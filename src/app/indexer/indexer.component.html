@@ -1,0 +1,16 @@
+<div>
+  Search
+
+  <h2>{{ article?.title }}</h2>
+
+  <p>{{ article?.abstractText }}</p>
+
+  <h3>DeCS IDs</h3>
+  <form class="example-form">
+    <mat-form-field appearance="fill">
+      <textarea matInput rows="15" [(ngModel)]="article.decsCodes" (ngModelChange)="toArray($event)">{{ article?.decsCodes }}</textarea>
+      <mat-hint>Número del Registro</mat-hint>
+    </mat-form-field>
+    <button type="submit" mat-raised-button color="accent" (click)=saveDecs()>Save DeCS</button>
+  </form>
+</div>
