@@ -5,16 +5,19 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-// https://angular.io/guide/http
-import { HttpClientModule } from '@angular/common/http';
-
-// https://material.angular.io/guide/getting-started
-import { MaterialModule } from './material.module';
-
-// Forms
+// Angular Forms
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-// Own app components
+// Angular HTTP
+import { HttpClientModule } from '@angular/common/http';
+
+// Angular Material
+import { MaterialModule } from './material.module';
+
+// Angular Flex-Layout
+import { FlexLayoutModule } from '@angular/flex-layout';
+
+// Own App Components
 import { IndexerComponent } from './indexer/indexer.component';
 
 @NgModule({
@@ -29,7 +32,8 @@ import { IndexerComponent } from './indexer/indexer.component';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    MaterialModule
+    MaterialModule,
+    FlexLayoutModule
   ],
   providers: [],
   bootstrap: [AppComponent]

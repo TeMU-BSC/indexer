@@ -1,9 +1,7 @@
 export interface Article {
-    journal: string,
-    title: string,
-    db: string,
     id: string,
+    title?: string,
+    abstractText?: string,
     decsCodes: string[],
-    year: number,
-    abstractText: string
+    annotatorId?: string
 }

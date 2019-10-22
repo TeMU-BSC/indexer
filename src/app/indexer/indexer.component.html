@@ -1,16 +1,24 @@
-<div>
-  Search
-
-  <h2>{{ article?.title }}</h2>
-
-  <p>{{ article?.abstractText }}</p>
-
-  <h3>DeCS IDs</h3>
-  <form class="example-form">
-    <mat-form-field appearance="fill">
-      <textarea matInput rows="15" [(ngModel)]="article.decsCodes" (ngModelChange)="toArray($event)">{{ article?.decsCodes }}</textarea>
-      <mat-hint>Número del Registro</mat-hint>
+<div fxLayout="row">
+  <div fxLayout="column">
+    <h4>Welcome, {{ annotator.name }}!</h4>
+    <h3>{{ article.title }}</h3>
+    <p>{{ article.abstractText }}</p>
+    <mat-form-field>
+      <input matInput placeholder="Search">
     </mat-form-field>
-    <button type="submit" mat-raised-button color="accent" (click)=saveDecs()>Save DeCS</button>
-  </form>
+  </div>
 </div>
+
+
+<h3>DeCS IDs</h3>
+<form class="example-form">
+  <mat-form-field appearance="fill">
+    <textarea matInput placeholder="DeCS codes...">{{ article.decsCodes }}</textarea>
+    <mat-hint>Número del Registro</mat-hint>
+  </mat-form-field>
+  <button type="submit" mat-flat-button color="accent" (click)=saveDecs()>SAVE</button>
+  <a mat-stroked-button color="primary" target="_blank"
+    href="http://decs.bvs.br/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
+    Go to DeCS website
+  </a>
+</form>
