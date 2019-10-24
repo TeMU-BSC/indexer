@@ -1,0 +1,35 @@
+[
+    {
+        "code": "1",
+        "description": {
+            "en": "First description",
+            "es": "Primera descripción"
+        },
+        "synonyms": {
+            "en": "Synonim1a|Synonim1b|Synonim1c",
+            "es": "Sinónimo1a|Sinónimo1b|Sinónimo1c"
+        }
+    },
+    {
+        "code": "2",
+        "description": {
+            "en": "Second description",
+            "es": "Segunda descripción"
+        },
+        "synonyms": {
+            "en": "Synonim2a|Synonim2b|Synonim2c",
+            "es": "Sinónimo2a|Sinónimo2b|Sinónimo2c"
+        }
+    },
+    {
+        "code": "3",
+        "description": {
+            "en": "Third description",
+            "es": "Tercera descripción"
+        },
+        "synonyms": {
+            "en": "Synonim3a|Synonim3b|Synonim3c",
+            "es": "Sinónimo3a|Sinónimo3b|Sinónimo3c"
+        }
+    }
+]

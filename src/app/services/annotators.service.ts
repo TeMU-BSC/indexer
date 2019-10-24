@@ -22,7 +22,7 @@ export class AnnotatorsService {
   /**
    * Get a list of annotators.
    */
-  getArticles(): Observable<Annotator[]> {
+  getAnnotators(): Observable<Annotator[]> {
     return this.http.get<Annotator[]>('http://localhost:4200/assets/data/annotators.json')
     // const url = 'http://localhost:4200/assets/data/articles.json';
     // const options = { headers: this.headers };

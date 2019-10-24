@@ -25,6 +25,7 @@ import {
     MatTooltipModule,
     MatStepperModule,
     MatButtonToggleModule,
+    MatAutocompleteModule,
 } from '@angular/material';
 
 const material = [
@@ -51,6 +52,7 @@ const material = [
     MatTooltipModule,
     MatStepperModule,
     MatButtonToggleModule,
+    MatAutocompleteModule
 ];
 
 @NgModule({
