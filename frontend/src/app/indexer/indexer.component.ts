@@ -32,12 +32,8 @@ export class IndexerComponent implements OnInit {
   decs: Decs[] = []
   filteredDecs: Observable<Decs[]>;
 
-  options: User[] = [
-    { name: 'Mary', surname: 'blah' },
-    { name: 'Shelley', surname: 'bleh' },
-    { name: 'Igor', surname: 'bluh' }
-  ];
-  filteredOptions: Observable<User[]>;
+  options: string[] = ['One', 'Two', 'Three'];
+  filteredOptions: Observable<string[]>;
 
 
   constructor(
@@ -55,7 +51,10 @@ export class IndexerComponent implements OnInit {
 
   getArticle() {
     this.articlesService.getArticle().subscribe(
-      data => this.article = data
+      data => {
+        this.article = data
+        this.article.decsCodesString = this.article.decsCodes.toString()
+      }
     )
   }
 
@@ -73,10 +72,6 @@ export class IndexerComponent implements OnInit {
     )
   }
 
-  displayFn(dec?: Decs): string | undefined {
-    return dec ? dec.code : undefined;
-  }
-
   private _filterCode(code: string): Decs[] {
     return this.decs.filter(decs => decs.code.toLowerCase().indexOf(code.toLowerCase()) === 0)
   }
@@ -92,6 +87,10 @@ export class IndexerComponent implements OnInit {
   private _filterSynonymEs(synonymsEs: string): Decs[] {
     return this.decs.filter(decs => decs.synonyms.es.toLowerCase().indexOf(synonymsEs.toLowerCase()) === 0)
   }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.options.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+  }
 
   getDecs() {
     this.articlesService.getDecs().subscribe(
@@ -101,6 +100,8 @@ export class IndexerComponent implements OnInit {
         this.filteredDecs = this.myControl.valueChanges
           .pipe(
             startWith(''),
+            // map(value => this._filter(value)),
+
             // map(value => typeof value === 'string' ? value : value.code),
             // map(code => code ? this._filterCode(code) : this.decs.slice()),
 
@@ -111,18 +112,15 @@ export class IndexerComponent implements OnInit {
     )
   }
 
-  toArray(value: string): void {
-    this.article.decsCodes = value.split(/[\s\.\-,;:]+/)
+  toArray(): void {
+    this.article.decsCodes = this.article.decsCodesString.split(/[\s\.\-,;:]+/)
   }
 
   saveDecs() {
-    let msg: string
     console.log(this.annotator)
-    console.log(JSON.stringify(this.article.decsCodes))
-    console.log(formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss', 'en'))
+    console.log(this.article.decsCodes);
 
-
-
+    let msg: string
     if (this.annotator.id === undefined) {
       msg = 'Please, select an annotator.'
       // let duration = 
@@ -132,6 +130,15 @@ export class IndexerComponent implements OnInit {
     this.snackBar.open(msg, 'OK', {
       duration: 5000
     })
+
+  }
+
+  onSelectionChange(event) {
+    let selectedCode = {
+      selectedCode: event.option.value,
+      timestamp: formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss', 'en')
+    }
+    console.log(selectedCode);
 
   }
 

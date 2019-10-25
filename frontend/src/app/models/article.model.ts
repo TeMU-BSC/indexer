@@ -3,6 +3,7 @@ export interface Article {
     title?: string,
     abstractText?: string,
     decsCodes?: string[],
+    decsCodesString?: string,
     annotatorId?: string
 }
 
