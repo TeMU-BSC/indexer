@@ -5,3 +5,8 @@ export interface Article {
     decsCodes?: string[],
     annotatorId?: string
 }
+
+export interface DecsCode {
+    id?: string,
+    timestamp?: string
+}

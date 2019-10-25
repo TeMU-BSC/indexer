@@ -1,49 +1,51 @@
-<h4>Select annotator</h4>
-<mat-form-field>
-  <mat-label>Annotator</mat-label>
-  <mat-select [(ngModel)]="annotator">
-    <mat-option *ngFor="let annotator of annotators" [value]="annotator">
-      {{ annotator.name }}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <span>DeCS Indexer</span>
+    <span style="flex: 1 1 auto;"></span>
+    <mat-form-field floatLabel="never">
+      <mat-label>Select annotator</mat-label>
+      <mat-select [(ngModel)]="annotator">
+        <mat-option *ngFor="let annotator of annotators" [value]="annotator">
+          {{ annotator.name }} ({{ annotator.id }})
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-icon class="example-icon" aria-hidden="false" aria-label="User logged in">verified_user</mat-icon>
+  </mat-toolbar-row>
+</mat-toolbar>
 
 <div fxLayout="row">
-  <div fxLayout="column">
-    <h3>Welcome, {{ annotator?.name }} (annotator.id: {{ annotator.id }})</h3>
+  <div fxFlex="70">
     <h3>{{ article?.title }}</h3>
     <p>{{ article?.abstractText }}</p>
   </div>
+
+  <div fxFlex="30">
+    <h3>DeCS IDs</h3>
+
+    <form>
+      <mat-form-field appearance="fill">
+        <textarea matInput name="decsCodes" placeholder="DeCS codes..."
+          [(ngModel)]="article.decsCodes">{{ article?.decsCodes }}</textarea>
+        <!-- <input matInput name="decsCodes" placeholder="input decs..." value="{{ article?.decsCodes }}" [(ngModel)]="article.decsCodes"> -->
+        <mat-hint>Número del Registro</mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="DeCS Filter" aria-label="DeCS Code" [formControl]="myControl"
+          [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+          <mat-option *ngFor="let dec of filteredDecs | async" [value]="dec">
+            {{ dec.code }} - {{ dec.description.es }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <!-- <button mat-flat-button color="accent" (click)="toArray(article.decsCodes);saveDecs()">SAVE</button> -->
+      <button mat-raised-button color="accent" (click)="saveDecs()">SAVE</button>
+    </form>
+
+    <a mat-stroked-button color="primary" target="_blank"
+      href="http://decs.bvs.br/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
+      Go to DeCS website
+    </a>
+  </div>
 </div>
-
-
-<h3>DeCS IDs</h3>
-
-<form class="example-form">
-  <mat-form-field class="example-full-width">
-    <input matInput placeholder="DeCS Filter" aria-label="DeCS Code" [formControl]="myControl" [matAutocomplete]="auto">
-    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-      <mat-option *ngFor="let dec of filteredDecs | async" [value]="dec">
-          {{ dec.code }} - {{ dec.description.es }}
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-  <mat-form-field appearance="fill">
-    <textarea matInput name="decsCodes" placeholder="DeCS codes..."
-      [(ngModel)]="article.decsCodes">{{ article?.decsCodes }}</textarea>
-    <!-- <input matInput name="decsCodes" placeholder="input decs..." value="{{ article?.decsCodes }}" [(ngModel)]="article.decsCodes"> -->
-    <mat-hint>Número del Registro</mat-hint>
-  </mat-form-field>
-  <button mat-flat-button color="accent" (click)="toArray(article.decsCodes);saveDecs()">SAVE</button>
-</form>
-
-<!-- <form>
-  <textarea name="dummy" id="dummy" cols="30" rows="10"
-    [(ngModel)]="article.decsCodes">{{ article?.decsCodes }}</textarea>
-  <button mat-flat-button color="accent" (click)="saveDecs()">SAVE</button>
-</form> -->
-
-<a mat-stroked-button color="primary" target="_blank"
-  href="http://decs.bvs.br/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
-  Go to DeCS website
-</a>

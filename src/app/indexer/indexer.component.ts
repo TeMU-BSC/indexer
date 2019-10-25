@@ -7,7 +7,9 @@ import { Article } from 'src/app/models/article.model'
 import { Annotator } from 'src/app/models/annotator.model'
 import { ArticlesService } from 'src/app/services/articles.service'
 import { AnnotatorsService } from 'src/app/services/annotators.service'
-import { Decs } from 'src/app/models/decs.model';
+import { Decs } from 'src/app/models/decs.model'
+import { formatDate } from '@angular/common'
+
 
 export interface User {
   name: string
@@ -53,9 +55,7 @@ export class IndexerComponent implements OnInit {
 
   getArticle() {
     this.articlesService.getArticle().subscribe(
-      data => {
-        this.article = data
-      }
+      data => this.article = data
     )
   }
 
@@ -101,21 +101,36 @@ export class IndexerComponent implements OnInit {
         this.filteredDecs = this.myControl.valueChanges
           .pipe(
             startWith(''),
-            map(value => typeof value === 'string' ? value : value.code),
-            map(code => code ? this._filterCode(code) : this.decs.slice()),
-            // map(descriptionEn => descriptionEn ? this._filterDescriptionEn(descriptionEn) : this.decs.slice()),
+            // map(value => typeof value === 'string' ? value : value.code),
+            // map(code => code ? this._filterCode(code) : this.decs.slice()),
+
+            map(value => typeof value === 'string' ? value : value.description.es),
+            map(descriptionEs => descriptionEs ? this._filterDescriptionEs(descriptionEs) : this.decs.slice()),
           );
       }
     )
   }
 
   toArray(value: string): void {
-    this.article.decsCodes = value.split(/[,; \t\r\n]+/);
+    this.article.decsCodes = value.split(/[\s\.\-,;:]+/)
   }
 
   saveDecs() {
-    this.snackBar.open('Data saved successfully.', 'OK', {
-      duration: 4000
+    let msg: string
+    console.log(this.annotator)
+    console.log(JSON.stringify(this.article.decsCodes))
+    console.log(formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss', 'en'))
+
+
+
+    if (this.annotator.id === undefined) {
+      msg = 'Please, select an annotator.'
+      // let duration = 
+    } else {
+      msg = 'DeCS saved successfully.'
+    }
+    this.snackBar.open(msg, 'OK', {
+      duration: 5000
     })
 
   }

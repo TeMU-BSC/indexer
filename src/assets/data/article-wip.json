@@ -2,6 +2,19 @@
     "id": "biblio-1003855",
     "title": "Riesgo coronario en pacientes con enfermedad arterial periférica tributarios de tratamiento quirúrgico",
     "abstractText": "RESUMEN  Introducción:  Los pacientes con enfermedad arterial periférica sometidos a cirugía vascular no cardíaca programada presentan un riesgo significativo de complicaciones cardiovasculares, debido a la enfermedad cardíaca sintomática o asintomática subyacente.  Objetivo:  Valorar el riesgo coronario en los pacientes tributarios de cirugía vascular no cardíaca.  Métodos:  Estudio descriptivo prospectivo en 35 pacientes del Servicio de Angiología y Cirugía Vascular del Hospital Clínico Quirúrgico \"Hermanos Ameijeiras\". El período de estudio osciló entre octubre de 2013 y mayo de 2016. Las variables cualitativas se expresaron como frecuencias absolutas y relativas. Se evaluó la asociación entre las variables mediante el test de Fischer, se usó el coeficiente de Pearson para relacionar los valores del índice de presiones tobillo brazo y los niveles del calcio score.  Resultados:  Predominó el sexo masculino y la edad menor de 60 años. El tabaquismo y la hipertensión arterial fueron los factores de riesgo de mayor frecuencia. A pesar de no existir diferencia significativa (p = 0,563) al asociar el calcio score y el índice de presiones tobillo-brazo, sí existió una correlación lineal negativa entre ellos. Las complicaciones perioperatorias presentadas en el grupo de moderado-alto riesgo quirúrgico fueron la fibrilación ventricular, el infarto agudo de miocardio y el paro cardíaco.  Conclusiones:  La valoración del riesgo coronario es una herramienta útil en la detección de lesiones coronarias significativas que pueden favorecer la aparición de complicaciones perioperatorias en los pacientes que son tributarios de tratamiento quirúrgico revascularizador no cardíaco.",
-    "decsCodes": ["11", "13", "17"],
+    "decsCodes": [
+        {
+            "id": "11",
+            "timestamp": "2019-10-24 12:01:26"
+        },
+        {
+            "id": "13",
+            "timestamp": "2019-10-24 12:04:59"
+        },
+        {
+            "id": "17",
+            "timestamp": "2019-10-24 12:15:14"
+        }
+    ],
     "annotatorId": "1"
 }
