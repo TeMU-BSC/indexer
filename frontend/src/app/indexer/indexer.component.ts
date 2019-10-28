@@ -3,11 +3,8 @@ import { MatSnackBar } from '@angular/material'
 import { FormBuilder, FormControl } from '@angular/forms'
 import { Observable } from 'rxjs'
 import { map, startWith } from 'rxjs/operators'
-import { Article } from 'src/app/models/article.model'
-import { Annotator } from 'src/app/models/annotator.model'
+import { Article, Descriptor, Annotator } from 'src/app/models/article.model'
 import { ArticlesService } from 'src/app/services/articles.service'
-import { AnnotatorsService } from 'src/app/services/annotators.service'
-import { Decs } from 'src/app/models/decs.model'
 import { formatDate } from '@angular/common'
 
 
@@ -29,96 +26,157 @@ export class IndexerComponent implements OnInit {
   annotators: Annotator[] = []
   myControl = new FormControl();
 
-  decs: Decs[] = []
-  filteredDecs: Observable<Decs[]>;
+  descriptores: Descriptor[] = []
+  filteredDescriptores: Observable<Descriptor[]>;
 
+  // // ----------------------------------------------------
   options: string[] = ['One', 'Two', 'Three'];
   filteredOptions: Observable<string[]>;
+
+  // // ----------------------------------------------------
+  // items: string[] = ["Noah", "Liam", "Mason", "Jacob"]
+  // formControlValue = '';
+  // findChoices(searchText: string) {
+  //   return ['John', 'Jane', 'Jonny'].filter(item =>
+  //     item.toLowerCase().includes(searchText.toLowerCase())
+  //   );
+  // }
+  // getChoiceLabel(choice: string) {
+  //   return `@${choice} `;
+  // }
+  // ----------------------------------------------------
+  // keyword = 'name';
+  keyword = 'descriptionEs';
+  data = [
+     {
+       id: 1,
+       name: 'Usa'
+     },
+     {
+       id: 2,
+       name: 'England'
+     }
+  ];
+ 
+ 
+  selectEvent(item) {
+    // do something with selected item
+  }
+ 
+  onChangeSearch(val: string) {
+    // fetch remote data from here
+    // And reassign the 'data' which is binded to 'data' property.
+  }
+  
+  onFocused(e){
+    // do something when input is focused
+  }
+  // ----------------------------------------------------
+
 
 
   constructor(
     private articlesService: ArticlesService,
-    private annotatorsService: AnnotatorsService,
     private snackBar: MatSnackBar,
   ) { }
 
   ngOnInit() {
-    this.getArticle()
-    // this.getArticles()
+    this.getArticles()
     this.getAnnotators()
-    this.getDecs()
-  }
-
-  getArticle() {
-    this.articlesService.getArticle().subscribe(
-      data => {
-        this.article = data
-        this.article.decsCodesString = this.article.decsCodes.toString()
-      }
-    )
+    this.getDescriptores()
+    console.log(this.descriptores);
+    
   }
 
   getArticles() {
     this.articlesService.getArticles().subscribe(
-      data => this.articles = data
+      data => this.articles = data,
+      error => console.log(error),
+      () => this.article = this.articles[1]
     )
   }
 
   getAnnotators() {
-    this.annotatorsService.getAnnotators().subscribe(
-      data => {
-        this.annotators = data
+    this.articlesService.getAnnotators().subscribe(
+      data => this.annotators = data,
+      error => console.log(error),
+      () => this.annotator = this.annotators[1]
+    )
+  }
+
+  getDescriptores() {
+    this.articlesService.getDescriptores().subscribe(
+      data => this.descriptores = data,
+      error => console.log(error),
+      () => {
+        this.filteredOptions = this.myControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value))
+        );
+
+        this.filteredDescriptores = this.myControl.valueChanges.pipe(
+          startWith(''),
+          map(value => typeof value === 'string' ? value : value.description.es),
+          map(descriptionEs => descriptionEs ? this._filterDescriptionEs(descriptionEs) : this.descriptores.slice())
+        );
+
+        // this.filteredDescriptores = this.myControl.valueChanges
+        //   .pipe(
+        //     startWith(''),
+        //     // map(value => this._filter(value)),
+
+        //     // map(value => typeof value === 'string' ? value : value.code),
+        //     // map(code => code ? this._filterCode(code) : this.descriptores.slice()),
+
+        //     map(value => typeof value.id === 'string' ? value.id : value.description.es),
+        //     map(descriptionEs => descriptionEs ? this._filterDescriptionEs(descriptionEs) : this.descriptores.slice()),
+        //   );
       }
     )
   }
 
-  private _filterCode(code: string): Decs[] {
-    return this.decs.filter(decs => decs.code.toLowerCase().indexOf(code.toLowerCase()) === 0)
-  }
-  private _filterDescriptionEn(descriptionEn: string): Decs[] {
-    return this.decs.filter(decs => decs.description.en.toLowerCase().indexOf(descriptionEn.toLowerCase()) === 0)
-  }
-  private _filterDescriptionEs(descriptionEs: string): Decs[] {
-    return this.decs.filter(decs => decs.description.es.toLowerCase().indexOf(descriptionEs.toLowerCase()) === 0)
-  }
-  private _filterSynonymEn(synonymsEn: string): Decs[] {
-    return this.decs.filter(decs => decs.synonyms.en.toLowerCase().indexOf(synonymsEn.toLowerCase()) === 0)
-  }
-  private _filterSynonymEs(synonymsEs: string): Decs[] {
-    return this.decs.filter(decs => decs.synonyms.es.toLowerCase().indexOf(synonymsEs.toLowerCase()) === 0)
-  }
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
+
     return this.options.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
   }
 
-  getDecs() {
-    this.articlesService.getDecs().subscribe(
-      data => this.decs = data,
-      error => { },
-      () => {
-        this.filteredDecs = this.myControl.valueChanges
-          .pipe(
-            startWith(''),
-            // map(value => this._filter(value)),
-
-            // map(value => typeof value === 'string' ? value : value.code),
-            // map(code => code ? this._filterCode(code) : this.decs.slice()),
-
-            map(value => typeof value === 'string' ? value : value.description.es),
-            map(descriptionEs => descriptionEs ? this._filterDescriptionEs(descriptionEs) : this.decs.slice()),
-          );
-      }
-    )
+  // private _filterCode(code: string): Descriptor[] {
+  //   return this.descriptores.filter(descriptores => descriptores.code.toLowerCase().indexOf(code.toLowerCase()) === 0)
+  // }
+  // private _filterDescriptionEn(descriptionEn: string): Descriptor[] {
+  //   return this.descriptores.filter(descriptores => descriptores.description.en.toLowerCase().indexOf(descriptionEn.toLowerCase()) === 0)
+  // }
+  private _filterDescriptionEs(descriptionEs: string): Descriptor[] {
+    return this.descriptores.filter(descriptores => descriptores.description.es.toLowerCase().indexOf(descriptionEs.toLowerCase()) === 0)
   }
+  // private _filterSynonymEn(synonymsEn: string): Descriptor[] {
+  //   return this.descriptores.filter(descriptores => descriptores.synonyms.en.toLowerCase().indexOf(synonymsEn.toLowerCase()) === 0)
+  // }
+  // private _filterSynonymEs(synonymsEs: string): Descriptor[] {
+  //   return this.descriptores.filter(descriptores => descriptores.synonyms.es.toLowerCase().indexOf(synonymsEs.toLowerCase()) === 0)
+  // }
+  // private _filter(value: string): string[] {
+  //   const filterValue = value.toLowerCase();
+  //   return this.options.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+  // }
+
+
 
   toArray(): void {
-    this.article.decsCodes = this.article.decsCodesString.split(/[\s\.\-,;:]+/)
+    // const currentDescriptores = this.article.descriptoresString.split(/[\s\.\-,;:]+/)
+    // console.log(currentDescriptores);
+
+    // this.article.descriptores.forEach(id => {
+
+    // });
   }
 
   saveDecs() {
     console.log(this.annotator)
-    console.log(this.article.decsCodes);
+    // console.log(this.articles)
+    console.log(this.article);
+    console.log(this.descriptores);
 
     let msg: string
     if (this.annotator.id === undefined) {
@@ -134,12 +192,18 @@ export class IndexerComponent implements OnInit {
   }
 
   onSelectionChange(event) {
+    let time = new Date()
     let selectedCode = {
       selectedCode: event.option.value,
-      timestamp: formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss', 'en')
+      // timestamp: formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss', 'en')
+      timestamp: time.getTime()
     }
     console.log(selectedCode);
 
+  }
+
+  trackByFn(index, item) {
+    return item.id; // unique id corresponding to the item
   }
 
 }

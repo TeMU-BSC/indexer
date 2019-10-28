@@ -17,6 +17,9 @@ import { MaterialModule } from './material.module';
 // Angular Flex-Layout
 import { FlexLayoutModule } from '@angular/flex-layout';
 
+// Autocomplete https://www.npmjs.com/package/angular-ng-autocomplete
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+
 // Own App Components
 import { IndexerComponent } from './indexer/indexer.component';
 
@@ -33,7 +36,8 @@ import { IndexerComponent } from './indexer/indexer.component';
     ReactiveFormsModule,
     HttpClientModule,
     MaterialModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    AutocompleteLibModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Article } from 'src/app/models/article.model'
-import { Decs } from 'src/app/models/decs.model'
+import { Article, Descriptor, Annotator } from 'src/app/models/article.model'
 
 @Injectable({
   providedIn: 'root'
@@ -25,13 +24,33 @@ export class ArticlesService {
    */
   getArticles(): Observable<Article[]> {
     return this.http.get<Article[]>('http://localhost:4200/assets/data/articles.json')
+    // return this.http.get<Article[]>('http://localhost:4200/assets/data/week9_test.json')
+    
+
     // const url = 'http://localhost:4200/assets/data/articles.json';
     // const options = { headers: this.headers };
     // return this.http.get<Article>(url, options);
   }
 
-  getDecs(): Observable<Decs[]> {
-    return this.http.get<Decs[]>('http://localhost:4200/assets/data/decs.json')
+  getDescriptores(): Observable<Descriptor[]> {
+    return this.http.get<Descriptor[]>('http://localhost:4200/assets/data/descriptores.json')
+  }
+
+  /** 
+   * Get one single annotator.
+   */
+  getAnnotator(): Observable<Annotator> {
+    return this.http.get<Annotator>('http://localhost:4200/assets/data/annotator.json')
+  }
+
+  /**
+   * Get a list of annotators.
+   */
+  getAnnotators(): Observable<Annotator[]> {
+    return this.http.get<Annotator[]>('http://localhost:4200/assets/data/annotators.json')
+    // const url = 'http://localhost:4200/assets/data/articles.json';
+    // const options = { headers: this.headers };
+    // return this.http.get<Article>(url, options);
   }
 
 }
