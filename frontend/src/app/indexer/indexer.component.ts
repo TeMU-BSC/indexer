@@ -7,6 +7,7 @@ import { Article, Descriptor, Annotator } from 'src/app/models/article.model'
 import { ArticlesService } from 'src/app/services/articles.service'
 import { formatDate } from '@angular/common'
 
+// TODO enviar al backend fechas antiguas de descriptores que el annotador no modifica
 
 export interface User {
   name: string
@@ -46,38 +47,38 @@ export class IndexerComponent implements OnInit {
   // }
   // ----------------------------------------------------
   // keyword = 'name';
-  keyword = 'descriptionEs';
-  data = [
-    {
-      id: 1,
-      name: 'Usa'
-    },
-    {
-      id: 2,
-      name: 'England'
-    }
-  ];
+  // keyword = 'descriptionEs';
+  // data = [
+  //   {
+  //     id: 1,
+  //     name: 'Usa'
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'England'
+  //   }
+  // ];
 
 
-  selectEvent(item) {
-    // do something with selected item
-  }
+  // selectEvent(item) {
+  //   // do something with selected item
+  // }
 
-  onChangeSearch(val: string) {
-    // fetch remote data from here
-    // And reassign the 'data' which is binded to 'data' property.
-  }
+  // onChangeSearch(val: string) {
+  //   // fetch remote data from here
+  //   // And reassign the 'data' which is binded to 'data' property.
+  // }
 
-  onFocused(e) {
-    // do something when input is focused
-  }
+  // onFocused(e) {
+  //   // do something when input is focused
+  // }
   // ----------------------------------------------------
 
 
 
   constructor(
     private articlesService: ArticlesService,
-    private snackBar: MatSnackBar,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
@@ -88,8 +89,7 @@ export class IndexerComponent implements OnInit {
 
   getArticles() {
     this.articlesService.getArticles().subscribe(
-      data => {this.articles = data, console.log(this.articles);},
-      
+      data => this.articles = data['results'],
       error => console.log(error),
       () => this.article = this.articles[1]
     )
@@ -104,59 +104,60 @@ export class IndexerComponent implements OnInit {
   }
 
   getDescriptores() {
-    this.articlesService.getDescriptores().subscribe(
-      data => this.descriptores = data,
-      error => console.log(error),
-      () => {
-        this.filteredOptions = this.myControl.valueChanges.pipe(
-          startWith(''),
-          map(value => this._filter(value))
-        );
+    // this.articlesService.getDescriptores().subscribe(
+    //   data => this.descriptores = data,
+    //   error => console.log(error),
+    //   () => {
+    //     this.filteredOptions = this.myControl.valueChanges.pipe(
+    //       startWith(''),
+    //       map(value => this._filter(value))
+    //     );
 
-        // this.filteredDescriptores = this.myControl.valueChanges.pipe(
-        //   startWith(''),
-        //   map(value => typeof value === 'string' ? value : value.descriptionEs),
-        //   map(descriptionEs => descriptionEs ? this._filterDescriptionEs(descriptionEs) : this.descriptores.slice())
-        // );
+    //     // this.filteredDescriptores = this.myControl.valueChanges.pipe(
+    //     //   startWith(''),
+    //     //   map(value => typeof value === 'string' ? value : value.descriptionEs),
+    //     //   map(descriptionEs => descriptionEs ? this._filterDescriptionEs(descriptionEs) : this.descriptores.slice())
+    //     // );
 
-        this.filteredDescriptores = this.myControl.valueChanges
-          .pipe(
-            startWith(''),
-            map(descriptor => this._filterDescriptor(descriptor))
-          )
+    //     this.filteredDescriptores = this.myControl.valueChanges
+    //       .pipe(
+    //         startWith(''),
+    //         map(descriptor => this._filterDescriptor(descriptor))
+    //       )
 
-        // this.filteredDescriptores = this.myControl.valueChanges
-        //   .pipe(
-        //     startWith(''),
-        //     // map(value => this._filter(value)),
+    //     // this.filteredDescriptores = this.myControl.valueChanges
+    //     //   .pipe(
+    //     //     startWith(''),
+    //     //     // map(value => this._filter(value)),
 
-        //     // map(value => typeof value === 'string' ? value : value.code),
-        //     // map(code => code ? this._filterCode(code) : this.descriptores.slice()),
+    //     //     // map(value => typeof value === 'string' ? value : value.code),
+    //     //     // map(code => code ? this._filterCode(code) : this.descriptores.slice()),
 
-        //     map(value => typeof value.id === 'string' ? value.id : value.description.es),
-        //     map(descriptionEs => descriptionEs ? this._filterDescriptionEs(descriptionEs) : this.descriptores.slice()),
-        //   );
-      }
-    )
+    //     //     map(value => typeof value.id === 'string' ? value.id : value.description.es),
+    //     //     map(descriptionEs => descriptionEs ? this._filterDescriptionEs(descriptionEs) : this.descriptores.slice()),
+    //     //   );
+    //   }
+    // )
+
+    this.articlesService.getDescriptores()
+    
   }
 
   private _filter(value: string): string[] {
     return this.options.filter(option => option.toLowerCase().indexOf(value.toLowerCase()) === 0)
   }
 
-  private _filterDescriptionEs(descriptionEs: string): Descriptor[] {
-    return this.descriptores.filter(descriptores => descriptores.descriptionEs.toLowerCase().indexOf(descriptionEs.toLowerCase()) === 0)
+  private _filterDescriptionEs(termSpanish: string): Descriptor[] {
+    return this.descriptores.filter(descriptores => descriptores.termSpanish.toLowerCase().indexOf(termSpanish.toLowerCase()) === 0)
   }
 
   private _filterDescriptor(value: Descriptor): Descriptor[] {
-    console.log(value);
-    
     return this.descriptores.filter(
       // option => {
       //   option.id.toLowerCase().includes(value.id.toLowerCase())
       //     || option.descriptionEs.toLowerCase().includes(value.descriptionEs.toLowerCase())
       // }
-      option => option.id.toLowerCase().includes(value.id.toLowerCase())
+      option => option.decsCode.toLowerCase().includes(value.decsCode.toLowerCase())
     )
   }
 
@@ -184,10 +185,10 @@ export class IndexerComponent implements OnInit {
   }
 
   saveDecs() {
-    console.log(this.annotator)
+    // console.log(this.annotator)
     // console.log(this.articles)
-    console.log(this.article);
-    console.log(this.descriptores);
+    // console.log(this.article);
+    // console.log(this.descriptores);
 
     let msg: string
     if (this.annotator.id === undefined) {
@@ -200,20 +201,25 @@ export class IndexerComponent implements OnInit {
       duration: 5000
     })
 
+    // console.log(formatDate(new Date().getTime(), 'yyyy-MM-ddTHH:mm:ss', 'en'));
+
   }
 
   onSelectionChange(event) {
     let descriptor: Descriptor = {
-      id: event.option.value.id,
-      // timestamp: formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss', 'en')
-      addedOn: new Date().getTime().toString()
+      decsCode: event.option.value.id,
+      // addedBy: this.annotator.id,
+      addedOn: formatDate(new Date().getTime(), 'yyyy-MM-ddTHH:mm:ss', 'en')
     }
     this.article.descriptores.push(descriptor)
+
+
 
   }
 
   trackByFn(index, item) {
     return item.id; // unique id corresponding to the item
   }
+
 
 }

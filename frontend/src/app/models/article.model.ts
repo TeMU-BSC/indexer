@@ -2,6 +2,7 @@ export interface Article {
     id?: string,
     title?: string,
     abstractText?: string,
+    addedBy?: Annotator['id'],
     descriptores?: Descriptor[]
 }
 
@@ -12,13 +13,16 @@ export interface Article {
  * its plural should be 'descriptores'.
  */
 export interface Descriptor {
-    id: string,
-    descriptionEs?: string,
-    descriptionEn?: string,
-    synonymsEn?: string,
-    synonymsEs?: string,
-    addedBy?: Annotator['id'],
-    addedOn?: string
+    decsCode?: string,
+    termSpanish?: string,
+    termEnglish?: string,
+    meshCode?: string,
+    synonyms?: string,
+    treeNumber?: string,
+    definitionSpanish?: string,
+    definitionLatin?: string,
+
+    addedOn: string
 }
 
 export interface Annotator {
