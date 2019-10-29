@@ -16,7 +16,7 @@
   <div fxFlex="30">
     <h3>DeCS IDs</h3>
 
-    <form>
+    <form fxLayout="column">
       <mat-form-field floatLabel="never">
         <mat-label>Select annotator</mat-label>
         <mat-select name="annotator" [(ngModel)]="annotator">
@@ -32,20 +32,15 @@
       </mat-form-field> -->
 
       <!-- OK -->
-      <!-- <mat-form-field *ngFor="let descriptor of descriptores">
-        <input type="text" placeholder="Pick one" aria-label="DeCS Code" matInput [formControl]="myControl"
+      <mat-form-field *ngFor="let descriptor of descriptores">
+        <input matInput placeholder="Filter a descriptor..." aria-label="DeCS Code" [formControl]="myControl"
           [matAutocomplete]="auto">
         <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSelectionChange($event)">
-
-          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-            {{option}}
-          </mat-option>
-
-          <mat-option *ngFor="let descriptor of filteredDescriptores | async" [value]="descriptor.id">
-            {{ descriptor.description.es }} ({{ descriptor.id }})
+          <mat-option *ngFor="let descriptor of filteredDescriptores | async" [value]="descriptor">
+            ({{ descriptor.id }}) {{ descriptor.descriptionEs }}
           </mat-option>
         </mat-autocomplete>
-      </mat-form-field> -->
+      </mat-form-field>
 
       <!-- <mat-form-field floatLabel="never">
         <input matInput placeholder="Pick a DeCS Code" aria-label="DeCS Code" [formControl]="myControl"
@@ -89,7 +84,7 @@
       <div class="ng-autocomplete">
         <ng-autocomplete [data]="descriptores" [searchKeyword]="keyword" (selected)='selectEvent($event)'
           (inputChanged)='onChangeSearch($event)' (inputFocused)='onFocused($event)' [itemTemplate]="itemTemplate"
-          [notFoundTemplate]="notFoundTemplate">
+          [notFoundTemplate]="notFoundTemplate" placeholder="Search DeCS...">
         </ng-autocomplete>
         <ng-template #itemTemplate let-item>
           <a [innerHTML]="item.descriptionEs"></a>

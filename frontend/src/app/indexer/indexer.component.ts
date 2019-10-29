@@ -48,27 +48,27 @@ export class IndexerComponent implements OnInit {
   // keyword = 'name';
   keyword = 'descriptionEs';
   data = [
-     {
-       id: 1,
-       name: 'Usa'
-     },
-     {
-       id: 2,
-       name: 'England'
-     }
+    {
+      id: 1,
+      name: 'Usa'
+    },
+    {
+      id: 2,
+      name: 'England'
+    }
   ];
- 
- 
+
+
   selectEvent(item) {
     // do something with selected item
   }
- 
+
   onChangeSearch(val: string) {
     // fetch remote data from here
     // And reassign the 'data' which is binded to 'data' property.
   }
-  
-  onFocused(e){
+
+  onFocused(e) {
     // do something when input is focused
   }
   // ----------------------------------------------------
@@ -84,13 +84,12 @@ export class IndexerComponent implements OnInit {
     this.getArticles()
     this.getAnnotators()
     this.getDescriptores()
-    console.log(this.descriptores);
-    
   }
 
   getArticles() {
     this.articlesService.getArticles().subscribe(
-      data => this.articles = data,
+      data => {this.articles = data, console.log(this.articles);},
+      
       error => console.log(error),
       () => this.article = this.articles[1]
     )
@@ -114,11 +113,17 @@ export class IndexerComponent implements OnInit {
           map(value => this._filter(value))
         );
 
-        this.filteredDescriptores = this.myControl.valueChanges.pipe(
-          startWith(''),
-          map(value => typeof value === 'string' ? value : value.description.es),
-          map(descriptionEs => descriptionEs ? this._filterDescriptionEs(descriptionEs) : this.descriptores.slice())
-        );
+        // this.filteredDescriptores = this.myControl.valueChanges.pipe(
+        //   startWith(''),
+        //   map(value => typeof value === 'string' ? value : value.descriptionEs),
+        //   map(descriptionEs => descriptionEs ? this._filterDescriptionEs(descriptionEs) : this.descriptores.slice())
+        // );
+
+        this.filteredDescriptores = this.myControl.valueChanges
+          .pipe(
+            startWith(''),
+            map(descriptor => this._filterDescriptor(descriptor))
+          )
 
         // this.filteredDescriptores = this.myControl.valueChanges
         //   .pipe(
@@ -136,20 +141,26 @@ export class IndexerComponent implements OnInit {
   }
 
   private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-
-    return this.options.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+    return this.options.filter(option => option.toLowerCase().indexOf(value.toLowerCase()) === 0)
   }
 
-  // private _filterCode(code: string): Descriptor[] {
-  //   return this.descriptores.filter(descriptores => descriptores.code.toLowerCase().indexOf(code.toLowerCase()) === 0)
-  // }
-  // private _filterDescriptionEn(descriptionEn: string): Descriptor[] {
-  //   return this.descriptores.filter(descriptores => descriptores.description.en.toLowerCase().indexOf(descriptionEn.toLowerCase()) === 0)
-  // }
   private _filterDescriptionEs(descriptionEs: string): Descriptor[] {
-    return this.descriptores.filter(descriptores => descriptores.description.es.toLowerCase().indexOf(descriptionEs.toLowerCase()) === 0)
+    return this.descriptores.filter(descriptores => descriptores.descriptionEs.toLowerCase().indexOf(descriptionEs.toLowerCase()) === 0)
   }
+
+  private _filterDescriptor(value: Descriptor): Descriptor[] {
+    console.log(value);
+    
+    return this.descriptores.filter(
+      // option => {
+      //   option.id.toLowerCase().includes(value.id.toLowerCase())
+      //     || option.descriptionEs.toLowerCase().includes(value.descriptionEs.toLowerCase())
+      // }
+      option => option.id.toLowerCase().includes(value.id.toLowerCase())
+    )
+  }
+
+
   // private _filterSynonymEn(synonymsEn: string): Descriptor[] {
   //   return this.descriptores.filter(descriptores => descriptores.synonyms.en.toLowerCase().indexOf(synonymsEn.toLowerCase()) === 0)
   // }
@@ -192,13 +203,12 @@ export class IndexerComponent implements OnInit {
   }
 
   onSelectionChange(event) {
-    let time = new Date()
-    let selectedCode = {
-      selectedCode: event.option.value,
+    let descriptor: Descriptor = {
+      id: event.option.value.id,
       // timestamp: formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss', 'en')
-      timestamp: time.getTime()
+      addedOn: new Date().getTime().toString()
     }
-    console.log(selectedCode);
+    this.article.descriptores.push(descriptor)
 
   }
 

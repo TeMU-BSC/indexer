@@ -13,14 +13,10 @@ export interface Article {
  */
 export interface Descriptor {
     id: string,
-    description?: {
-        en: string,
-        es: string
-    },
-    synonyms?: {
-        en: string,
-        es: string
-    }
+    descriptionEs?: string,
+    descriptionEn?: string,
+    synonymsEn?: string,
+    synonymsEs?: string,
     addedBy?: Annotator['id'],
     addedOn?: string
 }

@@ -23,13 +23,13 @@ export class ArticlesService {
    * Get a list of articles.
    */
   getArticles(): Observable<Article[]> {
-    return this.http.get<Article[]>('http://localhost:4200/assets/data/articles.json')
+    // return this.http.get<Article[]>('http://localhost:4200/assets/data/articles.json')
     // return this.http.get<Article[]>('http://localhost:4200/assets/data/week9_test.json')
     
-
-    // const url = 'http://localhost:4200/assets/data/articles.json';
-    // const options = { headers: this.headers };
-    // return this.http.get<Article>(url, options);
+    // const url = 'http://84.88.188.74:5000/articles?start=0&total=1'
+    const url = 'http://localhost:5000/articles?start=0&total=1'
+    const options = { headers: this.headers }
+    return this.http.get<Article[]>(url, options)
   }
 
   getDescriptores(): Observable<Descriptor[]> {
