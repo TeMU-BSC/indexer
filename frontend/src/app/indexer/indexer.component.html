@@ -25,76 +25,28 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <!-- <mat-form-field appearance="fill">
-        <textarea matInput name="descriptores" placeholder="DeCS codes..."
-          [(ngModel)]="article.descriptores"></textarea>
+      <mat-form-field appearance="fill">
+        <textarea matInput name="descriptors" placeholder="DeCS codes..." [(ngModel)]="descriptorsString"></textarea>
         <mat-hint>Número del Registro</mat-hint>
-      </mat-form-field> -->
-
-      <!-- OK -->
-      <mat-form-field *ngFor="let descriptor of descriptores">
-        <input matInput placeholder="Filter a descriptor..." aria-label="DeCS Code" [formControl]="myControl"
-          [matAutocomplete]="auto">
-        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSelectionChange($event)">
-          <mat-option *ngFor="let descriptor of filteredDescriptores | async" [value]="descriptor">
-            ({{ descriptor.id }}) {{ descriptor.descriptionEs }}
-          </mat-option>
-        </mat-autocomplete>
       </mat-form-field>
 
-      <!-- <mat-form-field floatLabel="never">
-        <input matInput placeholder="Pick a DeCS Code" aria-label="DeCS Code" [formControl]="myControl"
+      <!-- OK -->
+      <!-- <mat-form-field *ngFor="let descriptor of descriptors"> -->
+      <mat-form-field>
+        <input matInput placeholder="Filter a descriptor..." aria-label="DeCS Code" [formControl]="myControl"
           [matAutocomplete]="auto">
-        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSelectionChange($event)">
-          <mat-option *ngFor="let descriptor of filteredDescriptores | async" [value]="descriptor.id">
-            {{ descriptor.id }} - {{ descriptor.description.es }}
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectionChange($event)">
+          
+          <!-- <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+            {{ user.name }}
+          </mat-option> -->
+
+          <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
+            ({{ descriptor.decsCode }}) {{ descriptor.termSpanish }}
           </mat-option>
+        
         </mat-autocomplete>
-      </mat-form-field> -->
-
-      <!-- <input type="text" [mention]="items"> -->
-      <!-- <input type="text" [mention]="descriptores" [mentionConfig]="{triggerChar:'#',maxItems:10,labelKey:'description[`es`]'}"> -->
-
-      <!-- <mwl-text-input-autocomplete-container>
-        <textarea
-          name="choice"
-          placeholder="Type @ to search..."
-          class="form-control"
-          rows="5"
-          [(ngModel)]="formControlValue"
-          mwlTextInputAutocomplete
-          [findChoices]="findChoices"
-          [getChoiceLabel]="getChoiceLabel">
-        </textarea>
-      </mwl-text-input-autocomplete-container> -->
-
-      <!-- <div class="ng-autocomplete">
-        <ng-autocomplete [data]="data" [searchKeyword]="keyword" (selected)='selectEvent($event)'
-          (inputChanged)='onChangeSearch($event)' (inputFocused)='onFocused($event)' [itemTemplate]="itemTemplate"
-          [notFoundTemplate]="notFoundTemplate">
-        </ng-autocomplete>
-        <ng-template #itemTemplate let-item>
-          <a [innerHTML]="item.name"></a>
-        </ng-template>
-        <ng-template #notFoundTemplate let-notFound>
-          <div [innerHTML]="notFound"></div>
-        </ng-template>
-      </div> -->
-
-      <!-- <div class="ng-autocomplete">
-        <ng-autocomplete [data]="descriptores" [searchKeyword]="keyword" (selected)='selectEvent($event)'
-          (inputChanged)='onChangeSearch($event)' (inputFocused)='onFocused($event)' [itemTemplate]="itemTemplate"
-          [notFoundTemplate]="notFoundTemplate" placeholder="Search DeCS...">
-        </ng-autocomplete>
-        <ng-template #itemTemplate let-item>
-          <a [innerHTML]="item.descriptionEs"></a>
-        </ng-template>
-        <ng-template #notFoundTemplate let-notFound>
-          <div [innerHTML]="notFound"></div>
-        </ng-template>
-      </div> -->
-
-
+      </mat-form-field>
     </form>
 
     <button mat-flat-button color="accent" (click)="toArray(); saveDecs()">SAVE</button>
