@@ -1,21 +1,14 @@
-import { Component, OnInit } from '@angular/core'
-import { MatSnackBar } from '@angular/material'
-import { FormBuilder, FormControl } from '@angular/forms'
-import { Observable } from 'rxjs'
-import { map, startWith } from 'rxjs/operators'
-import { Annotator } from '../models/annotator.model'
-import { Descriptor } from '../models/descriptor.model'
-import { Article } from 'src/app/models/article.model'
-import { ArticlesService } from 'src/app/services/articles.service'
+import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material';
+import { FormBuilder, FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { Annotator, Article, Descriptor } from '../app.model';
+import { AppService } from '../app.service';
 import { formatDate } from '@angular/common'
-
 
 // TODO enviar al backend fechas antiguas de descriptors que el annotador no modifica
 
-export interface User {
-  name: string
-  phone: string
-}
 
 @Component({
   selector: 'app-indexer',
@@ -24,50 +17,50 @@ export interface User {
 })
 export class IndexerComponent implements OnInit {
 
-  annotator: Annotator = {}
-  annotators: Annotator[] = []
-  article: Article = {}
-  articles: Article[] = []
-  descriptors: Descriptor[] = []
-  myControl = new FormControl()
-  filteredDescriptors: Observable<Descriptor[]>
-  
-  descriptorsString: string = ''
-  descriptorsSimpleArray: string[]
-  articleUpdatedDescriptors: Descriptor[] = []
+  annotator: Annotator = {};
+  annotators: Annotator[] = [];
+  article: Article = {};
+  articles: Article[] = [];
+  descriptors: Descriptor[] = [];
+  myControl = new FormControl();
+  filteredDescriptors: Observable<Descriptor[]>;
+
+  descriptorsString = '';
+  descriptorsSimpleArray: string[];
+  articleUpdatedDescriptors: Descriptor[] = [];
 
   constructor(
-    private articlesService: ArticlesService,
+    private appService: AppService,
     private snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
-    this.getArticles()
-    this.getAnnotators()
-    this.getDescriptors()
+    this.getArticles();
+    this.getAnnotators();
+    this.getDescriptors();
   }
 
   getArticles() {
-    this.articlesService.getArticles().subscribe(
+    this.appService.getArticles().subscribe(
       data => this.articles = data['results'],
       error => console.log(error),
       () => {
-        this.article = this.articles[1]
-        this.descriptorsString = this.article.descriptors ? this.article.descriptors.toString() : ''
+        this.article = this.articles[1];
+        this.descriptorsString = this.article.descriptors ? this.article.descriptors.toString() : '';
       }
-    )
+    );
   }
 
   getAnnotators() {
-    this.articlesService.getAnnotators().subscribe(
+    this.appService.getAnnotators().subscribe(
       data => this.annotators = data,
       error => console.log(error),
       () => this.annotator = this.annotators[1]
-    )
+    );
   }
 
   getDescriptors() {
-    this.articlesService.getDescriptors().subscribe(
+    this.appService.getDescriptors().subscribe(
       data => this.descriptors = data,
       error => console.log(error),
       () => {
@@ -77,53 +70,53 @@ export class IndexerComponent implements OnInit {
           map(termSpanish => termSpanish ? this._filterDescriptors(termSpanish) : this.descriptors.slice())
         );
       }
-    )
+    );
   }
 
   // Filtering
   private _filterDescriptors(termSpanish: string): Descriptor[] {
-    const filterValue = termSpanish.toLowerCase()
-    return this.descriptors.filter(option => option.termSpanish.toLowerCase().includes(filterValue))
+    const filterValue = termSpanish.toLowerCase();
+    return this.descriptors.filter(option => option.termSpanish.toLowerCase().includes(filterValue));
   }
 
   displayFn(descriptor?: Descriptor): string | undefined {
-    return descriptor ? descriptor.decsCode : undefined
+    return descriptor ? descriptor.decsCode : undefined;
   }
 
   toArray() {
-    this.descriptorsSimpleArray = this.descriptorsString.split(/[\s\.\-,;:]+/)
+    this.descriptorsSimpleArray = this.descriptorsString.split(/[\s\.\-,;:]+/);
   }
 
   onSelectionChange(event) {
-    this.descriptorsString += `,${event.option.value.decsCode}`
+    this.descriptorsString += `,${event.option.value.decsCode}`;
     this.articleUpdatedDescriptors.push({
       decsCode: event.option.value.decsCode,
       addedOn: formatDate(new Date().getTime(), 'yyyy-MM-ddTHH:mm:ss', 'en')
-    })
+    });
   }
 
   saveDecs() {
-    this.article.addedBy = this.annotator.id
-    this.article.descriptors = this.articleUpdatedDescriptors
+    this.article.addedBy = this.annotator.id;
+    this.article.descriptors = this.articleUpdatedDescriptors;
     this.descriptorsSimpleArray.forEach(decsCode => {
       this.article.descriptors.push({
-        decsCode: decsCode,
+        decsCode,
         addedOn: formatDate(new Date().getTime(), 'yyyy-MM-ddTHH:mm:ss', 'en')
-      })
+      });
     });
 
-    console.log(this.article)
+    console.log(this.article);
 
-    let msg: string
+    let msg: string;
     if (this.annotator.id === undefined) {
-      msg = 'Please, select an annotator.'
-      // let duration = 
+      msg = 'Please, select an annotator.';
+      // let duration =
     } else {
-      msg = 'DeCS saved successfully.'
+      msg = 'DeCS saved successfully.';
     }
     this.snackBar.open(msg, 'OK', {
       duration: 5000
-    })
+    });
 
 
   }
