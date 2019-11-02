@@ -1,14 +1,15 @@
 export interface Annotator {
-  id?: string;
-  name?: string;
+  id?: string
+  name?: string
 }
 
 export interface Article {
-  id?: string;
-  title?: string;
-  abstractText?: string;
-  addedBy?: Annotator['id'];
-  descriptors?: Descriptor[];
+  id?: string
+  title?: string
+  abstractText?: string
+  results?: any
+  addedBy?: Annotator['id']
+  descriptors?: Descriptor[]
 }
 
 /**
@@ -18,13 +19,13 @@ export interface Article {
  * its plural should be 'descriptors'.
  */
 export interface Descriptor {
-  decsCode?: string;
-  termSpanish?: string;
-  termEnglish?: string;
-  meshCode?: string;
-  synonyms?: string;
-  treeNumber?: string;
-  definitionSpanish?: string;
-  definitionLatin?: string;
-  addedOn?: string;
+  decsCode?: string
+  termSpanish?: string
+  termEnglish?: string
+  meshCode?: string
+  synonyms?: string
+  treeNumber?: string
+  definitionSpanish?: string
+  definitionLatin?: string
+  addedOn?: string
 }

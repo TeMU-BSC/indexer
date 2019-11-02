@@ -1,29 +1,33 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser'
+import { NgModule } from '@angular/core'
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppRoutingModule } from './app-routing.module'
+import { AppComponent } from './app.component'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 // Angular Forms
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 
 // Angular HTTP
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http'
 
 // Angular Material
-import { MaterialModule } from './material.module';
+import { MaterialModule } from './material.module'
 
 // Angular Flex-Layout
-import { FlexLayoutModule } from '@angular/flex-layout';
+import { FlexLayoutModule } from '@angular/flex-layout'
 
 // Own App Components
-import { IndexerComponent } from './indexer/indexer.component';
+import { IndexerComponent } from './components/indexer/indexer.component'
+import { LoginComponent } from './components/login/login.component'
+import { HeaderComponent } from './components/header/header.component'
 
 @NgModule({
   declarations: [
     AppComponent,
-    IndexerComponent
+    IndexerComponent,
+    LoginComponent,
+    HeaderComponent,
   ],
   imports: [
     BrowserModule,
