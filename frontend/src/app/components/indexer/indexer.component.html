@@ -34,15 +34,16 @@
       </mat-form-field>
     </form> -->
 
+    <mat-form-field appearance="fill">
+      <mat-label>Select annotator</mat-label>
+      <mat-select name="annotator" [(ngModel)]="user">
+        <mat-option *ngFor="let annotator of annotators" [value]="annotator">
+          {{ annotator.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <form [formGroup]="decsForm" fxLayout="column">
-      <mat-form-field appearance="fill">
-        <mat-label>Select annotator</mat-label>
-        <mat-select name="annotator" formControlName="annotator">
-          <mat-option *ngFor="let annotator of annotators" [value]="annotator">
-            {{ annotator.name }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
       <h3>Códigos DeCS</h3>
       <div formArrayName="descriptors" fxLayout="column">
         <mat-form-field appearance="outline" *ngFor="let item of descriptors.controls; let i = index"
@@ -53,7 +54,7 @@
           <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn"
             (optionSelected)="onSelectionChange($event)">
             <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
-              ({{ descriptor.decsCode }}) {{ descriptor.termSpanish }}
+              {{ descriptor.id }} - {{ descriptor.termSpanish }}
             </mat-option>
           </mat-autocomplete>
 
@@ -67,7 +68,7 @@
           <!-- <mat-hint>Hint</mat-hint> -->
 
         </mat-form-field>
-        <button *ngIf="descriptors.length === 0" mat-button color="primary" (click)="addDescriptor()">Añadir
+        <button *ngIf="descriptors.length === 0" mat-stroked-button color="primary" (click)="addDescriptor()">Añadir
           código</button>
       </div>
 
@@ -79,4 +80,6 @@
 
 
   </div>
+
+  {{ filteredDescriptors }}
 </div>

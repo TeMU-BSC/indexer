@@ -50,7 +50,7 @@ export class IndexerComponent implements OnInit {
   initForm() {
     /* Initiate the form structure */
     this.decsForm = this.formBuilder.group({
-      annotator: [, Validators.required],
+      // annotator: [, Validators.required],
       descriptors: this.formBuilder.array(
         [this.formBuilder.group({ decsCode: ['', Validators.required], addedOn: this.getAddedOn() })],
         Validators.required
@@ -79,15 +79,21 @@ export class IndexerComponent implements OnInit {
   }
 
   getArticles() {
-    this.appService.getArticles().subscribe(
-      data => this.articles = data,
+    this.appService.getArticles(3).subscribe(
+      response => this.articles = response['results'],
       error => console.log(error),
       () => {
         // TODO select article by annotator in view
         this.article = this.articles[1]
-        this.article.descriptors.forEach(descriptor => {
-          this.descriptorsString += `${descriptor.decsCode}\n`
-        })
+        console.log(this.articles);
+        
+
+        if (this.article.descriptors === undefined) {
+          this.article.descriptors = []
+        }
+        // this.article.descriptors.forEach(descriptor => {
+        //   this.descriptorsString += `${descriptor.id}\n`
+        // })
       }
     )
   }
@@ -109,6 +115,8 @@ export class IndexerComponent implements OnInit {
 
   getDescriptors() {
     this.allDescriptors = this.appService.getDescriptors()
+
+    // Init filtered descriptors list
     this.filteredDescriptors = this.myControl.valueChanges.pipe(
       startWith(''),
       map(value => typeof value === 'string' ? value : value.termSpanish),
@@ -123,7 +131,7 @@ export class IndexerComponent implements OnInit {
   }
 
   displayFn(descriptor?: Descriptor): string | undefined {
-    return descriptor ? descriptor.decsCode : undefined
+    return descriptor ? descriptor.id : undefined
   }
 
   toArray() {
@@ -131,21 +139,29 @@ export class IndexerComponent implements OnInit {
   }
 
   onSelectionChange(event) {
-    this.descriptorsString += `\n${event.option.value.decsCode}`
+    this.descriptorsString += `\n${event.option.value.id}`
     this.articleUpdatedDescriptors.push({
-      decsCode: event.option.value.decsCode,
+      id: event.option.value.id,
       addedOn: formatDate(new Date().getTime(), 'yyyy-MM-ddTHH:mm:ss', 'en')
     })
   }
 
   saveDecs() {
-    this.article.addedBy = this.decsForm.controls.annotator.value.id
+    // let message: string
+    if (this.user === undefined) {
+      // message = 'Please, select an annotator.'
+      this.snackBar.open('Please, select an annotator.', 'OK', {
+        duration: 5000
+      })
+      return
+    }
+
+    // Get data from the form
+    this.article.addedBy = this.user.id
     this.article.descriptors = this.decsForm.controls.descriptors.value
 
-    console.log(this.article.id)
-    console.log(this.article.addedBy)
-    console.log(this.article.descriptors)
-
+    // Send request to backend
+    this.appService.updateArticle(this.article).subscribe(bu => console.log(bu))
     this.snackBar.open('DeCS saved successfully.', 'OK', {
       duration: 5000
     })

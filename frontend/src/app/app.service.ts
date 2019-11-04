@@ -11,8 +11,11 @@ import * as ALL_DESCRIPTORS from '../assets/data/DeCS.2019.both.v5_limited.json'
 export class AppService {
 
   decs: Descriptor[] = (ALL_DESCRIPTORS as any).default
+  // ip = '84.88.52.79'
+  ip = 'localhost'
+  port = '5000'
   headers: HttpHeaders = new HttpHeaders({ Accept: 'application/json' })
-  options: any = { headers: this.headers }
+  options = { headers: this.headers }
 
   constructor(
     private http: HttpClient
@@ -25,13 +28,18 @@ export class AppService {
     // return this.http.get<Article>(url, options)
   }
 
-  getArticles(): Observable<Article[]> {
-    return this.http.get<Article[]>('assets/data/articles-ankush.json')
+  getArticles(total: number, start?: number): Observable<Article[]> {
+    // return this.http.get<Article[]>('assets/data/articles-ankush.json')
 
-    // const url = 'http://84.88.188.74:5000/articles?start=0&total=1'
-    // const url = 'http://localhost:5000/articles?start=0&total=1'
-    // const options = { headers: this.headers }
-    // return this.http.get<Article[]>(url, options)
+    const baseUrl = `http://${this.ip}:${this.port}/articles`
+    let url = baseUrl
+    if (total !== undefined) {
+      url += `?total=${total}`
+      if (start !== undefined) {
+        url += `?start=${start}`
+      }
+    }
+    return this.http.get<Article[]>(url, this.options)
   }
 
   // getDescriptors(): Observable<Descriptor[]> {
@@ -50,6 +58,19 @@ export class AppService {
 
   getDescriptors(): Descriptor[] {
     return this.decs
+  }
+
+  /**
+   * PUT: update an article to the database
+   */
+  updateArticle(article: Article): Observable<Article> {
+    // Title and abstractText are not necessary to update the descriptors list in database
+    delete article.title
+    delete article.abstractText
+    console.log(JSON.stringify(article));
+    
+    const url = `http://${this.ip}:${this.port}/modify`
+    return this.http.put<Article>(url, article, this.options)
   }
 
 }

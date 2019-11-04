@@ -19,7 +19,7 @@ export interface Article {
  * its plural should be 'descriptors'.
  */
 export interface Descriptor {
-  decsCode?: string
+  id?: string
   termSpanish?: string
   termEnglish?: string
   meshCode?: string
