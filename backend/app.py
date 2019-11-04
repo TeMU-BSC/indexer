@@ -8,13 +8,13 @@ from pymongo import MongoClient
 
 # MongoDB constants variable
 DB_NAME = 'BvSalud'
-# MONGO_URI = 'mongodb://localhost:27017/'
+MONGO_URI = 'mongodb://localhost:27017/'
 # MONGO_URI = 'mongodb://84.88.52.79:27017/'
-# COLLECTION_NAME = 'selected_importants'
+COLLECTION_NAME = 'selected_importants'
 
-# CLIENT = MongoClient(MONGO_URI)
-# DB = CLIENT[DB_NAME]
-# COLLECTION = DB[COLLECTION_NAME]
+CLIENT = MongoClient(MONGO_URI)
+DB = CLIENT[DB_NAME]
+COLLECTION = DB[COLLECTION_NAME]
 
 # APP Flask
 APP = Flask(__name__)
@@ -97,18 +97,19 @@ def put():
     """
     # json_obj = request.json
     # article_id = json_obj['id']
-    article_id = request.json.get('id')
 
-    added_by, descriptors_obj, decsCodes = getDescriptorObj_decsList(json_obj)
+    # added_by, descriptors_obj, decsCodes = getDescriptorObj_decsList(json_obj)
 
-    key_to_set = str(DESCRIPTORS_OBJ + '.' + added_by)
+    # key_to_set = str(DESCRIPTORS_OBJ + '.' + added_by)
 
-    COLLECTION.update_one({"_id": article_id},
-                          {"$set": {key_to_set: descriptors_obj},
-                           "$addToSet": {DECSCODES:{"$each":decsCodes}}
-                          })
+    # COLLECTION.update_one({"_id": article_id},
+    #                       {"$set": {key_to_set: descriptors_obj},
+    #                        "$addToSet": {DECSCODES:{"$each":decsCodes}}
+    #                       })
 
-    return {key_to_set:descriptors_obj}
+    # return {key_to_set:descriptors_obj}
+
+    return jsonify({'message': 'Hello from modify'})
 
 
 if __name__ == '__main__':
