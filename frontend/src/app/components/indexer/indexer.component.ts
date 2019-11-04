@@ -22,47 +22,43 @@ export class IndexerComponent implements OnInit {
   article: Article = {}
   articles: Article[] = []
   allDescriptors: Descriptor[] = []
+  descriptorsArray: Descriptor[] = []
   decsForm: FormGroup
 
   myControl = new FormControl()
   filteredDescriptors: Observable<Descriptor[]>
 
-  descriptorsString = ''
-  descriptorsSimpleArray: string[]
-  articleUpdatedDescriptors: Descriptor[] = []
-
-  orderForm: FormGroup
-  items: FormArray
+  // descriptorsString = ''
+  // descriptorsSimpleArray: string[]
+  // articleUpdatedDescriptors: Descriptor[] = []
+  // items: FormArray
 
   constructor(
     private appService: AppService,
     private snackBar: MatSnackBar,
-    private formBuilder: FormBuilder
-  ) { }
+    // tslint:disable-next-line:variable-name
+    private _formBuilder: FormBuilder
+  ) {
+    /* Initiate the form structure */
+    this.decsForm = this._formBuilder.group({
+      descriptors: this._formBuilder.array(
+        [{ id: '', addedOn: ''}]
+        // [this._formBuilder.group({ decsCode: ['', Validators.required], addedOn: this.getAddedOn() })], Validators.required
+      )
+    })
+  }
 
   ngOnInit() {
-    this.initForm()
     this.getArticles()
     this.getAnnotators()
     this.getDescriptors()
-  }
-
-  initForm() {
-    /* Initiate the form structure */
-    this.decsForm = this.formBuilder.group({
-      // annotator: [, Validators.required],
-      descriptors: this.formBuilder.array(
-        [this.formBuilder.group({ decsCode: ['', Validators.required], addedOn: this.getAddedOn() })],
-        Validators.required
-      )
-    })
   }
 
   get descriptors() {
     return this.decsForm.get('descriptors') as FormArray
   }
   addDescriptor() {
-    this.descriptors.push(this.formBuilder.group({ decsCode: ['', Validators.required], addedOn: this.getAddedOn() }))
+    this.descriptors.push(this._formBuilder.group([]))
   }
   removeDescriptor(index: number) {
     this.descriptors.removeAt(index)
@@ -80,13 +76,11 @@ export class IndexerComponent implements OnInit {
 
   getArticles() {
     this.appService.getArticles(3).subscribe(
-      response => this.articles = response['results'],
+      articles => this.articles = articles,
       error => console.log(error),
       () => {
         // TODO select article by annotator in view
         this.article = this.articles[1]
-        console.log(this.articles);
-        
 
         if (this.article.descriptors === undefined) {
           this.article.descriptors = []
@@ -134,16 +128,19 @@ export class IndexerComponent implements OnInit {
     return descriptor ? descriptor.id : undefined
   }
 
-  toArray() {
-    this.descriptorsSimpleArray = this.descriptorsString.split(/[\s\.\-,;:]+/)
-  }
+  // toArray() {
+  //   this.descriptorsSimpleArray = this.descriptorsString.split(/[\s\.\-,;:]+/)
+  // }
 
   onSelectionChange(event) {
-    this.descriptorsString += `\n${event.option.value.id}`
-    this.articleUpdatedDescriptors.push({
-      id: event.option.value.id,
-      addedOn: formatDate(new Date().getTime(), 'yyyy-MM-ddTHH:mm:ss', 'en')
-    })
+    console.log(event.option.value.id)
+    this.decsForm.controls.descriptors.value.push({id: event.option.value.id, addedOn: this.getAddedOn()})
+
+    // this.descriptorsString += `\n${event.option.value.id}`
+    // this.articleUpdatedDescriptors.push({
+    //   id: event.option.value.id,
+    //   addedOn: formatDate(new Date().getTime(), 'yyyy-MM-ddTHH:mm:ss', 'en')
+    // })
   }
 
   saveDecs() {
@@ -159,6 +156,8 @@ export class IndexerComponent implements OnInit {
     // Get data from the form
     this.article.addedBy = this.user.id
     this.article.descriptors = this.decsForm.controls.descriptors.value
+
+    console.log(this.article.id)
 
     // Send request to backend
     this.appService.updateArticle(this.article).subscribe(bu => console.log(bu))

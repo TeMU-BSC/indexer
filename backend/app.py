@@ -8,13 +8,13 @@ from pymongo import MongoClient
 
 # MongoDB constants variable
 DB_NAME = 'BvSalud'
-# MONOG_URI = 'mongodb://localhost:27017/'
-MONOG_URI = 'mongodb://84.88.52.79:27017/'
-COLLECTION_NAME = 'selected_importants'
+# MONGO_URI = 'mongodb://localhost:27017/'
+# MONGO_URI = 'mongodb://84.88.52.79:27017/'
+# COLLECTION_NAME = 'selected_importants'
 
-CLIENT = MongoClient(MONOG_URI)
-DB = CLIENT[DB_NAME]
-COLLECTION = DB[COLLECTION_NAME]
+# CLIENT = MongoClient(MONGO_URI)
+# DB = CLIENT[DB_NAME]
+# COLLECTION = DB[COLLECTION_NAME]
 
 # APP Flask
 APP = Flask(__name__)

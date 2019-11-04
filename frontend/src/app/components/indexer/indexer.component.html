@@ -46,10 +46,10 @@
     <form [formGroup]="decsForm" fxLayout="column">
       <h3>Códigos DeCS</h3>
       <div formArrayName="descriptors" fxLayout="column">
-        <mat-form-field appearance="outline" *ngFor="let item of descriptors.controls; let i = index"
+        <mat-form-field appearance="outline" *ngFor="let item of descriptors; let i = index"
           [formGroupName]="i">
           <mat-label>Número del Registro</mat-label>
-          <input matInput placeholder="Código DeCS" formControlName="decsCode" [matAutocomplete]="auto">
+          <input matInput placeholder="Código DeCS" formControlName="id" [matAutocomplete]="auto">
 
           <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn"
             (optionSelected)="onSelectionChange($event)">
@@ -72,14 +72,15 @@
           código</button>
       </div>
 
-      <span>{{ this.decsForm.value | json }}</span>
+      
 
     </form>
 
-    <button mat-raised-button color="accent" (click)="toArray(); saveDecs()">Save all DeCS</button>
+    <button mat-raised-button color="accent" (click)="saveDecs()">Save all DeCS</button>
+
+    <span>{{ this.decsForm.value | json }}</span>
 
 
   </div>
 
-  {{ filteredDescriptors }}
 </div>

@@ -11,8 +11,8 @@ import * as ALL_DESCRIPTORS from '../assets/data/DeCS.2019.both.v5_limited.json'
 export class AppService {
 
   decs: Descriptor[] = (ALL_DESCRIPTORS as any).default
-  // ip = '84.88.52.79'
-  ip = 'localhost'
+  ip = '84.88.52.79'
+  // ip = 'localhost'
   port = '5000'
   headers: HttpHeaders = new HttpHeaders({ Accept: 'application/json' })
   options = { headers: this.headers }
@@ -67,8 +67,7 @@ export class AppService {
     // Title and abstractText are not necessary to update the descriptors list in database
     delete article.title
     delete article.abstractText
-    console.log(JSON.stringify(article));
-    
+    console.log(JSON.stringify(article))
     const url = `http://${this.ip}:${this.port}/modify`
     return this.http.put<Article>(url, article, this.options)
   }
