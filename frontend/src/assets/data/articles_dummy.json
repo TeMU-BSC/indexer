@@ -1,71 +1,94 @@
 [
   {
+    "_id": "biblio-985342",
+    "title": "Dummy Title",
     "abstractText": "El objetivo de esta breve comunicaci\u00f3n es analizar y reflejar la eficiencia de la utilizaci\u00f3n del m\u00e9todo psicodram\u00e1tico en conjunto con la jornada del h\u00e9roe, monomito descrito por Joseph Campbell, que est\u00e1 presente en todas las culturas y relata la presencia de un h\u00e9roe y su jornada de transformaci\u00f3n. Llamamos el resultado de esa uni\u00f3n de Psicodrama del h\u00e9roe (PDH). Describimos, en este estudio, un trabajo realizado con PDH, en el cual los participantes vivenciaron la jornada de un personaje construido por el propio grupo.",
     "descriptors": [
       {
-        "decsCode": "1",
-        "addedOn": "2019-10-24T15:03:01"
+        "id": "11",
+        "added": [
+          {
+            "by": "A1",
+            "on": "2019-11-02T08:02:36"
+          },
+          {
+            "by": "A2",
+            "on": "2019-11-15T15:14:32"
+          }
+        ]
       },
       {
-        "decsCode": "2",
-        "addedOn": "2019-10-24T15:05:12"
+        "id": "12",
+        "added": [
+          {
+            "by": "A1",
+            "on": "2019-11-02T08:05:45"
+          }
+        ]
+      },
+      {
+        "id": "13",
+        "added": [
+          {
+            "by": "A1",
+            "on": "2019-11-02T08:46:13"
+          }
+        ]
       }
-    ],
-    "decsCodes_Annotator": null,
-    "id": "biblio-985342"
+    ]
   },
   {
     "abstractText": "Resumen El art\u00edculo investig\u00f3 debates parlamentarios en la C\u00e1mara de los Diputados en Brasil sobre el permisibilidad de psic\u00f3logos para ofrecer tratamiento de conversi\u00f3n a heterosexualidad para homosexuales entre 2009 y 2013. La metodolog\u00eda consisti\u00f3 en examinar los discursos de los diputados. Entre los defensores de estas terapias se destacaban los parlamentarios evang\u00e9licos, que expresaban concepciones negativas sobre la homosexualidad. Entre los que se opusieron a estas terapias se destacaron parlamentarios feministas y representantes de movimientos LGBT (Lesbianas, Gays, Bisexuales, Travestis y Transexuales), que expresaban concepciones positivas sobre la homosexualidad, relacion\u00e1ndola con la diversidad sexual humana. La prohibici\u00f3n de estos tratamientos se mantuvo, asegurando la defensa de los derechos humanos y la autonom\u00eda del Consejo Federal de Psicolog\u00eda.",
-    "descriptors": [],
-    "decsCodes_Annotator": null,
-    "id": "biblio-1004712"
+    "descriptors": ["1", "2", "3"],
+    "_id": "biblio-1004712",
+    "title": "Dummy Simple Title"
   },
   {
     "abstractText": "La fascitis necrotizante es una infecci\u00f3n agresiva y altamente destructiva de la fascia y el m\u00fasculo con una alta morbimortalidad. Se suele presentar en pacientes inmunocomprometidos tales como VIH, diab\u00e9ticos, oncol\u00f3gicos o trasplantados, siendo sus localizaciones m\u00e1s habituales las extremidades, pared abdominal y perin\u00e9; en esta \u00faltima localizaci\u00f3n recibe el nombre de gangrena de Fournier. Su asociaci\u00f3n con \u00falceras de dec\u00fabito es infrecuente, relacion\u00e1ndose en la mayor\u00eda de las ocasiones con procesos osteomiel\u00edticos, traumatismos con heridas cut\u00e1neas o presencia de cuerpos extra\u00f1os. Presentamos un caso cl\u00ednico de un paciente con fascitis necrotizante secundaria a \u00falcera de dec\u00fabito. Nos parece interesante presentar las caracter\u00edsticas cl\u00ednicas, as\u00ed como exponer los hallazgos radiol\u00f3gicos de esta entidad y, por otra parte, acentuar la importancia de un adecuado cuidado de las \u00falceras por presi\u00f3n, ya que pueden ser el origen de la fascitis necrotizante",
     "decsCodes": null,
     "decsCodes_Annotator": null,
-    "id": "ibc-ET1-2866"
+    "_id": "ibc-ET1-2866"
   },
   {
     "abstractText": "En este art\u00edculo describiremos brevemente ciertos pacientes que consultan por cuadros psiqui\u00e1tricos agudos y que adem\u00e1s sufren de difusi\u00f3n de identidad. Estos pacientes ofrecen dificultades importantes a su propio tratamiento porque tienden a no persistir en una tarea, no cuidar de s\u00ed mismos, no confiar en las personas y a no recuperarse de las fallas de mentalizaci\u00f3n que puedan tener en sus relaciones interpersonales, produciendo graves complicaciones en el proceso terap\u00e9utico. Describiremos el Programa de Intervenci\u00f3n Psicoeducativa y Control Farmacol\u00f3gico en Grupo que hemos implementado en el Instituto Psiqui\u00e1trico Jos\u00e9 Horwitz Barak para manejar de mejor forma las dificultades terap\u00e9uticas que estos pacientes ofrecen. Palabras Claves: Difusi\u00f3n de identidad, adherencia a tratamiento, psicoeducaci\u00f3n, resistencia a tratamiento, tratamiento en grupo",
     "decsCodes": null,
     "decsCodes_Annotator": null,
-    "id": "biblio-998637"
+    "_id": "biblio-998637"
   },
   {
     "abstractText": "Resumen Se presenta el caso de una paciente con hemorragia digestiva alta, en quien durante el examen f\u00edsico se document\u00f3 el signo de la hermana Mar\u00eda Jos\u00e9, que se confirm\u00f3 ulteriormente mediante endoscopia digestiva y estudios histopatol\u00f3gicos la presencia de un c\u00e1ncer g\u00e1strico avanzado.",
     "decsCodes": null,
     "decsCodes_Annotator": null,
-    "id": "biblio-1003841"
+    "_id": "biblio-1003841"
   },
   {
     "abstractText": "RESUMEN La paratiromatosis se describe como una dolencia en la que existen m\u00faltiples n\u00f3dulos de tejido paratiroideo hiperfuncionante diseminados por cuello y el mediastino, en la cual las pruebas de imagen no son efectivas para localizar las gl\u00e1ndulas paratiroides y requiere de la combinaci\u00f3n de un tratamiento m\u00e9dico y quir\u00fargico que en ocasiones se presenta como un desaf\u00edo. Describimos el caso de una mujer de 61 a\u00f1os con hiperparatiroidismo primario recurrente a la que se le extirpan un total de 9 gl\u00e1ndulas paratiroideas en 3 cirug\u00edas diferentes, y realizamos revisi\u00f3n de la literatura.",
     "decsCodes": null,
     "decsCodes_Annotator": null,
-    "id": "biblio-985749"
+    "_id": "biblio-985749"
   },
   {
     "abstractText": "El meta-an\u00e1lisis es una metodolog\u00eda firmemente establecida y una parte integral del proceso de generaci\u00f3n de conocimiento en las ciencias emp\u00edricas. El meta-an\u00e1lisis tambi\u00e9n se ha centrado en la metodolog\u00eda y se ha convertido en uno de los principales cr\u00edticos de las deficiencias metodol\u00f3gicas. Destacamos varios puntos problem\u00e1ticos sobre c\u00f3mo investigamos en psicolog\u00eda: exceso de heterogeneidad en los resultados y dificultades para la replicaci\u00f3n, sesgo de publicaci\u00f3n, calidad metodol\u00f3gica sub-\u00f3ptima y pr\u00e1cticas cuestionables de los investigadores. Estos y otros problemas condujeron a una \"crisis de confianza\" en psicolog\u00eda. Discutimos c\u00f3mo la perspectiva meta-anal\u00edtica y sus procedimientos pueden ayudar a superar la crisis. Una perspectiva m\u00e1s cooperativa, en lugar de competitiva, puede ayudar a cambiar para que consideremos la replicaci\u00f3n como una contribuci\u00f3n m\u00e1s valiosa. El conocimiento no puede basarse en estudios aislados. Dada la naturaleza del objeto de estudio de la psicolog\u00eda la unidad natural para generar conocimiento debe ser la distribuci\u00f3n estimada del tama\u00f1o del efecto, no la decisi\u00f3n dicot\u00f3mica sobre la significaci\u00f3n estad\u00edstica en estudios espec\u00edficos. Se ofrecen algunas sugerencias sobre c\u00f3mo redirigir la investigaci\u00f3n y las pr\u00e1cticas de los investigadores, de modo que sus intereses personales y los de la ciencia en s\u00ed est\u00e9n m\u00e1s alineados",
     "decsCodes": null,
     "decsCodes_Annotator": null,
-    "id": "ibc-ET3-2539"
+    "_id": "ibc-ET3-2539"
   },
   {
     "abstractText": "RESUMEN  Objetivo: determinar el impacto del tipo de contrato y la antig\u00fcedad del personal de enfermer\u00eda en sus actitudes hacia la comunicaci\u00f3n, la inteligencia emocional y la empat\u00eda.  M\u00e9todos: los instrumentos que miden las actitudes hacia la comunicaci\u00f3n, la empat\u00eda y la inteligencia emocional. La muestra del estudio fue de 450 enfermeras de 7 hospitales. Para comprobar el efecto de las variables estudiadas, se realizaron ANOVA de un factor, correlaciones Pearson y modelos de regresi\u00f3n lineal jer\u00e1rquica m\u00faltiple, seg\u00fan el tipo de contrato.  Resultados: existen diferencias estad\u00edsticamente significativas entre las variables estudiadas seg\u00fan el tipo de contrato. M\u00e1s concretamente, el personal de enfermer\u00eda con contrato indefinido mostr\u00f3 puntuaciones m\u00e1s altas en la dimensi\u00f3n cognitiva de la escala actitudes hacia la comunicaci\u00f3n. Asimismo, las mayores correlaciones se encontraron entre las dimensiones de la escala actitudes hacia la comunicaci\u00f3n en todos los grupos. Al mismo tiempo, la antig\u00fcedad se relacionaba positivamente con la inteligencia emocional en el \u00ednterin y negativamente con la empat\u00eda en el contrato indefinido. Finalmente, mirando los modelos de regresi\u00f3n, se observ\u00f3 que la toma de perspectiva es el principal predictor de cada dimensi\u00f3n de la escala actitudes hacia la comunicaci\u00f3n en todos los grupos, independientemente del tipo de contrato.  Conclusi\u00f3n: se ha comprobado que las condiciones de trabajo positivas (seguridad laboral, contrato permanente y antig\u00fcedad) influyen en la capacidad de comunicaci\u00f3n en la relaci\u00f3n paciente-enfermera.",
     "decsCodes": null,
     "decsCodes_Annotator": null,
-    "id": "biblio-985657"
+    "_id": "biblio-985657"
   },
   {
     "abstractText": "Resumen  Introducci\u00f3n:  De los 36 millones de personas que viven con vih en el mundo, el 63 %, aproximadamente, son activas a nivel laboral, pero poco se sabe de los significados que el trabajo representa para ellas.  Objetivo:  Comprender los significados que el trabajo tiene para un grupo de trabajadores con vih y que viven en la ciudad de Bogot\u00e1.  Metodolog\u00eda:  Estudio de tipo cualitativo, hermen\u00e9utico e interpretativo, en el que participaron voluntariamente once trabajadores (seis mujeres y cinco hombres), seleccionados seg\u00fan criterios de pertinencia y adecuaci\u00f3n. La muestra se defini\u00f3 por saturaci\u00f3n te\u00f3rica, y la recolecci\u00f3n de datos se dio mediante una entrevista semiestructurada. El an\u00e1lisis sigui\u00f3 la t\u00e9cnica hermen\u00e9utica propuesta por Diekelman, Allen y Tanner.  Resultados:  Para los participantes del estudio, el significado del trabajo, cuando se vive con vih, se encuentra sustentado bajo tres categor\u00edas: 1) \"Empleabilidad, tipo de empleo y manejo de horarios\", 2) \"Salud, trabajo y vih\" y 3) \"Entorno social y laboral del vih\".  Conclusiones:  El vih significa una disminuci\u00f3n en las posibilidades laborales, que afecta las condiciones extra- e intralaborales del trabajador, principalmente debido al estigma que se impone a la infecci\u00f3n, lo cual lleva a acciones de discriminaci\u00f3n e influye en las opciones de empleo. Trabajar es un determinante fundamental en el acceso a la salud y, por ende, en su mantenimiento.",
     "decsCodes": null,
     "decsCodes_Annotator": null,
-    "id": "biblio-985116"
+    "_id": "biblio-985116"
   },
   {
     "abstractText": "No disponible",
     "decsCodes": null,
     "decsCodes_Annotator": null,
-    "id": "ibc-FGT-1422"
+    "_id": "ibc-FGT-1422"
   }
 ]

@@ -1,10 +1,10 @@
-export interface Annotator {
+export class Annotator {
   id?: string
   name?: string
 }
 
-export interface Article {
-  id?: string
+export class Article {
+  _id?: string
   title?: string
   abstractText?: string
   results?: any
@@ -15,10 +15,10 @@ export interface Article {
 /**
  * DeCS acronym stands for 'Descriptor de Ciencias de la Salud'. To avoid the
  * possible misunderstanding between the singular and the plural of DeCS due to
- * its final 's' of its acronym, the interface has been named 'Descriptor', and
+ * its final 's' of its acronym, the class has been named 'Descriptor', and
  * its plural should be 'descriptors'.
  */
-export interface Descriptor {
+export class Descriptor {
   id?: string
   termSpanish?: string
   termEnglish?: string
@@ -27,5 +27,5 @@ export interface Descriptor {
   treeNumber?: string
   definitionSpanish?: string
   definitionLatin?: string
-  addedOn?: string
+  added?: { by: Annotator['id'], on: string }
 }
