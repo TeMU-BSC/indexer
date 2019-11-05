@@ -1,11 +1,11 @@
+import { formatDate } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
-import { MatSnackBar, MatAutocompleteSelectedEvent } from '@angular/material'
-import { FormControl, FormGroup, FormArray, FormBuilder, Validators } from '@angular/forms'
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
+import { MatAutocompleteSelectedEvent, MatSnackBar } from '@angular/material'
 import { Observable } from 'rxjs'
 import { map, startWith } from 'rxjs/operators'
 import { Annotator, Article, Descriptor } from './app.model'
 import { AppService } from './app.service'
-import { formatDate } from '@angular/common'
 
 // TODO enviar al backend fechas antiguas de descriptors que el annotador no modifica
 // TODO implementar login contra bbdd
@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
     this.initForm()
   }
 
-  get annotator() { return this.decsForm.get('annotator') }
+  get annotator() { return this.decsForm.get('annotator') as FormControl }
   get descriptors() { return this.decsForm.get('descriptors') as FormArray }
 
   ngOnInit() {
@@ -51,7 +51,7 @@ export class AppComponent implements OnInit {
 
   initForm() {
     this.decsForm = this.fb.group({
-      _id: 'this.article._id',
+      _id: '',
       annotator: ['', Validators.required],
       descriptors: this.fb.array([])
     })
@@ -84,7 +84,7 @@ export class AppComponent implements OnInit {
   getArticles() {
     this.appService.getArticles(3).subscribe(
       articles => this.articles = articles,
-      error => console.log(error),
+      error => console.warn(error),
       () => {
         // TODO select article by annotator in view
         this.getArticle(0)
@@ -141,7 +141,7 @@ export class AppComponent implements OnInit {
     this.descriptors.push(this.fb.control({
       id: event.option.value.id,
       added: {
-        by: this.annotator.value.id,
+        by: this.annotator.value,
         on: this.getTimestamp()
       }
     }))
@@ -149,10 +149,10 @@ export class AppComponent implements OnInit {
 
   saveChanges() {
     this.decsForm.controls._id.setValue(this.article._id)
-    console.log(this.decsForm.value)
+    console.log(JSON.stringify(this.decsForm.value))
 
     // Send request to backend
-    // this.appService.updateArticle(this.article).subscribe(bu => console.log(bu))
+    // this.appService.updateArticle(this.article).subscribe(bu => console.trace(bu))
 
     this.snackBar.open('DeCS saved successfully.', 'OK', {
       duration: 5000

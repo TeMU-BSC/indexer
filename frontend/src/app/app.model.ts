@@ -1,6 +1,7 @@
 export class Annotator {
   id?: string
   name?: string
+  password?: string
 }
 
 export class Article {

@@ -5,7 +5,7 @@
     "abstractText": "El objetivo de esta breve comunicaci\u00f3n es analizar y reflejar la eficiencia de la utilizaci\u00f3n del m\u00e9todo psicodram\u00e1tico en conjunto con la jornada del h\u00e9roe, monomito descrito por Joseph Campbell, que est\u00e1 presente en todas las culturas y relata la presencia de un h\u00e9roe y su jornada de transformaci\u00f3n. Llamamos el resultado de esa uni\u00f3n de Psicodrama del h\u00e9roe (PDH). Describimos, en este estudio, un trabajo realizado con PDH, en el cual los participantes vivenciaron la jornada de un personaje construido por el propio grupo.",
     "descriptors": [
       {
-        "id": "11",
+        "id": "10",
         "added": [
           {
             "by": "A1",
@@ -18,7 +18,7 @@
         ]
       },
       {
-        "id": "12",
+        "id": "100",
         "added": [
           {
             "by": "A1",
@@ -27,7 +27,7 @@
         ]
       },
       {
-        "id": "13",
+        "id": "1000",
         "added": [
           {
             "by": "A1",
@@ -39,7 +39,12 @@
   },
   {
     "abstractText": "Resumen El art\u00edculo investig\u00f3 debates parlamentarios en la C\u00e1mara de los Diputados en Brasil sobre el permisibilidad de psic\u00f3logos para ofrecer tratamiento de conversi\u00f3n a heterosexualidad para homosexuales entre 2009 y 2013. La metodolog\u00eda consisti\u00f3 en examinar los discursos de los diputados. Entre los defensores de estas terapias se destacaban los parlamentarios evang\u00e9licos, que expresaban concepciones negativas sobre la homosexualidad. Entre los que se opusieron a estas terapias se destacaron parlamentarios feministas y representantes de movimientos LGBT (Lesbianas, Gays, Bisexuales, Travestis y Transexuales), que expresaban concepciones positivas sobre la homosexualidad, relacion\u00e1ndola con la diversidad sexual humana. La prohibici\u00f3n de estos tratamientos se mantuvo, asegurando la defensa de los derechos humanos y la autonom\u00eda del Consejo Federal de Psicolog\u00eda.",
-    "descriptors": ["1", "2", "3"],
+    "descriptors": [
+      {
+        "id": "23",
+        "addedOn": "2019-10-31T14:12:00"
+      }
+    ],
     "_id": "biblio-1004712",
     "title": "Dummy Simple Title"
   },

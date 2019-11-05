@@ -1,18 +1,22 @@
 [
   {
     "id": "A0",
-    "name": "Annotator-0"
+    "name": "Annotator-0",
+    "password": "admin"
   },
   {
     "id": "A1",
-    "name": "Alejandro"
+    "name": "Alejandro",
+    "password": "testing"
   },
   {
     "id": "A2",
-    "name": "Ankush"
+    "name": "Ankush",
+    "password": "testing"
   },
   {
     "id": "B1",
-    "name": "Someone Else"
+    "name": "Someone Else",
+    "password": "testing"
   }
 ]

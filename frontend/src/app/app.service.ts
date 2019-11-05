@@ -21,10 +21,15 @@ export class AppService {
     private http: HttpClient
   ) { }
 
+  login(annotator: Annotator) {
+    // const url = `http://${this.ip}:${this.port}/login`
+    // return this.http.post<Annotator>(url, annotator, this.options)
+    return 'OK'
+  }
+
   getAnnotators(): Observable<Annotator[]> {
     return this.http.get<Annotator[]>('assets/data/annotators_dummy.json')
     // const url = 'assets/data/articles.json'
-    // const options = { headers: this.headers }
     // return this.http.get<Article>(url, options)
   }
 
