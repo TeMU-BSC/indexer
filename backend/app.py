@@ -95,21 +95,21 @@ def put():
     :return: [description]
     :rtype: [type]
     """
-    # json_obj = request.json
-    # article_id = json_obj['id']
+    json_obj = request.json
+    article_id = json_obj['id']
 
-    # added_by, descriptors_obj, decsCodes = getDescriptorObj_decsList(json_obj)
+    added_by, descriptors_obj, decsCodes = getDescriptorObj_decsList(json_obj)
 
-    # key_to_set = str(DESCRIPTORS_OBJ + '.' + added_by)
+    key_to_set = str(DESCRIPTORS_OBJ + '.' + added_by)
 
-    # COLLECTION.update_one({"_id": article_id},
-    #                       {"$set": {key_to_set: descriptors_obj},
-    #                        "$addToSet": {DECSCODES:{"$each":decsCodes}}
-    #                       })
+    COLLECTION.update_one({"_id": article_id},
+                          {"$set": {key_to_set: descriptors_obj},
+                           "$addToSet": {DECSCODES:{"$each":decsCodes}}
+                          })
 
-    # return {key_to_set:descriptors_obj}
+    return jsonify({key_to_set:descriptors_obj})
 
-    return jsonify({'message': 'Hello from modify'})
+    # return jsonify({'message': 'Hello from modify'})
 
 
 if __name__ == '__main__':
