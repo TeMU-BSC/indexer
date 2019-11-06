@@ -45,26 +45,27 @@ def modifyDecriptors(jsonObj) -> (str, List[dict], List[str]):
         }
     """
 
-    mongo_descriptors = [{
-        "id": "11",
-        "added": [
-            {
-                "by": "A1",
-                "on": "2019-11-02T08:22:08"
-            }
-        ]
-    }, {
-        "id": "12",
-        "added": [
-            {
-                "by": "A1",
-                "on": "2019-11-04T08:05:45"
-            }
-        ]
-    }
+    mongo_descriptors = [
+        {
+            "id": "11",
+            "added": [
+                {
+                    "by": "A1",
+                    "on": "2019-11-02T08:22:08"
+                }
+            ]
+        }, {
+            "id": "12",
+            "added": [
+                {
+                    "by": "A1",
+                    "on": "2019-11-04T08:05:45"
+                }
+            ]
+        }
     ]
 
-    print("mongo Json -> ", mongo_descriptors,"\n")
+    print("mongo Json -> ", mongo_descriptors, "\n")
 
     article_id = jsonObj[ARTICLE_ID]
     user_added_by = jsonObj[DESCRIPTORS][0][ADDED][0]
@@ -100,7 +101,7 @@ def modifyDecriptors(jsonObj) -> (str, List[dict], List[str]):
         """
 
         # Getting descriptor id from main json object, that have been sent by user to save.
-        
+
         """ EX:
                 "id": "122"
         """
@@ -112,20 +113,18 @@ def modifyDecriptors(jsonObj) -> (str, List[dict], List[str]):
                 }
         """
 
-
-  
-        for mongo_descriptor in mongo_descriptors:  # Loop to get each descriptor object from the list of sescriptors.
+        # Loop to get each descriptor object from the list of sescriptors.
+        for mongo_descriptor in mongo_descriptors:
             # descriptor id from mongo DB descriptors of each descriptor.
             if is_saved_to_mongoJson:
                 break
-
 
             """ EX:
                     "id": "122"
             """
 
             if descriptor["id"] == mongo_descriptor["id"]:
-                
+
                 """ EX:
                         [{
                             "by": "A1",
@@ -147,7 +146,8 @@ def modifyDecriptors(jsonObj) -> (str, List[dict], List[str]):
                             }
                     """
 
-                    if mongo_addedObj[ADDED_BY_ID] == user_added_obj[ADDED_BY_ID]: #if user_added_by and mongo added_by match, modifies the date and get out from the loop, Otherwise enter in next loop to check next case.
+                    # if user_added_by and mongo added_by match, modifies the date and get out from the loop, Otherwise enter in next loop to check next case.
+                    if mongo_addedObj[ADDED_BY_ID] == user_added_obj[ADDED_BY_ID]:
                         mongo_addedObj[ADDED_ON] = user_added_obj[ADDED_ON]
                         is_saved_to_mongoJson = True
 
@@ -157,7 +157,7 @@ def modifyDecriptors(jsonObj) -> (str, List[dict], List[str]):
 
         if not is_saved_to_mongoJson:
             mongo_descriptors.append(descriptor)
-            is_saved_to_mongoJson = True    
+            is_saved_to_mongoJson = True
 
     return mongo_descriptors
 
@@ -267,8 +267,6 @@ if __name__ == '__main__':
             }
         ]
     }
-    print("User Json -> ", jsonObj[DESCRIPTORS],"\n")
+    print("User Json -> ", jsonObj[DESCRIPTORS], "\n")
     newJson = modifyDecriptors(jsonObj)
-    print("new Json -> ", newJson,"\n")
-    
- 
+    print("new Json -> ", newJson, "\n")
