@@ -18,20 +18,14 @@ import { MaterialModule } from './material.module'
 import { FlexLayoutModule } from '@angular/flex-layout'
 
 // Own App Components
-import { IndexerComponent } from './components/indexer/indexer.component'
-import { LoginComponent } from './components/login/login.component'
 import { HeaderComponent } from './components/header/header.component';
-import { DynamicFormComponent } from './components/dynamic-form/dynamic-form.component';
-import { DynamicFieldsComponent } from './components/dynamic-fields/dynamic-fields.component'
+import { LoginComponent } from './components/login/login.component'
 
 @NgModule({
   declarations: [
     AppComponent,
-    IndexerComponent,
     LoginComponent,
-    HeaderComponent,
-    DynamicFormComponent,
-    DynamicFieldsComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,

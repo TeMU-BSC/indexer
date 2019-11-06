@@ -21,25 +21,30 @@ export class AppService {
     private http: HttpClient
   ) { }
 
+  login(annotator: Annotator) {
+    // const url = `http://${this.ip}:${this.port}/login`
+    // return this.http.post<Annotator>(url, annotator, this.options)
+    return 'OK'
+  }
+
   getAnnotators(): Observable<Annotator[]> {
-    return this.http.get<Annotator[]>('assets/data/dummy_annotators.json')
+    return this.http.get<Annotator[]>('assets/data/annotators_dummy.json')
     // const url = 'assets/data/articles.json'
-    // const options = { headers: this.headers }
     // return this.http.get<Article>(url, options)
   }
 
   getArticles(total: number, start?: number): Observable<Article[]> {
-    // return this.http.get<Article[]>('assets/data/articles-ankush.json')
+    return this.http.get<Article[]>('assets/data/articles_dummy.json')
 
-    const baseUrl = `http://${this.ip}:${this.port}/articles`
-    let url = baseUrl
-    if (total !== undefined) {
-      url += `?total=${total}`
-      if (start !== undefined) {
-        url += `?start=${start}`
-      }
-    }
-    return this.http.get<Article[]>(url, this.options)
+    // const baseUrl = `http://${this.ip}:${this.port}/articles`
+    // let url = baseUrl
+    // if (total !== undefined) {
+    //   url += `?total=${total}`
+    //   if (start !== undefined) {
+    //     url += `?start=${start}`
+    //   }
+    // }
+    // return this.http.get<Article[]>(url, this.options)
   }
 
   // getDescriptors(): Observable<Descriptor[]> {
@@ -65,9 +70,8 @@ export class AppService {
    */
   updateArticle(article: Article): Observable<Article> {
     // Title and abstractText are not necessary to update the descriptors list in database
-    delete article.title
-    delete article.abstractText
-    console.log(JSON.stringify(article))
+    // delete article.title
+    // delete article.abstractText
     const url = `http://${this.ip}:${this.port}/modify`
     return this.http.put<Article>(url, article, this.options)
   }
