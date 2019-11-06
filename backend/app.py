@@ -28,7 +28,7 @@ ADDED_BY_ID = "by"
 ADDED_ON = "on"
 
 
-def getDescriptorObj_decsList(jsonObj) -> (str, List[dict], List[str]):
+def modifyDecriptors(jsonObj) -> (str, List[dict], List[str]):
     """Ex of json object sent by user. "descriptors" contain a list of objects. This object in mongoDB's collection will same format as it.
         {
         "_id": "biblio-1001075",
@@ -45,84 +45,121 @@ def getDescriptorObj_decsList(jsonObj) -> (str, List[dict], List[str]):
         }
     """
 
+    mongo_descriptors = [{
+        "id": "11",
+        "added": [
+            {
+                "by": "A1",
+                "on": "2019-11-02T08:22:08"
+            }
+        ]
+    }, {
+        "id": "12",
+        "added": [
+            {
+                "by": "A1",
+                "on": "2019-11-04T08:05:45"
+            }
+        ]
+    }
+    ]
+
+    print("mongo Json -> ", mongo_descriptors,"\n")
+
     article_id = jsonObj[ARTICLE_ID]
     user_added_by = jsonObj[DESCRIPTORS][0][ADDED][0]
 
-    mongo_obj = COLLECTION.find_one({ARTICLE_ID: article_id})
+    # mongo_obj = COLLECTION.find_one({ARTICLE_ID: article_id})
 
-    mongo_descriptors = mongo_obj.get(DESCRIPTORS)
+    # mongo_descriptors = mongo_obj.get(DESCRIPTORS)
     jSon_descriptors = jsonObj[DESCRIPTORS]
 
     if not mongo_descriptors:
-        return jSon_descriptors
+        return mongo_descriptors.append(jSon_descriptors)
 
     for descriptor in jSon_descriptors:
+        is_saved_to_mongoJson = False
         """Example of each descriptor from json object.
             "descriptors": [
                     {
                     "id": "11",
-                    "added": [
-                                {
+                    "added":[{
                                     "by": "A1",
                                     "on": "2019-11-02T08:02:36"
                                 }
                             ]
-                    },
-                     {
+                    },{
                     "id": "12",
-                    "added": [
-                                {
+                    "added":[{
                                     "by": "A1",
                                     "on": "2019-11-02T08:02:36"
                                 }
                             ]
-                    }
-                ]
+                        }
+                    ]
         """
+
         # Getting descriptor id from main json object, that have been sent by user to save.
-        user_descriptor_id = descriptor["id"]
+        
         """ EX:
                 "id": "122"
         """
-        user_added_obj = descriptor[ADDED]  # Getting added object' list from main json object, that have been sent by user to save.
+        user_added_obj = descriptor[ADDED][0]  # Getting added object' list from main json object, that have been sent by user to save.
         """ EX:
-                "added": [
-                            {
-                                "by": "A1",
-                                "on": "2019-11-02T08:02:36"
-                            },
+                {
+                    "by": "A1",
+                    "on": "2019-11-02T08:02:36"
+                }
+        """
+
+
+  
+        for mongo_descriptor in mongo_descriptors:  # Loop to get each descriptor object from the list of sescriptors.
+            # descriptor id from mongo DB descriptors of each descriptor.
+            if is_saved_to_mongoJson:
+                break
+
+
+            """ EX:
+                    "id": "122"
+            """
+
+            if descriptor["id"] == mongo_descriptor["id"]:
+                
+                """ EX:
+                        [{
+                            "by": "A1",
+                            "on": "2019-11-02T08:02:36"
+                        },
+                        {
+                            "by": "A2",
+                            "on": "2019-11-02T08:05:36"
+                        }]
+                """
+                mongo_added_list = mongo_descriptor[ADDED]
+                for mongo_addedObj in mongo_added_list:
+                    if is_saved_to_mongoJson:
+                        break
+                    """ EX:
                             {
                                 "by": "A1",
                                 "on": "2019-11-02T08:02:36"
                             }
-                        ]
-        """
-        for mongo_descriptor in mongo_descriptors:  # Loop to get each descriptor object from the list of sescriptors.
-            # descriptor id from mongo DB descriptors of each descriptor.
-            mongo_descriptor_id = mongo_descriptor.get("id")
-            """ EX:
-                    "id": "122"
-            """
-            if user_descriptor_id == mongo_descriptor_id:
-                mongo_added_list = mongo_descriptor[ADDED]
-                """ EX:
-                        "added": [
-                                    {
-                                        "by": "A1",
-                                        "on": "2019-11-02T08:02:36"
-                                    },
-                                    {
-                                        "by": "A2",
-                                        "on": "2019-11-02T08:05:36"
-                                    }
-                                ]
-                """
-                # for mongo_addedObj in mongo_added_list:
-                #     mongo_added_by = mongo_addedObj.get(ADDED_BY_ID)
-                #     if mongo_added_by == user_added_by:
-                #         mongo_added_by[ADDED_ON] = use
+                    """
 
-            mongo_descriptor.append(descriptor)
+                    if mongo_addedObj[ADDED_BY_ID] == user_added_obj[ADDED_BY_ID]: #if user_added_by and mongo added_by match, modifies the date and get out from the loop, Otherwise enter in next loop to check next case.
+                        mongo_addedObj[ADDED_ON] = user_added_obj[ADDED_ON]
+                        is_saved_to_mongoJson = True
+
+                if not is_saved_to_mongoJson:
+                    mongo_added_list.append(user_added_obj)
+                    is_saved_to_mongoJson = True
+
+        if not is_saved_to_mongoJson:
+            mongo_descriptors.append(descriptor)
+            is_saved_to_mongoJson = True    
+
+    return mongo_descriptors
 
 
 @APP.route('/articles', methods=['GET'])
@@ -196,4 +233,42 @@ def put():
 
 if __name__ == '__main__':
     # APP.run(debug=False, host='0.0.0.0', port='5100')
-    APP.run(debug=True, host='0.0.0.0')
+    # APP.run(debug=True, host='0.0.0.0')
+
+    jsonObj = {
+        "_id": "biblio-1001075",
+        "descriptors": [
+            {
+                "id": "11",
+                "added": [
+                    {
+                        "by": "A1",
+                        "on": "2019-11-02T08:02:36"
+                    }
+                ]
+            },
+            {
+                "id": "12",
+                "added": [
+                    {
+                        "by": "A1",
+                        "on": "2019-11-02T08:08:2"
+                    }
+                ]
+            },
+            {
+                "id": "18",
+                "added": [
+                    {
+                        "by": "A1",
+                        "on": "2019-11-02T08:46:13"
+                    }
+                ]
+            }
+        ]
+    }
+    print("User Json -> ", jsonObj[DESCRIPTORS],"\n")
+    newJson = modifyDecriptors(jsonObj)
+    print("new Json -> ", newJson,"\n")
+    
+ 
