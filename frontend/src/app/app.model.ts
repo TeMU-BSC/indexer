@@ -8,9 +8,7 @@ export class Article {
   id?: string
   title?: string
   abstractText?: string
-  results?: any
-  addedBy?: Annotator['id']
-  descriptors?: Descriptor[]
+  descriptors?: Descriptor[] // Remove after discard old versions 1 and 2 in app.component
 }
 
 /**
@@ -28,5 +26,7 @@ export class Descriptor {
   treeNumber?: string
   definitionSpanish?: string
   definitionLatin?: string
+
+  addedBy?: Annotator['id']
   addedOn?: number
 }

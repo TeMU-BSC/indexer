@@ -1,11 +1,11 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes'
-import { Component, ElementRef, ViewChild } from '@angular/core'
+import { Component, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core'
 import { FormControl } from '@angular/forms'
 import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete'
 import { MatChipInputEvent } from '@angular/material/chips'
 import { Observable } from 'rxjs'
 import { map, startWith } from 'rxjs/operators'
-import { Descriptor } from 'src/app/app.model'
+import { Descriptor, Article } from 'src/app/app.model'
 import { AppService } from 'src/app/app.service'
 
 @Component({
@@ -15,6 +15,7 @@ import { AppService } from 'src/app/app.service'
 })
 export class DescriptorsComponent {
 
+  @Output() descriptorToEmit = new EventEmitter<Descriptor>()
   visible = true
   selectable = true
   removable = true
@@ -36,14 +37,16 @@ export class DescriptorsComponent {
     )
   }
 
+  private _filter(value: string): Descriptor[] {
+    return this.allDescriptors.filter(descriptor => descriptor.termSpanish.toLowerCase().includes(value.toString().toLowerCase()))
+  }
+
   add(event: MatChipInputEvent): void {
     // Add descriptor only when MatAutocomplete is not open
     // To make sure this does not conflict with OptionSelected Event
     if (!this.matAutocomplete.isOpen) {
-      const input = event.input
-      const value = event.value
-
-      // // Add our descriptor
+      // Add custom typed text [DISABLED]
+      // const value = event.value
       // if ((value || '').trim()) {
       //   this.descriptors.push({
       //     id: 'DeCS inválido',
@@ -53,30 +56,41 @@ export class DescriptorsComponent {
       // }
 
       // Reset the input value
-      if (input) {
-        input.value = ''
-      }
-
+      event.input.value = event.input ? '' : null
       this.descriptorCtrl.setValue(null)
     }
   }
 
   remove(descriptor: Descriptor): void {
     const index = this.descriptors.indexOf(descriptor)
-
     if (index >= 0) {
       this.descriptors.splice(index, 1)
     }
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    this.descriptors.push(event.option.value)
+    const selectedDescriptor: Descriptor = event.option.value
+
+    this.descriptors.push(selectedDescriptor)
+    // this.descriptors.push({
+    //   id: selectedDescriptor.id,
+    //   addedOn: Date.now()
+    // })
+
     this.descriptorInput.nativeElement.value = ''
     this.descriptorCtrl.setValue(null)
+    this.sendDescriptorToArticle(selectedDescriptor)
   }
 
-  private _filter(value: string): Descriptor[] {
-    return this.allDescriptors.filter(descriptor => descriptor.termSpanish.toLowerCase().includes(value.toString().toLowerCase()))
+  /**
+   * Make an HTTP POST request with the selected descriptor
+   */
+  sendDescriptorToArticle(descriptor: Descriptor): void {
+    this.descriptorToEmit.emit({
+      id: descriptor.id,
+      addedBy: 'A9', // It will be the logged user id
+      addedOn: Date.now()
+    })
   }
 
 }

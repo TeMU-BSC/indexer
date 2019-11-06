@@ -1,21 +1,16 @@
 <mat-card class="example-card p-0">
   <mat-card-header class="pt-3" style="background-color: #f2f2f2">
-    <!-- <div mat-card-avatar class="example-header-image"></div> -->
     <mat-card-title>{{ article?.title }}</mat-card-title>
-    <!-- <mat-card-subtitle>Dog Breed</mat-card-subtitle> -->
   </mat-card-header>
-  <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
   <mat-card-content class="p-3">
     <p>
       {{ article?.abstractText }}
     </p>
-    <app-descriptors></app-descriptors>
+    <app-descriptors (descriptorToEmit)="getDescriptor($event)"></app-descriptors>
   </mat-card-content>
-  <mat-card-actions>
-    <!-- <button mat-stroked-button color="warn" (click)="resetForm()"
-      [disabled]="descriptors.length === 0">Deshacer</button>
-    <button mat-flat-button class="my-flat-green-button" (click)="saveChanges()"
-      [disabled]="!decsForm.valid">Guardar</button> -->
-    
-  </mat-card-actions>
+  <!-- SIN BOTONES! HAREMOS UNA HTTP POST REQUEST EN CADA DeCS SELECTION -->
+  <!-- <mat-card-actions class="p-3">
+    <button mat-flat-button color="warn">Deshacer</button>
+    <button mat-flat-button color="primary">Guardar</button>
+  </mat-card-actions> -->
 </mat-card>
