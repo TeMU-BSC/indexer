@@ -5,7 +5,7 @@ export class Annotator {
 }
 
 export class Article {
-  _id?: string
+  id?: string
   title?: string
   abstractText?: string
   results?: any
@@ -28,5 +28,5 @@ export class Descriptor {
   treeNumber?: string
   definitionSpanish?: string
   definitionLatin?: string
-  added?: { by: Annotator['id'], on: string }
+  addedOn?: number
 }

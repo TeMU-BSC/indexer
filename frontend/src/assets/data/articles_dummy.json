@@ -1,21 +1,12 @@
 [
   {
     "_id": "biblio-985342",
-    "title": "Dummy Title",
+    "title": "First Article",
     "abstractText": "El objetivo de esta breve comunicaci\u00f3n es analizar y reflejar la eficiencia de la utilizaci\u00f3n del m\u00e9todo psicodram\u00e1tico en conjunto con la jornada del h\u00e9roe, monomito descrito por Joseph Campbell, que est\u00e1 presente en todas las culturas y relata la presencia de un h\u00e9roe y su jornada de transformaci\u00f3n. Llamamos el resultado de esa uni\u00f3n de Psicodrama del h\u00e9roe (PDH). Describimos, en este estudio, un trabajo realizado con PDH, en el cual los participantes vivenciaron la jornada de un personaje construido por el propio grupo.",
     "descriptors": [
       {
         "id": "10",
-        "added": [
-          {
-            "by": "A1",
-            "on": "2019-11-02T08:02:36"
-          },
-          {
-            "by": "A2",
-            "on": "2019-11-15T15:14:32"
-          }
-        ]
+        "addedOn": "2019-11-02T08:02:36"
       },
       {
         "id": "100",

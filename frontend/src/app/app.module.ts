@@ -17,15 +17,24 @@ import { MaterialModule } from './material.module'
 // Angular Flex-Layout
 import { FlexLayoutModule } from '@angular/flex-layout'
 
+// Typeahead
+import { NgxTypeaheadModule } from 'ngx-typeahead'
+
 // Own App Components
-import { HeaderComponent } from './components/header/header.component';
+import { HeaderComponent } from './components/header/header.component'
 import { LoginComponent } from './components/login/login.component'
+import { AutocompleteAsyncComponent } from './components/autocomplete-async/autocomplete-async.component'
+import { ArticleComponent } from './components/article/article.component'
+import { DescriptorsComponent } from './components/descriptors/descriptors.component'
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    HeaderComponent
+    HeaderComponent,
+    AutocompleteAsyncComponent,
+    ArticleComponent,
+    DescriptorsComponent
   ],
   imports: [
     BrowserModule,
@@ -35,7 +44,8 @@ import { LoginComponent } from './components/login/login.component'
     ReactiveFormsModule,
     HttpClientModule,
     MaterialModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    NgxTypeaheadModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatAutocompleteSelectedEvent, MatSnackBar } from '@angular/material'
@@ -7,8 +6,8 @@ import { map, startWith } from 'rxjs/operators'
 import { Annotator, Article, Descriptor } from './app.model'
 import { AppService } from './app.service'
 
-// TODO enviar al backend fechas antiguas de descriptors que el annotador no modifica
 // TODO implementar login contra bbdd
+// TODO enviar al backend un descriptor cada vez que el anotador seleccione uno del autocompletar
 
 @Component({
   selector: 'app-root',
@@ -51,7 +50,7 @@ export class AppComponent implements OnInit {
 
   initForm() {
     this.decsForm = this.fb.group({
-      _id: '',
+      id: '',
       annotator: ['', Validators.required],
       descriptors: this.fb.array([])
     })
@@ -67,10 +66,6 @@ export class AppComponent implements OnInit {
 
   removeDescriptor(index: number) {
     this.descriptors.removeAt(index)
-  }
-
-  getTimestamp() {
-    return formatDate(new Date().getTime(), 'yyyy-MM-ddTHH:mm:ss', 'en')
   }
 
   getAnnotators() {
@@ -116,7 +111,7 @@ export class AppComponent implements OnInit {
 
   // Filtering.
   private _filterDescriptors(termSpanish: string): Descriptor[] {
-    const filterValue = termSpanish.toLowerCase()
+    const filterValue = termSpanish.toLowerCase().trim()
     return this.allDescriptors.filter(option => option.termSpanish.toLowerCase().includes(filterValue))
   }
 
@@ -124,32 +119,19 @@ export class AppComponent implements OnInit {
     return descriptor ? descriptor.id : undefined
   }
 
-  // VERSION 1
-  // onSelectionChange(event: MatAutocompleteSelectedEvent) {
-  //   this.descriptorsString += `\n${event.option.value.id}`
-  //   this.articleUpdatedDescriptors.push({
-  //     id: event.option.value.id,
-  //     added: {
-  //       by: this.annotator.value.id,
-  //       on: formatDate(new Date().getTime(), 'yyyy-MM-ddTHH:mm:ss', 'en')
-  //     }
-  //   })
-  // }
-
-  // VERSION 2: NO ME SALE!
   onSelectionChange(event: MatAutocompleteSelectedEvent) {
     this.descriptors.push(this.fb.control({
       id: event.option.value.id,
       added: {
         by: this.annotator.value,
-        on: this.getTimestamp()
+        on: Date.now() / 1000
       }
     }))
   }
 
   saveChanges() {
-    this.decsForm.controls._id.setValue(this.article._id)
-    console.log(JSON.stringify(this.decsForm.value))
+    this.decsForm.controls.id.setValue(this.article.id)
+    console.log(this.decsForm.value)
 
     // Send request to backend
     // this.appService.updateArticle(this.article).subscribe(bu => console.trace(bu))

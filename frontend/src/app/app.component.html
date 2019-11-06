@@ -1,26 +1,13 @@
 <app-header [title]="title"></app-header>
 
-<div fxLayout="row" fxLayoutGap="2em grid" style="padding: 2em">
+<div class="container p-3">
 
-  <div fxFlex="60" fxLayout="column">
-    <h3>{{ article?.title }}</h3>
-    <p>{{ article?.abstractText }}</p>
-    <mat-form-field fxFlex>
-      <input matInput placeholder="Busca por término en español" aria-label="DeCS Code" [formControl]="myControl"
-        [matAutocomplete]="auto">
-      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn"
-        (optionSelected)="onSelectionChange($event)">
-        <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
-          ({{ descriptor.id }}) {{ descriptor.termSpanish }}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
-  </div>
+  <app-article [article]="article"></app-article>
 
-  <div fxFlex="40" fxLayout="column">
-
-    <!-- VERSION 1: AUTOCOMPLETAR FUNCIONA OK -->
-    <!-- <form fxLayout="column">
+  <div>
+    <hr>
+    <h2>Versión Textarea</h2>
+    <form>
       <mat-form-field floatLabel="never">
         <mat-label>Select annotator</mat-label>
         <mat-select name="annotator" [(ngModel)]="annotator">
@@ -34,9 +21,10 @@
           [(ngModel)]="descriptorsString"></textarea>
         <mat-hint>Número del Registro</mat-hint>
       </mat-form-field>
-    </form> -->
+    </form>
 
-    <!-- VERSION 2: CAMPOS SEPARADOS Y DINAMICOS -->
+    <hr>
+    <h2>Versión Autocomplete + Add DeCS</h2>
     <form [formGroup]="decsForm">
       <mat-form-field appearance="fill">
         <mat-label>Annotator</mat-label>
@@ -46,15 +34,24 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <div>
+      <mat-form-field style="width: 50%">
+        <input matInput placeholder="Busca por término en español" aria-label="DeCS Code" [formControl]="myControl"
+          [matAutocomplete]="auto">
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn"
+          (optionSelected)="onSelectionChange($event)">
+          <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
+            ({{ descriptor.id }}) {{ descriptor.termSpanish }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <div style="display: inline">
         <button mat-stroked-button color="warn" (click)="resetForm()"
           [disabled]="descriptors.length === 0">Deshacer</button>
-        <button mat-flat-button class="my-green-button" (click)="saveChanges()"
+        <button mat-flat-button class="my-flat-green-button" (click)="saveChanges()"
           [disabled]="!decsForm.valid">Guardar</button>
       </div>
-      <div formArrayName="descriptors" fxLayout="column">
-        <h3>Descriptores</h3>
-        <mat-form-field appearance="outline"
+      <div formArrayName="descriptors">
+        <mat-form-field appearance="outline" style="width: 20%"
           *ngFor="let descriptor of descriptors?.controls; let i=index; trackBy: trackByFn">
           <mat-label>Número del Registro</mat-label>
           <input matInput [formControlName]="i" [value]="descriptor.value.id">
@@ -62,23 +59,7 @@
             <mat-icon>remove_circle</mat-icon>
           </button>
         </mat-form-field>
-        <!-- ¿ HACE FALTA BOTON PARA AÑADIR ? -->
-        <!-- <mat-form-field appearance="outline" (click)="addDescriptor()">
-          <mat-label>Add Descriptor</mat-label>
-          <input matInput readonly>
-          <button matSuffix mat-icon-button color="primary">
-            <mat-icon>add_circle</mat-icon>
-          </button>
-        </mat-form-field> -->
       </div>
     </form>
-
-    <!-- <p>Form Value: {{ decsForm.value | json }}</p> -->
-    <!-- <p>Form Status: {{ decsForm.status }}</p> -->
-
-
   </div>
 </div>
-
-<!-- <app-dynamic-form></app-dynamic-form> -->
-<!-- <app-dynamic-fields></app-dynamic-fields> -->
