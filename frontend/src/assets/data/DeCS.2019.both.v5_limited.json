@@ -1,6 +1,6 @@
 [
     {
-        "id": "10",
+        "decsCode": "10",
         "termSpanish": "nervio abducens",
         "termEnglish": "Abducens Nerve",
         "meshCode": "D000010",
@@ -10,7 +10,7 @@
         "definitionLatin": "Sexto nervio craneal, el cual se origina en el N\u00daCLEO DEL NERVIO ABDUCENS del PUENTE y env\u00eda fibras motoras a los m\u00fasculos rectos laterales del OJO. El da\u00f1o del nervio o su n\u00facleo interrumpe el control del movimiento horizontal del ojo."
     },
     {
-        "id": "100",
+        "decsCode": "100",
         "termSpanish": "acetolactato sintasa",
         "termEnglish": "Acetolactate Synthase",
         "meshCode": "D000095",
@@ -20,7 +20,7 @@
         "definitionLatin": "Flavoprote\u00edna que cataliza la formaci\u00f3n de acetolactato a partir de 2 moles de \u00c1CIDO PIR\u00daVICO en la bios\u00edntesis de VALINA y en la formaci\u00f3n de acetohidroxibutirato, a partir de piruvato y alfa-cetobutirato en la bios\u00edntesis de ISOLEUCINA . Esta enzima se incluia anteriormente en EC 4.1.3.18."
     },
     {
-        "id": "1000",
+        "decsCode": "1000",
         "termSpanish": "antitus\u00edgenos",
         "termEnglish": "Antitussive Agents",
         "meshCode": "D000996",
@@ -30,7 +30,7 @@
         "definitionLatin": "Sustancias que suprimen la tos. Act\u00faan centralmente sobre el centro medular de la tos. Los EXPECTORANTES , utilizados tambi\u00e9n para el tratamiento de la tos, act\u00faan localmente."
     },
     {
-        "id": "10000",
+        "decsCode": "10000",
         "termSpanish": "esofagostomiasis",
         "termEnglish": "Oesophagostomiasis",
         "meshCode": "D009814",
@@ -40,7 +40,7 @@
         "definitionLatin": "Infecci\u00f3n del tracto intestinal con helmintos del g\u00e9nero OESOPHAGOSTOMUM . Esta afecci\u00f3n ocurre fundamentalmente en animales diferentes al hombre."
     },
     {
-        "id": "10001",
+        "decsCode": "10001",
         "termSpanish": "Oesophagostomum",
         "termEnglish": "Oesophagostomum",
         "meshCode": "D009815",
@@ -50,7 +50,7 @@
         "definitionLatin": "G\u00e9nero de nem\u00e1todos de la superfamilia STRONGYLOIDEA , par\u00e1sitos en los intestinos de animales . Los adultos usualmente est\u00e1n libres en la luz intestinal; las larvas se enquistan en la pared."
     },
     {
-        "id": "10002",
+        "decsCode": "10002",
         "termSpanish": "gesti\u00f3n del consultorio",
         "termEnglish": "Office Management",
         "meshCode": "D009817",
@@ -60,7 +60,7 @@
         "definitionLatin": "Planificaci\u00f3n , organizaci\u00f3n y actividades administrativas de un consultorio."
     },
     {
-        "id": "10004",
+        "decsCode": "10004",
         "termSpanish": "visitas al consultorio m\u00e9dico",
         "termEnglish": "Office Visits",
         "meshCode": "D009819",
@@ -70,7 +70,7 @@
         "definitionLatin": "Consultas hechas por pacientes en consult\u00f3rios m\u00e9dicos , para diagn\u00f3stico , tratamiento o seguimiento."
     },
     {
-        "id": "10008",
+        "decsCode": "10008",
         "termSpanish": "bases de pomadas",
         "termEnglish": "Ointment Bases",
         "meshCode": "D009823",
@@ -80,7 +80,7 @@
         "definitionLatin": "Varias mezclas de grasas , ceras, aceites animal y vegetal e hidrocarburos s\u00f3lidos y l\u00edquidos; son veh\u00edculos para las sustancias medicinales que se utilizan en aplicaciones externas; hay cuatro clases: base de hidrocarburo, base de absorci\u00f3n , base hidrof\u00f3bica, base soluble en agua; varias tambi\u00e9n son emolientes."
     },
     {
-        "id": "10009",
+        "decsCode": "10009",
         "termSpanish": "pomadas",
         "termEnglish": "Ointments",
         "meshCode": "D009824",
@@ -90,7 +90,7 @@
         "definitionLatin": "Preparados semis\u00f3lidos utilizados t\u00f3picamente por sus efectos emolientes protectores o como veh\u00edculos para la administraci\u00f3n local de medicamentos. Las bases de los ung\u00fcentos son diversas mezclas de grasas , ceras, y aceites vegetales y animales e hicrocarburos s\u00f3lidos y l\u00edquidos."
     },
     {
-        "id": "10011",
+        "decsCode": "10011",
         "termSpanish": "asistencia a los ancianos",
         "termEnglish": "Old Age Assistance",
         "meshCode": "D009826",

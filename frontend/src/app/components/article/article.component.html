@@ -6,7 +6,7 @@
     <p>
       {{ article?.abstractText }}
     </p>
-    <app-descriptors (descriptorToEmit)="getDescriptor($event)"></app-descriptors>
+    <app-descriptors [article]="article" (descriptorToAdd)="getDescriptorToAdd($event)" (descriptorToRemove)="getDescriptorToRemove($event)"></app-descriptors>
   </mat-card-content>
   <!-- SIN BOTONES! HAREMOS UNA HTTP POST REQUEST EN CADA DeCS SELECTION -->
   <!-- <mat-card-actions class="p-3">

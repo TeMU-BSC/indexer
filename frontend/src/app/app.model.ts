@@ -18,7 +18,16 @@ export class Article {
  * its plural should be 'descriptors'.
  */
 export class Descriptor {
-  id?: string
+  decsCode?: string
+
+  // Attributes for HTTP requests
+  articleId?: Article['id']
+  addedBy?: Annotator['id']
+  addedOn?: number
+  removedBy?: Annotator['id']
+  removedOn?: number
+
+  // Attributes for filtering
   termSpanish?: string
   termEnglish?: string
   meshCode?: string
@@ -26,7 +35,4 @@ export class Descriptor {
   treeNumber?: string
   definitionSpanish?: string
   definitionLatin?: string
-
-  addedBy?: Annotator['id']
-  addedOn?: number
 }

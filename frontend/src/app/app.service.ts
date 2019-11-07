@@ -66,14 +66,25 @@ export class AppService {
   }
 
   /**
-   * PUT: update an article to the database
+   * Add a new descriptor to database
    */
-  updateArticle(article: Article): Observable<Article> {
-    // Title and abstractText are not necessary to update the descriptors list in database
-    // delete article.title
-    // delete article.abstractText
-    const url = `http://${this.ip}:${this.port}/modify`
-    return this.http.put<Article>(url, article, this.options)
+  // addDescriptor(descriptor: Descriptor): Observable<Descriptor> {
+  //   const url = `http://${this.ip}:${this.port}/descriptor/add`
+  //   return this.http.post<Descriptor>(url, descriptor, this.options)
+  // }
+  addDescriptor(descriptor: Descriptor): string {
+    return `DeCS ${descriptor.decsCode} added!`
   }
 
+  /**
+   * Remove a new descriptor from database
+   */
+  // removeDescriptor(descriptor: Descriptor): Observable<Descriptor> {
+  //   const url = `http://${this.ip}:${this.port}/descriptor/remove`
+  //   const deleteOptions = { headers: this.headers, body: descriptor }
+  //   return this.http.delete<Descriptor>(url, deleteOptions)
+  // }
+  removeDescriptor(descriptor: Descriptor): string {
+    return `DeCS ${descriptor.decsCode} removed!`
+  }
 }

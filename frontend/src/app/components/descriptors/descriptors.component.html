@@ -1,11 +1,11 @@
 <mat-form-field class="w-100">
   <mat-chip-list #chipList aria-label="Descriptor selection">
     <mat-chip
-      *ngFor="let descriptor of descriptors; let i=index;"
+      *ngFor="let descriptor of descriptors"
       [selectable]="selectable"
       [removable]="removable"
       (removed)="remove(descriptor)">
-      {{ descriptor.termSpanish }} ({{ descriptor.id }})
+      {{ descriptor.termSpanish }} ({{ descriptor.decsCode }})
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
     <input
@@ -20,10 +20,9 @@
   </mat-chip-list>
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
     <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
-      {{ descriptor.termSpanish }} ({{ descriptor.id }})
+      <!-- {{ descriptor.termSpanish }} / {{ descriptor.termEnglish }} / {{ descriptor.synonyms }} ({{ descriptor.decsCode }}) -->
+      {{ descriptor.termSpanish }} / {{ descriptor.termEnglish }} ({{ descriptor.decsCode }})
     </mat-option>
   </mat-autocomplete>
   <mat-hint>Número del Registro</mat-hint>
 </mat-form-field>
-
-<!-- <pre>{{ descriptors | json }}</pre> -->

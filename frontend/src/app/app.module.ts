@@ -26,6 +26,8 @@ import { LoginComponent } from './components/login/login.component'
 import { AutocompleteAsyncComponent } from './components/autocomplete-async/autocomplete-async.component'
 import { ArticleComponent } from './components/article/article.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
+import { MainComponent } from './components/main/main.component';
+import { BulkEditComponent } from './components/bulk-edit/bulk-edit.component'
 
 @NgModule({
   declarations: [
@@ -34,7 +36,9 @@ import { DescriptorsComponent } from './components/descriptors/descriptors.compo
     HeaderComponent,
     AutocompleteAsyncComponent,
     ArticleComponent,
-    DescriptorsComponent
+    DescriptorsComponent,
+    MainComponent,
+    BulkEditComponent
   ],
   imports: [
     BrowserModule,

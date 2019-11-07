@@ -9,12 +9,17 @@ import { Article, Descriptor } from 'src/app/app.model'
 export class ArticleComponent {
 
   @Input() article: Article
-  receivedDescriptor: Descriptor
+  descriptorToAdd: Descriptor
+  descriptorToRemove: Descriptor
 
-  getDescriptor(descriptor: Descriptor) {
-    this.receivedDescriptor = descriptor
-    console.log(this.receivedDescriptor)
+  getDescriptorToAdd(descriptor: Descriptor) {
+    this.descriptorToAdd = descriptor
+    console.log('To Add: ', this.descriptorToAdd)
+  }
 
+  getDescriptorToRemove(descriptor: Descriptor) {
+    this.descriptorToRemove = descriptor
+    console.log('To Remove: ', this.descriptorToRemove)
   }
 
 }
