@@ -17,9 +17,26 @@ export class Article {
  * its final 's' of its acronym, the class has been named 'Descriptor', and
  * its plural should be 'descriptors'.
  */
-export class Descriptor {
-  decsCode?: string
+// export class Descriptor {
+//   decsCode?: string
 
+//   // Attributes for HTTP requests
+//   articleId?: Article['id']
+//   addedBy?: Annotator['id']
+//   addedOn?: number
+//   removedBy?: Annotator['id']
+//   removedOn?: number
+
+//   // Attributes for filtering
+//   termSpanish?: string
+//   termEnglish?: string
+//   meshCode?: string
+//   synonyms?: string
+//   treeNumber?: string
+//   definitionSpanish?: string
+//   definitionLatin?: string
+// }
+export class Descriptor {
   // Attributes for HTTP requests
   articleId?: Article['id']
   addedBy?: Annotator['id']
@@ -27,12 +44,19 @@ export class Descriptor {
   removedBy?: Annotator['id']
   removedOn?: number
 
-  // Attributes for filtering
-  termSpanish?: string
-  termEnglish?: string
-  meshCode?: string
-  synonyms?: string
-  treeNumber?: string
-  definitionSpanish?: string
-  definitionLatin?: string
+  constructor(
+    public decsCode?: string,
+    public termSpanish?: string,
+    public termEnglish?: string,
+    public meshCode?: string,
+    public synonyms?: string,
+    public treeNumber?: string,
+    public definitionSpanish?: string,
+    public definitionLatin?: string
+  ) { }
+}
+
+export interface IDescriptorResponse {
+  total: number
+  results: Descriptor[]
 }

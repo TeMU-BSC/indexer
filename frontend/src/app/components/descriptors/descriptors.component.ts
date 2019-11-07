@@ -1,10 +1,10 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes'
-import { Component, ElementRef, ViewChild, Output, EventEmitter, Input } from '@angular/core'
+import { Component, ElementRef, ViewChild, Input, OnInit } from '@angular/core'
 import { FormControl } from '@angular/forms'
 import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete'
 import { MatChipInputEvent } from '@angular/material/chips'
 import { Observable } from 'rxjs'
-import { map, startWith } from 'rxjs/operators'
+import { map, startWith, debounceTime, tap, switchMap, finalize } from 'rxjs/operators'
 import { Descriptor, Article } from 'src/app/app.model'
 import { AppService } from 'src/app/app.service'
 
@@ -13,7 +13,7 @@ import { AppService } from 'src/app/app.service'
   templateUrl: './descriptors.component.html',
   styleUrls: ['./descriptors.component.css']
 })
-export class DescriptorsComponent {
+export class DescriptorsComponent implements OnInit {
 
   visible = true
   selectable = true
@@ -21,7 +21,8 @@ export class DescriptorsComponent {
   addOnBlur = true
   separatorKeysCodes: number[] = [ENTER, COMMA]
   descriptorCtrl = new FormControl()
-  filteredDescriptors: Observable<Descriptor[]>
+  // filteredDescriptors: Observable<Descriptor[]> // OK
+  filteredDescriptors: Descriptor[] = []
   descriptors: Descriptor[] = []
   allDescriptors: Descriptor[] = this.appService.getDescriptors()
 
@@ -31,12 +32,26 @@ export class DescriptorsComponent {
   @Input() article: Article
   toHighlight = ''
 
-  constructor(private appService: AppService) {
+  isLoading = false
+
+  constructor(private appService: AppService) { }
+
+  ngOnInit() {
+    // OK
     // Filter descriptors on any typing change of input field
-    this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
-      startWith(null),
-      map((value: string | null) => value ? this._filter(value) : this.allDescriptors.slice())
-    )
+    // this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
+    //   startWith(null),
+    //   map((value: string | null) => value ? this._filter(value) : this.allDescriptors.slice())
+    // )
+
+    // TEST
+    this.descriptorCtrl.valueChanges.pipe(
+      debounceTime(300),
+      tap(() => this.isLoading = true),
+      switchMap(value => this.appService.search({ termSpanish: value }, 1).pipe(
+        finalize(() => this.isLoading = false)))
+    ).subscribe(users => this.filteredDescriptors = users.results)
+
   }
 
   /**

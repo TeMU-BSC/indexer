@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { Annotator, Article, Descriptor } from './app.model'
+import { Annotator, Article, Descriptor, IDescriptorResponse } from './app.model'
 import * as ALL_DESCRIPTORS from '../assets/data/DeCS.2019.both.v5_limited.json'
-
+import { map, tap } from 'rxjs/operators'
 
 @Injectable({
   providedIn: 'root'
@@ -72,7 +72,7 @@ export class AppService {
   //   const url = `http://${this.ip}:${this.port}/descriptor/add`
   //   return this.http.post<Descriptor>(url, descriptor, this.options)
   // }
-  addDescriptor(descriptor: Descriptor): string {
+  addDescriptor(descriptor: Descriptor) {
     return `DeCS ${descriptor.decsCode} added!`
   }
 
@@ -84,7 +84,59 @@ export class AppService {
   //   const deleteOptions = { headers: this.headers, body: descriptor }
   //   return this.http.delete<Descriptor>(url, deleteOptions)
   // }
-  removeDescriptor(descriptor: Descriptor): string {
+  removeDescriptor(descriptor: Descriptor) {
     return `DeCS ${descriptor.decsCode} removed!`
   }
+
+  /**
+   * https://stackblitz.com/edit/angular-material-autocomplete-async2
+   */
+  search(filter: { termSpanish: string } = { termSpanish: '' }, page = 1): Observable<IDescriptorResponse> {
+    // const
+    return this.http.get<IDescriptorResponse>('assets/data/DeCS.2019.both.v5_limited_RESULTS.json')
+      .pipe(
+        tap((response: IDescriptorResponse) => {
+          response.results = response.results
+            .map(descriptor => new Descriptor(
+              descriptor.decsCode,
+              descriptor.termSpanish,
+              descriptor.termEnglish,
+              descriptor.meshCode,
+              descriptor.synonyms,
+              descriptor.treeNumber,
+              descriptor.definitionSpanish,
+              descriptor.definitionLatin
+            ))
+            // Not filtering in the server since in-memory-web-api has somewhat restricted api
+            .filter(descriptor => descriptor.termSpanish.includes(filter.termSpanish.toLowerCase()))
+
+          return response
+        })
+      )
+  }
+
+  // search(filter: { name: string } = { name: '' }, page = 1): Observable<Descriptor[]> {
+  //   return this.http.get<Descriptor[]>('assets/data/DeCS.2019.both.v5_limited.json').pipe(
+  //     tap(descriptors => {
+  //       descriptors.map(descriptor => new Descriptor(
+  //         descriptor.decsCode,
+  //         descriptor.termSpanish,
+  //         descriptor.termEnglish,
+  //         descriptor.meshCode,
+  //         descriptor.synonyms,
+  //         descriptor.treeNumber,
+  //         descriptor.definitionSpanish,
+  //         descriptor.definitionLatin
+  //       ))
+  //         // Not filtering in the server since in-memory-web-api has somewhat restricted api
+  //         .filter(descriptor => JSON.stringify(descriptor).toLowerCase().includes(input.toLowerCase()))
+  //       return descriptors
+  //     })
+  //   )
+  // }
+
+  // search(input: string): Descriptor[] {
+  //   return this.decs.filter(descriptor => JSON.stringify(descriptor).toLowerCase().includes(input.toLowerCase()))
+  // }
+
 }

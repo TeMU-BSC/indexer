@@ -12,7 +12,7 @@ export class AutocompleteAsyncService {
   constructor(private http: HttpClient) { }
 
   search(filter: { name: string } = { name: '' }, page = 1): Observable<IUserResponse> {
-    return this.http.get<IUserResponse>('/api/users')
+    return this.http.get<IUserResponse>('assets/data/users.json')
       .pipe(
         tap((response: IUserResponse) => {
           response.results = response.results

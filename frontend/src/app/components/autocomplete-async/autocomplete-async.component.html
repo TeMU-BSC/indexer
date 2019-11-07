@@ -1,6 +1,6 @@
 <form class="example-form" [formGroup]='usersForm'>
   <mat-form-field class="example-full-width">
-    <input matInput placeholder="Choose a user" [matAutocomplete]="auto" formControlName='userInput'>
+    <input matInput placeholder="Choose a user (hero)" [matAutocomplete]="auto" formControlName='userInput'>
   </mat-form-field>
   <span>Your choice is: {{usersForm.get('userInput').value | json}}</span>
 

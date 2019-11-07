@@ -18,23 +18,14 @@ export class AutocompleteAsyncComponent implements OnInit {
   constructor(private fb: FormBuilder, private appService: AutocompleteAsyncService) { }
 
   ngOnInit() {
-    this.usersForm = this.fb.group({
-      userInput: null
-    })
+    this.usersForm = this.fb.group({ userInput: null })
 
-    this.usersForm
-      .get('userInput')
-      .valueChanges
-      .pipe(
-        debounceTime(300),
-        tap(() => this.isLoading = true),
-        switchMap(value => this.appService.search({ name: value }, 1)
-          .pipe(
-            finalize(() => this.isLoading = false),
-          )
-        )
-      )
-      .subscribe(users => this.filteredUsers = users.results)
+    this.usersForm.get('userInput').valueChanges.pipe(
+      debounceTime(300),
+      tap(() => this.isLoading = true),
+      switchMap(value => this.appService.search({ name: value }, 1).pipe(
+        finalize(() => this.isLoading = false)))
+    ).subscribe(users => this.filteredUsers = users.results)
   }
 
   displayFn(user: User) {

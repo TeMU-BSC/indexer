@@ -26,9 +26,9 @@ import { LoginComponent } from './components/login/login.component'
 import { AutocompleteAsyncComponent } from './components/autocomplete-async/autocomplete-async.component'
 import { ArticleComponent } from './components/article/article.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
-import { MainComponent } from './components/main/main.component';
-import { BulkEditComponent } from './components/bulk-edit/bulk-edit.component';
-import { BoldPipe } from './bold.pipe';
+import { MainComponent } from './components/main/main.component'
+import { BulkEditComponent } from './components/bulk-edit/bulk-edit.component'
+import { BoldPipe } from './bold.pipe'
 import { NoSanitizePipe } from './no-sanitize.pipe'
 
 @NgModule({
@@ -42,7 +42,7 @@ import { NoSanitizePipe } from './no-sanitize.pipe'
     MainComponent,
     BulkEditComponent,
     BoldPipe,
-    NoSanitizePipe
+    NoSanitizePipe,
   ],
   imports: [
     BrowserModule,
