@@ -23,18 +23,15 @@ export class DescriptorsComponent {
   descriptorCtrl = new FormControl()
   filteredDescriptors: Observable<Descriptor[]>
   descriptors: Descriptor[] = []
-  allDescriptors: Descriptor[]
+  allDescriptors: Descriptor[] = this.appService.getDescriptors()
 
   @ViewChild('descriptorInput', { static: false }) descriptorInput: ElementRef<HTMLInputElement>
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete
 
   @Input() article: Article
-  @Output() descriptorToAdd = new EventEmitter<Descriptor>()
-  @Output() descriptorToRemove = new EventEmitter<Descriptor>()
+  toHighlight = ''
 
   constructor(private appService: AppService) {
-    this.allDescriptors = this.appService.getDescriptors()
-
     // Filter descriptors on any typing change of input field
     this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
       startWith(null),
@@ -47,8 +44,14 @@ export class DescriptorsComponent {
    * @param value Manually typed text (string) or entire object (Descriptor) when selected from autocomplete list.
    */
   private _filter(value: string | Descriptor): Descriptor[] {
+    // Highlight match substring
+    this.toHighlight = value.toString()
+
+    // Prepare the value to filter
     const stringifiedValue = typeof value === 'object' ? JSON.stringify(value) : value
     const normalizedValue = this._normalize(stringifiedValue.toLowerCase().trim())
+
+    // Use the javascript builtin filter() function on the stringified and lowercased descriptor object
     return this.allDescriptors.filter(descriptor => this._normalize(JSON.stringify(descriptor).toLowerCase()).includes(normalizedValue))
   }
 
