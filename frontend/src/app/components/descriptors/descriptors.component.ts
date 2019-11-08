@@ -2,11 +2,12 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes'
 import { Component, ElementRef, ViewChild, Input, OnInit } from '@angular/core'
 import { FormControl } from '@angular/forms'
 import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete'
-import { MatChipInputEvent } from '@angular/material/chips'
+import { MatChipInputEvent, MatChipEvent } from '@angular/material/chips'
 import { Observable } from 'rxjs'
 import { map, startWith, debounceTime, tap, switchMap, finalize } from 'rxjs/operators'
 import { Descriptor, Article } from 'src/app/app.model'
 import { AppService } from 'src/app/app.service'
+import { MatSnackBar } from '@angular/material'
 
 @Component({
   selector: 'app-descriptors',
@@ -21,10 +22,10 @@ export class DescriptorsComponent implements OnInit {
   addOnBlur = true
   separatorKeysCodes: number[] = [ENTER, COMMA]
   descriptorCtrl = new FormControl()
-  // filteredDescriptors: Observable<Descriptor[]> // OK
-  filteredDescriptors: Descriptor[] = []
+  filteredDescriptors: Observable<Descriptor[]>
   descriptors: Descriptor[] = []
-  allDescriptors: Descriptor[] = this.appService.getDescriptors()
+  // allDescriptors: Descriptor[] = this.appService.getDescriptors()
+  allDescriptors: Descriptor[]
 
   @ViewChild('descriptorInput', { static: false }) descriptorInput: ElementRef<HTMLInputElement>
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete
@@ -34,24 +35,24 @@ export class DescriptorsComponent implements OnInit {
 
   isLoading = false
 
-  constructor(private appService: AppService) { }
+  constructor(
+    private appService: AppService,
+    private snackBar: MatSnackBar
+  ) { }
 
   ngOnInit() {
-    // OK
+    // Get all descriptors from local JSON file
+    this.appService.getDescriptors().subscribe(data => this.allDescriptors = data)
     // Filter descriptors on any typing change of input field
-    // this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
-    //   startWith(null),
-    //   map((value: string | null) => value ? this._filter(value) : this.allDescriptors.slice())
-    // )
-
-    // TEST
-    this.descriptorCtrl.valueChanges.pipe(
+    this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
       debounceTime(300),
-      tap(() => this.isLoading = true),
-      switchMap(value => this.appService.search({ termSpanish: value }, 1).pipe(
-        finalize(() => this.isLoading = false)))
-    ).subscribe(users => this.filteredDescriptors = users.results)
+      startWith(''),
+      // https://material.angular.io/components/autocomplete
+      // map((value: string | null) => value ? this._filter(value) : this.allDescriptors.slice()),
 
+      // https://stackoverflow.com/questions/45229409/speeding-up-angular-material-autocomplete-or-alternatives#comment93317064_46289297
+      map((value: string | null) => value.length >= 3 ? this._filter(value) : [])
+    )
   }
 
   /**
@@ -97,7 +98,8 @@ export class DescriptorsComponent implements OnInit {
 
       // Clear the text in input field
       event.input.value = event.input ? '' : null
-      this.descriptorCtrl.setValue(null)
+      // this.descriptorCtrl.setValue(null)
+      this.descriptorCtrl.setValue('')
     }
   }
 
@@ -112,9 +114,12 @@ export class DescriptorsComponent implements OnInit {
     this.removeDescriptorFromDatabase({
       decsCode: descriptorToRemove.decsCode,
       removedBy: 'A9', // TODO: Change it to the current logged user id
-      removedOn: Date.now(),
+      removedOn: Date.now() / 1000, // seconds
       articleId: this.article.id
     })
+
+    // Viasual feedback to user
+    this.snackBar.open('¡Descriptor borrado!', 'Deshacer', { duration: 5000 })
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
@@ -132,9 +137,12 @@ export class DescriptorsComponent implements OnInit {
     this.addDescriptorToDatabase({
       decsCode: selectedDescriptor.decsCode,
       addedBy: 'A9', // TODO: Change it to the current logged user id
-      addedOn: Date.now(),
+      addedOn: Date.now() / 1000, // seconds
       articleId: this.article.id
     })
+
+    // Viasual feedback to user
+    this.snackBar.open('¡Descriptor añadido!', 'OK', { duration: 5000 })
   }
 
   addDescriptorToDatabase(descriptor: Descriptor) {
@@ -146,5 +154,7 @@ export class DescriptorsComponent implements OnInit {
     // this.appService.removeDescriptor(descriptor).subscribe(response => console.log(response))
     console.log(this.appService.removeDescriptor(descriptor))
   }
+
+
 
 }

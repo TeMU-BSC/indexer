@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
 import { Annotator, Article, Descriptor, IDescriptorResponse } from './app.model'
-import * as ALL_DESCRIPTORS from '../assets/data/DeCS.2019.both.v5_limited.json'
+import * as ALL_DESCRIPTORS from '../assets/data/DeCS.2019.both.v5.json'
 import { map, tap } from 'rxjs/operators'
 
 @Injectable({
@@ -17,9 +17,7 @@ export class AppService {
   headers: HttpHeaders = new HttpHeaders({ Accept: 'application/json' })
   options = { headers: this.headers }
 
-  constructor(
-    private http: HttpClient
-  ) { }
+  constructor(private http: HttpClient) { }
 
   login(annotator: Annotator) {
     // const url = `http://${this.ip}:${this.port}/login`
@@ -47,23 +45,23 @@ export class AppService {
     // return this.http.get<Article[]>(url, this.options)
   }
 
-  // getDescriptors(): Observable<Descriptor[]> {
-  //   // return this.http.get<Descriptor[]>('assets/data/DeCS.2019.both.v5.json')
-  //   return this.http.get<Descriptor[]>('assets/data/DeCS.2019.both.v5_limited.json')
+  getDescriptors(): Observable<Descriptor[]> {
+    return this.http.get<Descriptor[]>('assets/data/DeCS.2019.both.v5.json')
+    // return this.http.get<Descriptor[]>('assets/data/DeCS.2019.both.v5_limited.json')
 
-  //   // this.papa.parse('assets/data/DeCS.2019.both.v5.tsv', {
-  //   //   download: true,
-  //   //   header: true,
-  //   //   delimiter: '\t',
-  //   //   skipEmptyLines: true,
-  //   //   quoteChar: '',
-  //   //   complete: results => console.log(results)
-  //   // })
-  // }
-
-  getDescriptors(): Descriptor[] {
-    return this.decs
+    // this.papa.parse('assets/data/DeCS.2019.both.v5.tsv', {
+    //   download: true,
+    //   header: true,
+    //   delimiter: '\t',
+    //   skipEmptyLines: true,
+    //   quoteChar: '',
+    //   complete: results => console.log(results)
+    // })
   }
+
+  // getDescriptors(): Descriptor[] {
+  //   return this.decs
+  // }
 
   /**
    * Add a new descriptor to database
@@ -93,7 +91,7 @@ export class AppService {
    */
   search(filter: { termSpanish: string } = { termSpanish: '' }, page = 1): Observable<IDescriptorResponse> {
     // const
-    return this.http.get<IDescriptorResponse>('assets/data/DeCS.2019.both.v5_limited_RESULTS.json')
+    return this.http.get<IDescriptorResponse>('assets/data/DeCS.2019.both.v5.json')
       .pipe(
         tap((response: IDescriptorResponse) => {
           response.results = response.results

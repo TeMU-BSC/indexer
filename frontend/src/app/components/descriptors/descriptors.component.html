@@ -10,13 +10,7 @@
       [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)">
   </mat-chip-list>
   <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="selected($event)">
-    <!-- ASYNC PIPE -->
-    <!-- <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
-      {{ descriptor.termSpanish }} / {{ descriptor.termEnglish }} ({{ descriptor.decsCode }})
-    </mat-option> -->
-
-    <!-- WITHOUT ASYNC PIPE -->
-    <mat-option *ngFor="let descriptor of filteredDescriptors" [value]="descriptor">
+    <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
       {{ descriptor.termSpanish }} / {{ descriptor.termEnglish }} ({{ descriptor.decsCode }})
     </mat-option>
 

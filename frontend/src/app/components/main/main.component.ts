@@ -41,7 +41,6 @@ export class MainComponent implements OnInit {
   get descriptors() { return this.decsForm.get('descriptors') as FormArray }
 
   ngOnInit() {
-    this.getDescriptors()
     this.getArticles()
     this.getAnnotators()
   }
@@ -94,27 +93,6 @@ export class MainComponent implements OnInit {
 
   toArray() {
     this.descriptorsSimpleArray = this.descriptorsString.split(/[\s\.\-,;:]+/)
-  }
-
-  getDescriptors() {
-    this.allDescriptors = this.appService.getDescriptors()
-
-    // Init filtered descriptors list.
-    this.filteredDescriptors = this.myControl.valueChanges.pipe(
-      startWith(''),
-      map(value => typeof value === 'string' ? value : value.termSpanish),
-      map(termSpanish => termSpanish ? this._filterDescriptors(termSpanish) : this.allDescriptors.slice())
-    )
-  }
-
-  // Filtering.
-  private _filterDescriptors(termSpanish: string): Descriptor[] {
-    const filterValue = termSpanish.toLowerCase().trim()
-    return this.allDescriptors.filter(option => option.termSpanish.toLowerCase().includes(filterValue))
-  }
-
-  displayFn(descriptor?: Descriptor): string | undefined {
-    return descriptor ? descriptor.decsCode : undefined
   }
 
   onSelectionChange(event: MatAutocompleteSelectedEvent) {
