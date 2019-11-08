@@ -1,23 +1,24 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { Annotator, Article, Descriptor, IDescriptorResponse } from './app.model'
-import * as ALL_DESCRIPTORS from '../assets/data/DeCS.2019.both.v5.json'
-import { map, tap } from 'rxjs/operators'
+import { Annotator, Article, Descriptor } from './app.model'
+import { Papa } from 'ngx-papaparse'
+import * as ALL_DESCRIPTORS from 'src/assets/data/DeCS.2019.both.v5.json'
+// import { _normalize } from 'src/app/components/descriptors/descriptors.component'  // TODO utils module
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppService {
 
-  decs: Descriptor[] = (ALL_DESCRIPTORS as any).default
   ip = '84.88.52.79'
   // ip = 'localhost'
   port = '5000'
   headers: HttpHeaders = new HttpHeaders({ Accept: 'application/json' })
   options = { headers: this.headers }
+  allDescriptors: Descriptor[] = (ALL_DESCRIPTORS as any).default
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private papa: Papa) { }
 
   login(annotator: Annotator) {
     // const url = `http://${this.ip}:${this.port}/login`
@@ -45,22 +46,25 @@ export class AppService {
     // return this.http.get<Article[]>(url, this.options)
   }
 
+  /**
+   * From JSON file
+   */
   getDescriptors(): Observable<Descriptor[]> {
     return this.http.get<Descriptor[]>('assets/data/DeCS.2019.both.v5.json')
-    // return this.http.get<Descriptor[]>('assets/data/DeCS.2019.both.v5_limited.json')
-
-    // this.papa.parse('assets/data/DeCS.2019.both.v5.tsv', {
-    //   download: true,
-    //   header: true,
-    //   delimiter: '\t',
-    //   skipEmptyLines: true,
-    //   quoteChar: '',
-    //   complete: results => console.log(results)
-    // })
   }
 
-  // getDescriptors(): Descriptor[] {
-  //   return this.decs
+  /**
+   * From TSV file
+   */
+  // getDescriptorsFromTSV() {
+  //   this.papa.parse('assets/data/DeCS.2019.both.v5.tsv', {
+  //     download: true,
+  //     header: true,
+  //     delimiter: '\t',
+  //     skipEmptyLines: true,
+  //     quoteChar: '',
+  //     complete: results => console.log(results)
+  //   })
   // }
 
   /**
@@ -86,55 +90,8 @@ export class AppService {
     return `DeCS ${descriptor.decsCode} removed!`
   }
 
-  /**
-   * https://stackblitz.com/edit/angular-material-autocomplete-async2
-   */
-  search(filter: { termSpanish: string } = { termSpanish: '' }, page = 1): Observable<IDescriptorResponse> {
-    // const
-    return this.http.get<IDescriptorResponse>('assets/data/DeCS.2019.both.v5.json')
-      .pipe(
-        tap((response: IDescriptorResponse) => {
-          response.results = response.results
-            .map(descriptor => new Descriptor(
-              descriptor.decsCode,
-              descriptor.termSpanish,
-              descriptor.termEnglish,
-              descriptor.meshCode,
-              descriptor.synonyms,
-              descriptor.treeNumber,
-              descriptor.definitionSpanish,
-              descriptor.definitionLatin
-            ))
-            // Not filtering in the server since in-memory-web-api has somewhat restricted api
-            .filter(descriptor => descriptor.termSpanish.includes(filter.termSpanish.toLowerCase()))
-
-          return response
-        })
-      )
+  getDescriptorByDecsCode(decsCode: string): Descriptor {
+    return this.allDescriptors.find(descriptor => descriptor.decsCode === decsCode)
   }
-
-  // search(filter: { name: string } = { name: '' }, page = 1): Observable<Descriptor[]> {
-  //   return this.http.get<Descriptor[]>('assets/data/DeCS.2019.both.v5_limited.json').pipe(
-  //     tap(descriptors => {
-  //       descriptors.map(descriptor => new Descriptor(
-  //         descriptor.decsCode,
-  //         descriptor.termSpanish,
-  //         descriptor.termEnglish,
-  //         descriptor.meshCode,
-  //         descriptor.synonyms,
-  //         descriptor.treeNumber,
-  //         descriptor.definitionSpanish,
-  //         descriptor.definitionLatin
-  //       ))
-  //         // Not filtering in the server since in-memory-web-api has somewhat restricted api
-  //         .filter(descriptor => JSON.stringify(descriptor).toLowerCase().includes(input.toLowerCase()))
-  //       return descriptors
-  //     })
-  //   )
-  // }
-
-  // search(input: string): Descriptor[] {
-  //   return this.decs.filter(descriptor => JSON.stringify(descriptor).toLowerCase().includes(input.toLowerCase()))
-  // }
 
 }

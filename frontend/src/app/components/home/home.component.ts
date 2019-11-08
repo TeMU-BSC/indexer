@@ -9,11 +9,11 @@ import { AppService } from 'src/app/app.service'
 // TODO implementar login contra bbdd
 // TODO enviar al backend un descriptor cada vez que el anotador seleccione uno del autocompletar
 @Component({
-  selector: 'app-main',
-  templateUrl: './main.component.html',
-  styleUrls: ['./main.component.css']
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
 })
-export class MainComponent implements OnInit {
+export class HomeComponent implements OnInit {
 
   // user: Annotator
   annotators: Annotator[] = []
@@ -79,13 +79,9 @@ export class MainComponent implements OnInit {
       error => console.warn(error),
       () => {
         // TODO select article by annotator in view
-        this.getArticle(0)
+        this.getArticle(1)
         this.article.descriptors.forEach(descriptor => {
           this.descriptors.push(this.fb.control(descriptor))
-        })
-
-        this.article.descriptors.forEach(descriptor => {
-          this.descriptorsString += `${descriptor.decsCode}\n`
         })
       }
     )
@@ -106,7 +102,7 @@ export class MainComponent implements OnInit {
   }
 
   saveChanges() {
-    this.decsForm.controls.id.setValue(this.article.id)
+    this.decsForm.controls.id.setValue(this.article._id)
     console.log(this.decsForm.value)
 
     // Send request to backend

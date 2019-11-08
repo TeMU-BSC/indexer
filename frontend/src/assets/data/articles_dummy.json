@@ -5,39 +5,21 @@
     "abstractText": "El objetivo de esta breve comunicaci\u00f3n es analizar y reflejar la eficiencia de la utilizaci\u00f3n del m\u00e9todo psicodram\u00e1tico en conjunto con la jornada del h\u00e9roe, monomito descrito por Joseph Campbell, que est\u00e1 presente en todas las culturas y relata la presencia de un h\u00e9roe y su jornada de transformaci\u00f3n. Llamamos el resultado de esa uni\u00f3n de Psicodrama del h\u00e9roe (PDH). Describimos, en este estudio, un trabajo realizado con PDH, en el cual los participantes vivenciaron la jornada de un personaje construido por el propio grupo.",
     "descriptors": [
       {
-        "id": "10",
-        "addedOn": "2019-11-02T08:02:36"
+        "decsCode": "101"
       },
       {
-        "id": "100",
-        "added": [
-          {
-            "by": "A1",
-            "on": "2019-11-02T08:05:45"
-          }
-        ]
+        "decsCode": "102"
       },
       {
-        "id": "1000",
-        "added": [
-          {
-            "by": "A1",
-            "on": "2019-11-02T08:46:13"
-          }
-        ]
+        "decsCode": "103"
       }
     ]
   },
   {
-    "abstractText": "Resumen El art\u00edculo investig\u00f3 debates parlamentarios en la C\u00e1mara de los Diputados en Brasil sobre el permisibilidad de psic\u00f3logos para ofrecer tratamiento de conversi\u00f3n a heterosexualidad para homosexuales entre 2009 y 2013. La metodolog\u00eda consisti\u00f3 en examinar los discursos de los diputados. Entre los defensores de estas terapias se destacaban los parlamentarios evang\u00e9licos, que expresaban concepciones negativas sobre la homosexualidad. Entre los que se opusieron a estas terapias se destacaron parlamentarios feministas y representantes de movimientos LGBT (Lesbianas, Gays, Bisexuales, Travestis y Transexuales), que expresaban concepciones positivas sobre la homosexualidad, relacion\u00e1ndola con la diversidad sexual humana. La prohibici\u00f3n de estos tratamientos se mantuvo, asegurando la defensa de los derechos humanos y la autonom\u00eda del Consejo Federal de Psicolog\u00eda.",
-    "descriptors": [
-      {
-        "id": "23",
-        "addedOn": "2019-10-31T14:12:00"
-      }
-    ],
     "_id": "biblio-1004712",
-    "title": "Dummy Simple Title"
+    "title": "Dummy Simple Title",
+    "abstractText": "Resumen El art\u00edculo investig\u00f3 debates parlamentarios en la C\u00e1mara de los Diputados en Brasil sobre el permisibilidad de psic\u00f3logos para ofrecer tratamiento de conversi\u00f3n a heterosexualidad para homosexuales entre 2009 y 2013. La metodolog\u00eda consisti\u00f3 en examinar los discursos de los diputados. Entre los defensores de estas terapias se destacaban los parlamentarios evang\u00e9licos, que expresaban concepciones negativas sobre la homosexualidad. Entre los que se opusieron a estas terapias se destacaron parlamentarios feministas y representantes de movimientos LGBT (Lesbianas, Gays, Bisexuales, Travestis y Transexuales), que expresaban concepciones positivas sobre la homosexualidad, relacion\u00e1ndola con la diversidad sexual humana. La prohibici\u00f3n de estos tratamientos se mantuvo, asegurando la defensa de los derechos humanos y la autonom\u00eda del Consejo Federal de Psicolog\u00eda.",
+    "descriptors": ["99", "999", "9999"]
   },
   {
     "abstractText": "La fascitis necrotizante es una infecci\u00f3n agresiva y altamente destructiva de la fascia y el m\u00fasculo con una alta morbimortalidad. Se suele presentar en pacientes inmunocomprometidos tales como VIH, diab\u00e9ticos, oncol\u00f3gicos o trasplantados, siendo sus localizaciones m\u00e1s habituales las extremidades, pared abdominal y perin\u00e9; en esta \u00faltima localizaci\u00f3n recibe el nombre de gangrena de Fournier. Su asociaci\u00f3n con \u00falceras de dec\u00fabito es infrecuente, relacion\u00e1ndose en la mayor\u00eda de las ocasiones con procesos osteomiel\u00edticos, traumatismos con heridas cut\u00e1neas o presencia de cuerpos extra\u00f1os. Presentamos un caso cl\u00ednico de un paciente con fascitis necrotizante secundaria a \u00falcera de dec\u00fabito. Nos parece interesante presentar las caracter\u00edsticas cl\u00ednicas, as\u00ed como exponer los hallazgos radiol\u00f3gicos de esta entidad y, por otra parte, acentuar la importancia de un adecuado cuidado de las \u00falceras por presi\u00f3n, ya que pueden ser el origen de la fascitis necrotizante",
