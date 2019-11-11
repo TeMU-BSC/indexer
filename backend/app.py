@@ -23,7 +23,7 @@ APP = Flask(__name__)
 CORS(APP)
 
 ARTICLE_ID = "_id"
-ABSTRACT = "ab_es"
+
 DESCRIPTORS = "descriptors"
 ADDED = "added"
 ADDED_BY_ID = "by"
@@ -73,7 +73,9 @@ def get():
                                        for added in descriptor[ADDED]
                                        if added[ADDED_BY_ID] == annotatorId]
 
-        tmp_dict = {ARTICLE_ID: article[ARTICLE_ID],
+        tmp_dict = {"articleId": article[ARTICLE_ID],
+                    "tittle" : article["ti_es"],
+                    "abstractText": article["ab_es"],
                     DESCRIPTORS: descriptor_list_to_send}
 
         articles_list_output.append(tmp_dict)
