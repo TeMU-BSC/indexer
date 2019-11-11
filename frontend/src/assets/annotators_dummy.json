@@ -2,21 +2,25 @@
   {
     "id": "A0",
     "name": "Annotator-0",
+    "email": "admin@test.com",
     "password": "admin"
   },
   {
-    "id": "A1",
+    "id": "Z1",
     "name": "Alejandro",
+    "email": "alejandro@test.com",
     "password": "testing"
   },
   {
-    "id": "A2",
+    "id": "Z2",
     "name": "Ankush",
+    "email": "ankush@test.com",
     "password": "testing"
   },
   {
-    "id": "B1",
-    "name": "Someone Else",
+    "id": "Z3",
+    "name": "Marta",
+    "email": "marta@test.com",
     "password": "testing"
   }
 ]

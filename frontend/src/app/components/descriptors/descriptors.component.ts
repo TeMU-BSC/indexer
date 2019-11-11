@@ -3,11 +3,11 @@ import { Component, ElementRef, ViewChild, Input, OnInit, OnChanges } from '@ang
 import { FormControl } from '@angular/forms'
 import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete'
 import { MatChipInputEvent } from '@angular/material/chips'
+import { MatSnackBar } from '@angular/material'
 import { Observable } from 'rxjs'
 import { map, startWith, debounceTime } from 'rxjs/operators'
-import { Descriptor, Article } from 'src/app/app.model'
+import { Article, Descriptor } from 'src/app/app.model'
 import { AppService } from 'src/app/app.service'
-import { MatSnackBar } from '@angular/material'
 
 @Component({
   selector: 'app-descriptors',
@@ -62,7 +62,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // Init the input field with the current descriptors list from parent
     if (this.article.descriptors) {
       this.article.descriptors.forEach(decsCode => {
-        this.descriptors.push(this.appService.getDescriptorByDecsCode(decsCode))
+        this.descriptors.push(this.appService.findDescriptorByDecsCode(decsCode))
       })
     }
   }
@@ -86,17 +86,19 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // Filter only by some attributes
     return this.allDescriptors.filter(descriptor =>
       this._normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
-      this._normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
-      this._normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
-      this._normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
-      this._normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
+      (
+        this._normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
+        this._normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
+        this._normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
+        this._normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
+      )
     )
   }
 
   /**
    * Remove accents or tildes in the given string.
    * https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript
-   * @param value string that may contain accents (tildes)
+   * @param value string that may contain accents/tildes
    */
   private _normalize(value: string): string {
     return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -129,29 +131,29 @@ export class DescriptorsComponent implements OnInit, OnChanges {
         this.descriptors.push(descriptor)
       }
 
-      // this.descriptorCtrl.setValue(null)
       this.descriptorCtrl.setValue('')
     }
   }
 
-  remove(descriptorToRemove: Descriptor): void {
+  remove(descriptor: Descriptor): void {
     // Remove chip from input field
-    const index = this.descriptors.indexOf(descriptorToRemove)
+    const index = this.descriptors.indexOf(descriptor)
     if (index >= 0) {
       this.descriptors.splice(index, 1)
     }
 
-    // Remove the selected descriptor from database
-    this.removeDescriptorFromDatabase({
-      decsCode: descriptorToRemove.decsCode,
+    // Remove the clicked chip descriptor from database
+    const descriptorToRemove = {
+      decsCode: descriptor.decsCode,
       removedBy: 'A9', // TODO: Change it to the current logged user id
-      removedOn: Date.now() / 1000, // seconds
+      removedOn: Date.now() / 1000, // seconds from the epoch
       articleId: this.article._id
-    })
+    }
+    this.appService.removeDescriptor(descriptorToRemove)
 
     // Viasual feedback to user
-    const snackBarRef = this.snackBar.open('¡Descriptor borrado!', 'Deshacer', { duration: 10000 })
-    snackBarRef.onAction().subscribe(() => this.add(null, descriptorToRemove))
+    const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'Deshacer', { duration: 10000 })
+    snackBarRef.onAction().subscribe(() => this.add(null, descriptor))
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
@@ -165,31 +167,17 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     this.descriptorInput.nativeElement.value = ''
     this.descriptorCtrl.setValue('')
 
-    // Add the selected descriptor to database
-    this.addDescriptorToDatabase({
+    // Remove the clicked chip descriptor from database
+    const descriptorToAdd = {
       decsCode: selectedDescriptor.decsCode,
       addedBy: 'A9', // TODO: Change it to the current logged user id
-      addedOn: Date.now() / 1000, // seconds
+      addedOn: Date.now() / 1000, // seconds from the epoch
       articleId: this.article._id
-    })
+    }
+    this.appService.removeDescriptor(descriptorToAdd)
 
     // Viasual feedback to user
-    this.snackBar.open('¡Descriptor añadido!', 'OK', { duration: 5000 })
+    // this.snackBar.open(`Añadido: ${selectedDescriptor.termSpanish} (${selectedDescriptor.decsCode})`, 'OK', { duration: 5000 })
   }
-
-  addDescriptorToDatabase(descriptor: Descriptor) {
-    // this.appService.addDescriptor(descriptor).subscribe(response => console.log(response))
-    // console.log(this.appService.addDescriptor(descriptor))
-    console.log(descriptor)
-  }
-
-  removeDescriptorFromDatabase(descriptor: Descriptor) {
-    // this.appService.removeDescriptor(descriptor).subscribe(response => console.log(response))
-    // console.log(this.appService.removeDescriptor(descriptor))
-    console.log(descriptor)
-
-  }
-
-
 
 }

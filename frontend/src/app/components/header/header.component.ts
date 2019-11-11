@@ -7,6 +7,6 @@ import { Component } from '@angular/core'
 })
 export class HeaderComponent {
 
-  title = 'Text Mining DeCS Indexer'
+  title = 'Indizador de Descriptores de Ciencias de la Salud'
 
 }

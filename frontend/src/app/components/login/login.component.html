@@ -1,29 +1,14 @@
-<mat-card class="example-card">
-  <mat-card-header>
-    <mat-card-title>Login</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <form class="example-form">
-      <table class="example-full-width" cellspacing="0">
-        <tr>
-          <td>
-            <mat-form-field class="example-full-width">
-              <input matInput placeholder="Username" [(ngModel)]="username" name="username" required>
-            </mat-form-field>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <mat-form-field class="example-full-width">
-              <input matInput placeholder="Password" [(ngModel)]="password" type="password" name="password" required>
-            </mat-form-field>
-          </td>
-        </tr>
-      </table>
-    </form>
-    <!-- <mat-spinner [style.display]="showSpinner ? 'block' : 'none'"></mat-spinner> -->
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-raised-button (click)="login()" color="primary">Login</button>
-  </mat-card-actions>
-</mat-card>
+<div fxLayout="row" fxLayoutAlign="center center" class="p-3">
+  <mat-card fxFlex="25">
+    <mat-card-content fxLayout="column" class="p-3">
+      <mat-form-field>
+        <input matInput placeholder="Email" [(ngModel)]="annotator.email" name="email" required>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Contraseña" [(ngModel)]="annotator.password" type="password" name="password"
+          required>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="login()">Login</button>
+    </mat-card-content>
+  </mat-card>
+</div>
