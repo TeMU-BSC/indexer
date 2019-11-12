@@ -1,25 +1,38 @@
 """[summary]
 """
 from typing import List
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, json
+from flask_pymongo import PyMongo
+from flask_mongoengine import MongoEngine
 from flask_cors import CORS
-from pymongo import MongoClient
-import json
-import pprint
 # import pymongo
 
 # MongoDB constants variable
 DB_NAME = 'BvSalud'
-MONGO_URI = 'mongodb://localhost:27017/'
-# MONGO_URI = 'mongodb://84.88.52.79:27017/'
-COLLECTION_NAME = 'selected_importants'
+MONGO_URI = 'mongodb://localhost:27017/' + DB_NAME
+# MONGO_URI = 'mongodb://opscnio01.bsc.es:27017/' + DB_NAME
 
-CLIENT = MongoClient(MONGO_URI)
-DB = CLIENT[DB_NAME]
-COLLECTION = DB[COLLECTION_NAME]
-
-# APP Flask
+# app flask
 APP = Flask(__name__)
+APP.config['MONGO_DBNAME'] = DB_NAME
+APP.config['MONGO_URI'] = MONGO_URI
+#APP.config['JWT_SECRET_KEY'] = 'secret' # ????????????????
+
+# APP.config['MONGODB_SETTINGS'] = {
+#     'db': DB_NAME,
+#     'host': 'opscnio01.bsc.es',
+#     'port': 27017,
+#     'username': 'admin',
+#     'password': 'PlanTL-2019',
+#     'authentication_source': 'admin'
+# } 
+
+# APP.config['MONGO_USERNAME'] = 'mongo_admin'
+# APP.config['MONGO_PASSWORD'] = 'PlanTL-2019'
+
+# db = MongoEngine(APP)
+mongo = PyMongo(APP)
+
 CORS(APP)
 
 # Constants of attributes of article form mongoDB
@@ -30,6 +43,14 @@ ADDED_BY_ID = "by"
 ADDED_ON = "on"
 DECS_ID = "id"
 
+
+# def prueba():
+#     cursor = mongo.db.selected_importants.find()
+#     print(cursor)
+#     for article in cursor:
+
+#         print(article)
+#         break
 
 def remove_from_Decriptors(jsonObj, descriptors_list):
     """ The method removes descriptor's added object from the list added. (added list: It contains id of annotator and time of indexed)
@@ -50,8 +71,6 @@ def remove_from_Decriptors(jsonObj, descriptors_list):
             "articleId": "biblio-985342"
             }
     """
-
-   
 
     decsCode = jsonObj["decsCode"]  # decsCode from json object, sent by user.
 
@@ -89,10 +108,17 @@ def add_to_Decriptors(jsonObj, descriptors_list):
     if descriptors_list:
         for descriptor in descriptors_list:
             if descriptor[DECS_ID] == decsCode:
-                descriptor[ADDED].append(
-                    {ADDED_BY_ID: addedBy, ADDED_ON: addedOn})
-                is_added = True
-                break
+                
+                for added in descriptor[ADDED]:
+                    if added[ADDED_BY_ID] == addedBy:
+                        added[ADDED_ON] = addedOn
+                        is_added = True
+                        break
+
+                if not is_added:
+                    descriptor[ADDED].append({ADDED_BY_ID:addedBy,ADDED_ON: addedOn})
+                    is_added = True
+                    break
 
         if not is_added:
             descriptors_list.append({
@@ -124,11 +150,10 @@ def articles():
     annotatorId = "A1"
 
     articles_list_output = []
-    found_articles_cursor = COLLECTION.find()
+    articles_cursor = mongo.db.selected_importants.find()
 
-    for article in found_articles_cursor:
+    for article in articles_cursor:
         descriptor_list_to_send = []
-
         descriptor_list = article.get(DESCRIPTORS)
 
         if descriptor_list:
@@ -137,7 +162,7 @@ def articles():
                                        if added[ADDED_BY_ID] == annotatorId]
 
         tmp_dict = {"articleId": article[ARTICLE_ID],
-                    "tittle": article["ti_es"],
+                    "title": article["ti_es"],
                     "abstractText": article["ab_es"],
                     DESCRIPTORS: descriptor_list_to_send}
 
@@ -184,7 +209,7 @@ def one_article():
     article_id = "biblio-985342"
     annotatorId = "A1"
 
-    article = COLLECTION.find_one({ARTICLE_ID: article_id})
+    article = mongo.db.selected_importants.find_one({ARTICLE_ID: article_id})
 
     descriptor_list = article.get(DESCRIPTORS)
     descriptor_list_to_send = []
@@ -194,7 +219,7 @@ def one_article():
                                        if added[ADDED_BY_ID] == annotatorId]
 
     tmp_dict = {"articleId": article[ARTICLE_ID],
-                "tittle": article["ti_es"],
+                "title": article["ti_es"],
                 "abstractText": article["ab_es"],
                 DESCRIPTORS: descriptor_list_to_send}
 
@@ -211,13 +236,13 @@ def remove_descriptor():
     json_obj = request.json
     articleARTICLE_ID = json_obj["articleId"]
 
-    mongoObj = COLLECTION.find_one({ARTICLE_ID: articleARTICLE_ID})
+    mongoObj = mongo.db.selected_importants.find_one({ARTICLE_ID: articleARTICLE_ID})
 
     descriptors_list = mongoObj.get(DESCRIPTORS)
 
     new_descriptors_list = remove_from_Decriptors(json_obj, descriptors_list)
 
-    COLLECTION.update_one({ARTICLE_ID: articleARTICLE_ID},
+    mongo.db.selected_importants.update_one({ARTICLE_ID: articleARTICLE_ID},
                           {"$set": {DESCRIPTORS: new_descriptors_list}}
                           )
 
@@ -232,13 +257,13 @@ def add_descriptor():
     json_obj = request.json
     articleARTICLE_ID = json_obj["articleId"]
 
-    mongoObj = COLLECTION.find_one({ARTICLE_ID: articleARTICLE_ID})
+    mongoObj = mongo.db.selected_importants.find_one({ARTICLE_ID: articleARTICLE_ID})
 
     descriptors_list = mongoObj.get(DESCRIPTORS)
 
     new_descriptors_list = add_to_Decriptors(json_obj, descriptors_list)
 
-    COLLECTION.update_one({ARTICLE_ID: articleARTICLE_ID},
+    mongo.db.selected_importants.update_one({ARTICLE_ID: articleARTICLE_ID},
                           {"$set": {DESCRIPTORS: new_descriptors_list}}
                           )
 
@@ -246,5 +271,6 @@ def add_descriptor():
 
 
 if __name__ == '__main__':
-    APP.run(debug=False, host='0.0.0.0', port='5000')
+    # prueba()
+    APP.run(debug=True, host='0.0.0.0', port='5000')
     #APP.run(debug=True, host='0.0.0.0')
