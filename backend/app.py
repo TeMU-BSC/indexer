@@ -115,7 +115,7 @@ def add_to_Decriptors(jsonObj, descriptors_list):
 
 
 @APP.route('/articles', methods=['GET'])
-def get():
+def articles():
     """The method with get request, it returns articles depeneding on the request. 
 
     """
@@ -143,8 +143,8 @@ def get():
 
         articles_list_output.append(tmp_dict)
 
-    articles_list_sorted = sorted(
-        articles_list_output, key=lambda k: (k["articleId"]))
+    articles_list_sorted = sorted(articles_list_output, key=lambda k: (k["articleId"]))
+
     total_records_len = len(articles_list_sorted)
 
     start_record_to_send = args.get('start')
@@ -164,12 +164,44 @@ def get():
             total_records_to_send = int(total_records_to_send)
         except:
             total_records_to_send = total_records_len
+    else:
+        try:
+            total_records_to_send = int(total_records_to_send)
+        except:
+            total_records_to_send = total_records_len
+
 
     return jsonify(articles_list_output[start_record_to_send: start_record_to_send + total_records_to_send])
 
 
-@APP.route('/delete', methods=['DELETE'])
-def delete():
+@APP.route('/one_article', methods=['GET'])
+def one_article():
+    """The method with get request, it returns One articles depeneding on the request. 
+
+    """
+    args = request.args
+
+    article_id = "biblio-985342"
+    annotatorId = "A1"
+
+    article = COLLECTION.find_one({ARTICLE_ID: article_id})
+
+    descriptor_list = article.get(DESCRIPTORS)
+    descriptor_list_to_send = []
+    if descriptor_list:
+        descriptor_list_to_send = [descriptor["id"] for descriptor in descriptor_list
+                                       for added in descriptor[ADDED]
+                                       if added[ADDED_BY_ID] == annotatorId]
+
+    tmp_dict = {"articleId": article[ARTICLE_ID],
+                "tittle": article["ti_es"],
+                "abstractText": article["ab_es"],
+                DESCRIPTORS: descriptor_list_to_send}
+
+    return tmp_dict
+
+@APP.route('/descriptors/remove', methods=['DELETE'])
+def remove_descriptor():
     """ The method server for a petitison of put. It receives 
 
     :return: [description]
@@ -194,8 +226,8 @@ def delete():
     # return jsonify({'message': 'Hello from modify'})
 
 
-@APP.route('/add', methods=['PUT'])
-def add():
+@APP.route('/descriptors/add', methods=['PUT'])
+def add_descriptor():
 
     json_obj = request.json
     articleARTICLE_ID = json_obj["articleId"]
