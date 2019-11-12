@@ -5,10 +5,11 @@ verify_ssl = true
 
 [dev-packages]
 autopep8 = "*"
+pylint = "*"
 
 [packages]
 flask = "*"
-flask-pymongo = "*"
+flask-bcrypt = ""
 flask-cors = "*"
-pymongo = "*"
- 
+flask-jwt-extended = "*"
+flask-pymongo = "*"
