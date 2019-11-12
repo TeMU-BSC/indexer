@@ -2,7 +2,7 @@
   <mat-chip-list #chipList aria-label="Descriptor selection">
     <mat-chip *ngFor="let descriptor of descriptors" [selectable]="selectable" [removable]="removable"
       (removed)="remove(descriptor)">
-      {{ descriptor.termSpanish }} ({{ descriptor.decsCode }})
+      {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
     <input placeholder="Descriptores de Ciencias de la Salud (DeCS)" #descriptorInput [formControl]="descriptorCtrl"
@@ -23,3 +23,4 @@
 </mat-form-field>
 
 <!-- <pre>Current descriptors: {{ descriptors | json }}</pre> -->
+<!-- <pre>Current date and time: {{ now | date:'fullDate' }}</pre> -->

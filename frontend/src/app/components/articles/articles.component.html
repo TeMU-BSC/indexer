@@ -1,0 +1,28 @@
+<!-- <mat-sidenav-container>
+  <mat-drawer mode="side" opened>
+    <h4>My articles list:</h4>
+    <div *ngFor="let article of articles">{{ article.title }}</div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <app-article [article]="article"></app-article>
+  </mat-drawer-content>
+</mat-sidenav-container> -->
+
+<!-- <mat-sidenav-container autosize class="h-100">
+  <mat-sidenav #drawer mode="side" opened class="p-3">
+    <p>My articles list</p>
+    <div fxLayout="column">
+      <button *ngFor="let article of articles" mat-stroked-button>{{ article.title }}</button>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content class="p-3">
+    <app-article [article]="article"></app-article>
+  </mat-sidenav-content>
+</mat-sidenav-container> -->
+
+<div fxLayout="row" fxLayoutGap="2em" class="p-3">
+  <div fxLayout="column">
+    <button *ngFor="let article of articles" mat-stroked-button (click)="selectArticle(article)">{{ article.title }}</button>
+  </div>
+  <app-article *ngIf="article" [article]="article"></app-article>
+</div>

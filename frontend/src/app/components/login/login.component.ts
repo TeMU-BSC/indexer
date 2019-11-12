@@ -1,7 +1,8 @@
 import { Component } from '@angular/core'
 import { Router } from '@angular/router'
-import { Annotator } from 'src/app/app.model'
-import { AppService } from 'src/app/app.service'
+import { User } from 'src/app/app.model'
+import { AppService } from 'src/app/services/app.service'
+import { AuthenticationService } from 'src/app/services/auth.service'
 
 @Component({
   selector: 'app-login',
@@ -10,17 +11,29 @@ import { AppService } from 'src/app/app.service'
 })
 export class LoginComponent {
 
-  annotator: Annotator = new Annotator()
+  user: User = new User()
 
-  constructor(private router: Router, private appService: AppService) { }
+  constructor(
+    private auth: AuthenticationService,
+    private router: Router
+  ) { }
 
-  login(): void {
-    // this.router.navigate(['home'])
-    const loggedIn = this.appService.login(this.annotator)
-    if (loggedIn) {
-      alert('Login')
-      console.log(loggedIn)
-    }
+  login() {
+    this.auth.login(this.user).subscribe(
+      () => this.router.navigateByUrl('/'),
+      (error) => console.error(error)
+    )
   }
+
+  // login(): void {
+  //   // this.router.navigate(['home'])
+  //   const loggedIn = this.appService.login(this.annotator)
+  //   if (loggedIn) {
+  //     alert('Login')
+  //     console.log(loggedIn)
+  //   }
+  // }
+
+
 
 }

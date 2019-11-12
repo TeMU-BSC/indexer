@@ -1,6 +1,10 @@
-<main class="container p-3">
+<app-header></app-header>
 
-  <app-article [article]="article"></app-article>
+<main class="h-100 p-3">
+
+  <app-articles class="h-100"></app-articles>
+
+  
 
   <!-- <div>
     <hr>
@@ -25,7 +29,7 @@
     <h2>Versión Autocomplete + Add DeCS</h2>
     <form [formGroup]="decsForm">
       <mat-form-field appearance="fill">
-        <mat-label>Annotator</mat-label>
+        <mat-label>User</mat-label>
         <mat-select formControlName="annotator" required>
           <mat-option *ngFor="let annotator of annotators; trackBy: trackByFn" [value]="annotator.id">
             {{ annotator.name }}

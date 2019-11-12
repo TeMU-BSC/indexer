@@ -1,0 +1,35 @@
+<div fxLayout="row" fxLayoutAlign="center center" class="p-3">
+  <mat-card fxFlex="25">
+    <mat-card-content fxLayout="column" class="p-3">
+      <mat-form-field>
+        <input matInput placeholder="Id" [(ngModel)]="user.id" name="id" required>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Name" [(ngModel)]="user.name" name="name" required>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Email" [(ngModel)]="user.email" name="email" required>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Contraseña" [(ngModel)]="user.password" type="password" name="password" required>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Confirma contraseña" [(ngModel)]="user.passwordConfirm" type="password"
+          name="passwordConfirm" required>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="register(user)">Register New User</button>
+    </mat-card-content>
+  </mat-card>
+
+  <small>- or -</small>
+
+  <mat-card fxFlex="25">
+    <mat-card-content fxLayout="column" class="p-3">
+      <input type="file" (change)="onFileChange($event)">
+      <button mat-raised-button color="accent" (click)="bulkRegister()">Register Many Users</button>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="form-group">
+  </div>
+</div>

@@ -1,9 +1,9 @@
 [
   {
     "id": "A0",
-    "name": "Annotator-0",
+    "name": "Administrator",
     "email": "admin@test.com",
-    "password": "admin"
+    "password": "testing"
   },
   {
     "id": "Z1",
@@ -19,6 +19,12 @@
   },
   {
     "id": "Z3",
+    "name": "Aitor",
+    "email": "aitor@test.com",
+    "password": "testing"
+  },
+  {
+    "id": "Z4",
     "name": "Marta",
     "email": "marta@test.com",
     "password": "testing"

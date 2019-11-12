@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { Annotator, Article, Descriptor } from './app.model'
+import { User, Article, Descriptor } from '../app.model'
 import { Papa } from 'ngx-papaparse'
 import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
 import * as ALL_ANNOTATORS from 'src/assets/annotators_dummy.json'
+
+
 
 
 @Injectable({
@@ -18,42 +20,28 @@ export class AppService {
   headers: HttpHeaders = new HttpHeaders({ Accept: 'application/json' })
   options = { headers: this.headers }
   allDescriptors: Descriptor[] = (ALL_DESCRIPTORS as any).default
-  allAnnotaors: Annotator[] = (ALL_ANNOTATORS as any).default
-  currentAnnotator: Observable<Annotator>
+  allAnnotaors: User[] = (ALL_ANNOTATORS as any).default
+  currentUser: Observable<User>
 
-  constructor(private http: HttpClient, private papa: Papa) { }
-
-  login(annotatorToLogIn: Annotator) {
-    // const url = `http://${this.ip}:${this.port}/login`
-    // return this.http.post<Annotator>(url, annotator, this.options)
-    return this.allAnnotaors.find(annotator => annotator.email === annotatorToLogIn.email
-      && annotator.password === annotatorToLogIn.password)
-  }
-
-  logout() {
-    // remove user from local storage to log user out
-    localStorage.removeItem('currentUser')
-    // this.currentUserSubject.next(null)
-  }
-
-  getAnnotators(): Observable<Annotator[]> {
-    return this.http.get<Annotator[]>('assets/annotators_dummy.json')
-    // const url = 'assets/articles.json'
-    // return this.http.get<Article>(url, options)
-  }
+  constructor(
+    private http: HttpClient,
+    private papa: Papa
+  ) { }
 
   getArticles(total: number, start?: number): Observable<Article[]> {
+    // Local
     return this.http.get<Article[]>('assets/articles_dummy.json')
 
-    // const baseUrl = `http://${this.ip}:${this.port}/articles`
-    // let url = baseUrl
-    // if (total !== undefined) {
-    //   url += `?total=${total}`
-    //   if (start !== undefined) {
-    //     url += `?start=${start}`
-    //   }
-    // }
-    // return this.http.get<Article[]>(url, this.options)
+    // Server
+    const baseUrl = `http://${this.ip}:${this.port}/articles`
+    let url = baseUrl
+    if (total !== undefined) {
+      url += `?total=${total}`
+      if (start !== undefined) {
+        url += `?start=${start}`
+      }
+    }
+    return this.http.get<Article[]>(url, this.options)
   }
 
   /**
