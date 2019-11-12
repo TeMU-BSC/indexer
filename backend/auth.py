@@ -4,9 +4,9 @@ https://www.youtube.com/watch?v=3DMMPA3uxBo
 '''
 
 from datetime import datetime
-from bson.objectid import ObjectId
+# from bson.objectid import ObjectId
 
-from flask import Flask, jsonify, request, json
+from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
@@ -24,33 +24,49 @@ jwt = JWTManager(app)
 CORS(app)
 
 
-@app.route('/users/register', methods=['POST'])
+@app.route('/users/register/one', methods=['POST'])
 def register():
     '''Register a new user.'''
     users = mongo.db.users
-    name = request.get_json()['name']
-    email = request.get_json()['email']
-    password = bcrypt.generate_password_hash(request.get_json()['password']).decode('utf-8')
-    created = datetime.utcnow()
+    user_to_insert = {
+        'id': request.json['id'],
+        'name': request.json['name'],
+        'email': request.json['email'],
+        'password': bcrypt.generate_password_hash(request.json['password']).decode('utf-8'),
+        'created': datetime.utcnow(),
+    }
+    insert_one_result = users.insert_one(user_to_insert)
+    return jsonify({'result': str(insert_one_result.inserted_id)})
 
-    user_id = users.insert_one({
-        'name': name,
-        'email': email,
-        'password': password,
-        'created': created,
-    })
 
-    new_user = users.find_one({'_id': user_id})
-    result = {'email': f"{new_user['email']} registered"}
+@app.route('/users/register/many', methods=['POST'])
+def register_many():
+    '''Register many users.'''
+    users = mongo.db.users
 
+    users_to_insert = []
+    for user in request.json:
+        user_to_insert = {
+            'id': user['id'],
+            'name': user['name'],
+            'email': user['email'],
+            'password': bcrypt.generate_password_hash(user['password']).decode('utf-8'),
+            'created': datetime.utcnow(),
+        }
+        users_to_insert.append(user_to_insert)
+
+    insert_many_result = users.insert_many(users_to_insert)
+
+    result = [str(inserted_id) for inserted_id in insert_many_result.inserted_ids]
     return jsonify({'result': result})
+
 
 @app.route('/users/login', methods=['POST'])
 def login():
     '''Log in an existing user.'''
     users = mongo.db.users
-    email = request.get_json()['email']
-    password = request.get_json()['password']
+    email = request.json['email']
+    password = request.json['password']
     result = ''
 
     found_user = users.find_one({'email': email})
@@ -58,8 +74,11 @@ def login():
     if found_user:
         if bcrypt.check_password_hash(found_user['password'], password):
             access_token = create_access_token(identity={
+                'id': str(found_user['id']),
                 'name': found_user['name'],
-                'email': found_user['email']
+                'email': found_user['email'],
+                'registered': found_user['_id'].generation_time.timestamp()
+                # 'registered': found_user['_id'].generation_time
             })
             result = jsonify({'token': access_token})
         else:
