@@ -3,30 +3,42 @@
     "id": "A0",
     "name": "Administrator",
     "email": "admin@test.com",
-    "password": "testing"
+    "password": "testing",
+    "role": "admin"
   },
   {
     "id": "Z1",
     "name": "Alejandro",
     "email": "alejandro@test.com",
-    "password": "testing"
+    "password": "testing",
+    "role": "admin"
   },
   {
     "id": "Z2",
     "name": "Ankush",
     "email": "ankush@test.com",
-    "password": "testing"
+    "password": "testing",
+    "role": "admin"
   },
   {
     "id": "Z3",
     "name": "Aitor",
     "email": "aitor@test.com",
-    "password": "testing"
+    "password": "testing",
+    "role": "admin"
   },
   {
     "id": "Z4",
     "name": "Marta",
     "email": "marta@test.com",
-    "password": "testing"
+    "password": "testing",
+    "role": "admin"
+  },
+  {
+    "id": "Z9",
+    "name": "María",
+    "email": "maria@test.com",
+    "password": "testing",
+    "role": "annotator"
   }
 ]
