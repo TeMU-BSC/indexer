@@ -2,10 +2,10 @@
   <mat-card fxFlex="25">
     <mat-card-content fxLayout="column" class="p-3">
       <mat-form-field>
-        <input matInput placeholder="Email" [(ngModel)]="annotator.email" name="email" required>
+        <input matInput placeholder="Email" [(ngModel)]="user.email" name="email" required>
       </mat-form-field>
       <mat-form-field>
-        <input matInput placeholder="Contraseña" [(ngModel)]="annotator.password" type="password" name="password"
+        <input matInput placeholder="Contraseña" [(ngModel)]="user.password" type="password" name="password"
           required>
       </mat-form-field>
       <button mat-raised-button color="primary" (click)="login()">Login</button>

@@ -1,13 +1,14 @@
-export class Annotator {
+export class User {
   id?: string
   name?: string
   email: string
   password?: string
+  passwordConfirm?: string
 }
 
 export class Article {
   // tslint:disable-next-line: variable-name
-  _id?: string
+  id?: string
   title?: string
   abstractText?: string
   descriptors?: string[] // Remove after discard old versions 1 and 2 in app.component
@@ -22,12 +23,15 @@ export class Article {
 export class Descriptor {
   decsCode?: string
 
-  // Attributes for HTTP requests
-  articleId?: Article['_id']
-  addedBy?: Annotator['id']
+  // Attributes for POST HTTP requests
+  addedBy?: User['id']
   addedOn?: number
-  removedBy?: Annotator['id']
+  addedTo?: Article['id']
+
+  // Attributes for DELETE HTTP requests
+  removedBy?: User['id']
   removedOn?: number
+  removedFrom?: Article['id']
 
   // Attributes for filtering
   termSpanish?: string

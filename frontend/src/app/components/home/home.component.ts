@@ -3,8 +3,8 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { MatAutocompleteSelectedEvent, MatSnackBar } from '@angular/material'
 import { Observable } from 'rxjs'
 import { map, startWith } from 'rxjs/operators'
-import { Annotator, Article, Descriptor } from 'src/app/app.model'
-import { AppService } from 'src/app/app.service'
+import { User, Article, Descriptor } from 'src/app/app.model'
+import { AppService } from 'src/app/services/app.service'
 
 // TODO implementar login contra bbdd
 // TODO enviar al backend un descriptor cada vez que el anotador seleccione uno del autocompletar
@@ -15,8 +15,8 @@ import { AppService } from 'src/app/app.service'
 })
 export class HomeComponent implements OnInit {
 
-  // user: Annotator
-  annotators: Annotator[] = []
+  // user: User
+  annotators: User[] = []
   articles: Article[] = []
   article: Article = {}
   allDescriptors: Descriptor[] = []
@@ -30,7 +30,6 @@ export class HomeComponent implements OnInit {
   articleUpdatedDescriptors: Descriptor[] = []
 
   constructor(
-    private appService: AppService,
     private snackBar: MatSnackBar,
     private fb: FormBuilder
   ) {
@@ -41,8 +40,6 @@ export class HomeComponent implements OnInit {
   get descriptors() { return this.decsForm.get('descriptors') as FormArray }
 
   ngOnInit() {
-    this.getArticles()
-    this.getAnnotators()
   }
 
   initForm() {
@@ -65,27 +62,11 @@ export class HomeComponent implements OnInit {
     this.descriptors.removeAt(index)
   }
 
-  getAnnotators() {
-    this.appService.getAnnotators().subscribe(data => this.annotators = data)
-  }
+  // getUsers() {
+  //   this.appService.getUsers().subscribe(data => this.annotators = data)
+  // }
 
-  getArticle(index: number) {
-    this.article = this.articles[index]
-  }
 
-  getArticles() {
-    this.appService.getArticles(3).subscribe(
-      articles => this.articles = articles,
-      error => console.warn(error),
-      () => {
-        // TODO select article by annotator in view
-        this.getArticle(1)
-        this.article.descriptors.forEach(descriptor => {
-          this.descriptors.push(this.fb.control(descriptor))
-        })
-      }
-    )
-  }
 
   toArray() {
     this.descriptorsSimpleArray = this.descriptorsString.split(/[\s\.\-,;:]+/)
@@ -102,7 +83,7 @@ export class HomeComponent implements OnInit {
   }
 
   saveChanges() {
-    this.decsForm.controls.id.setValue(this.article._id)
+    this.decsForm.controls.id.setValue(this.article.id)
     console.log(this.decsForm.value)
 
     // Send request to backend
