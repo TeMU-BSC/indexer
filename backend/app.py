@@ -10,27 +10,18 @@ from flask_cors import CORS
 # MongoDB constants variable
 DB_NAME = 'BvSalud'
 MONGO_URI = 'mongodb://localhost:27017/' + DB_NAME
-# MONGO_URI = 'mongodb://opscnio01.bsc.es:27017/' + DB_NAME
+# MONGO_URI = 'mongodb://mongo_admin@bsccnio01.bsc.es:27017/' + DB_NAME
 
 # app flask
 APP = Flask(__name__)
-APP.config['MONGO_DBNAME'] = DB_NAME
+
 APP.config['MONGO_URI'] = MONGO_URI
+APP.config['MONGO_DBNAME'] = DB_NAME
+# APP.config['MONGO_AUTH_SOURCE'] = 'admin'
+# APP.config['MONGO_USERNAME'] = 'mongo_admin'
+# APP.config['PASSWORD'] = 'PlanTL-2019'
 #APP.config['JWT_SECRET_KEY'] = 'secret' # ????????????????
 
-# APP.config['MONGODB_SETTINGS'] = {
-#     'db': DB_NAME,
-#     'host': 'opscnio01.bsc.es',
-#     'port': 27017,
-#     'username': 'admin',
-#     'password': 'PlanTL-2019',
-#     'authentication_source': 'admin'
-# } 
-
-# APP.config['MONGO_USERNAME'] = 'mongo_admin'
-# APP.config['MONGO_PASSWORD'] = 'PlanTL-2019'
-
-# db = MongoEngine(APP)
 mongo = PyMongo(APP)
 
 CORS(APP)
@@ -43,14 +34,13 @@ ADDED_BY_ID = "by"
 ADDED_ON = "on"
 DECS_ID = "id"
 
-
 # def prueba():
-#     cursor = mongo.db.selected_importants.find()
-#     print(cursor)
-#     for article in cursor:
+    # cursor = mongo.db.selected_importants.find()
+    # print(cursor)
+    # for article in cursor:
 
-#         print(article)
-#         break
+    #     print(article)
+    #     break
 
 def remove_from_Decriptors(jsonObj, descriptors_list):
     """ The method removes descriptor's added object from the list added. (added list: It contains id of annotator and time of indexed)
@@ -204,10 +194,9 @@ def one_article():
     """The method with get request, it returns One articles depeneding on the request. 
 
     """
-    args = request.args
-
-    article_id = "biblio-985342"
-    annotatorId = "A1"
+    json_obj = request.json
+    article_id = json_obj["articleId"]
+    annotatorId =  json_obj["annotatorId"]
 
     article = mongo.db.selected_importants.find_one({ARTICLE_ID: article_id})
 
@@ -234,15 +223,15 @@ def remove_descriptor():
     """
 
     json_obj = request.json
-    articleARTICLE_ID = json_obj["articleId"]
+    article_id = json_obj["articleId"]
 
-    mongoObj = mongo.db.selected_importants.find_one({ARTICLE_ID: articleARTICLE_ID})
+    mongoObj = mongo.db.selected_importants.find_one({ARTICLE_ID: article_id})
 
     descriptors_list = mongoObj.get(DESCRIPTORS)
 
     new_descriptors_list = remove_from_Decriptors(json_obj, descriptors_list)
 
-    mongo.db.selected_importants.update_one({ARTICLE_ID: articleARTICLE_ID},
+    mongo.db.selected_importants.update_one({ARTICLE_ID: article_id},
                           {"$set": {DESCRIPTORS: new_descriptors_list}}
                           )
 
@@ -255,15 +244,15 @@ def remove_descriptor():
 def add_descriptor():
 
     json_obj = request.json
-    articleARTICLE_ID = json_obj["articleId"]
+    article_id = json_obj["articleId"]
 
-    mongoObj = mongo.db.selected_importants.find_one({ARTICLE_ID: articleARTICLE_ID})
+    mongoObj = mongo.db.selected_importants.find_one({ARTICLE_ID: article_id})
 
     descriptors_list = mongoObj.get(DESCRIPTORS)
 
     new_descriptors_list = add_to_Decriptors(json_obj, descriptors_list)
 
-    mongo.db.selected_importants.update_one({ARTICLE_ID: articleARTICLE_ID},
+    mongo.db.selected_importants.update_one({ARTICLE_ID: article_id},
                           {"$set": {DESCRIPTORS: new_descriptors_list}}
                           )
 
@@ -271,6 +260,6 @@ def add_descriptor():
 
 
 if __name__ == '__main__':
-    # prueba()
+    #prueba()
     APP.run(debug=True, host='0.0.0.0', port='5000')
     #APP.run(debug=True, host='0.0.0.0')
