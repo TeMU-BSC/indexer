@@ -9,19 +9,13 @@ from flask_cors import CORS
 
 # MongoDB constants variable
 DB_NAME = 'BvSalud'
-MONGO_URI = 'mongodb://localhost:27017/' + DB_NAME
-# MONGO_URI = 'mongodb://mongo_admin@bsccnio01.bsc.es:27017/' + DB_NAME
+#MONGO_URI = 'mongodb://localhost:27017/' + DB_NAME
+MONGO_URI = 'mongodb://webDecs:mesinesp@bsccnio01.bsc.es:27017/' + DB_NAME
 
 # app flask
 APP = Flask(__name__)
-
+APP.config['JWT_SECRET_KEY'] = 'secret' # ????????????????
 APP.config['MONGO_URI'] = MONGO_URI
-APP.config['MONGO_DBNAME'] = DB_NAME
-# APP.config['MONGO_AUTH_SOURCE'] = 'admin'
-# APP.config['MONGO_USERNAME'] = 'mongo_admin'
-# APP.config['PASSWORD'] = 'PlanTL-2019'
-#APP.config['JWT_SECRET_KEY'] = 'secret' # ????????????????
-
 mongo = PyMongo(APP)
 
 CORS(APP)
