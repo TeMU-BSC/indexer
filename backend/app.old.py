@@ -1,5 +1,3 @@
-"""[summary]
-"""
 from typing import List
 from flask import Flask, jsonify, request, json
 from flask_pymongo import PyMongo
@@ -9,19 +7,13 @@ from flask_cors import CORS
 
 # MongoDB constants variable
 DB_NAME = 'BvSalud'
-MONGO_URI = 'mongodb://localhost:27017/' + DB_NAME
-# MONGO_URI = 'mongodb://mongo_admin@bsccnio01.bsc.es:27017/' + DB_NAME
+# MONGO_URI = 'mongodb://localhost:27017/' + DB_NAME
+MONGO_URI = 'mongodb://webDecs:mesinesp@bsccnio01.bsc.es:27017/' + DB_NAME
 
 # app flask
 APP = Flask(__name__)
-
+APP.config['JWT_SECRET_KEY'] = 'secret' # ????????????????
 APP.config['MONGO_URI'] = MONGO_URI
-APP.config['MONGO_DBNAME'] = DB_NAME
-# APP.config['MONGO_AUTH_SOURCE'] = 'admin'
-# APP.config['MONGO_USERNAME'] = 'mongo_admin'
-# APP.config['PASSWORD'] = 'PlanTL-2019'
-#APP.config['JWT_SECRET_KEY'] = 'secret' # ????????????????
-
 mongo = PyMongo(APP)
 
 CORS(APP)
@@ -34,26 +26,22 @@ ADDED_BY_ID = "by"
 ADDED_ON = "on"
 DECS_ID = "id"
 
-# def prueba():
-    # cursor = mongo.db.selected_importants.find()
-    # print(cursor)
-    # for article in cursor:
 
-    #     print(article)
-    #     break
-
-def remove_from_Decriptors(jsonObj, descriptors_list):
+def remove_from_Decriptors(jsonObj: dict, descriptors_list: List[dict]):
     """ The method removes descriptor's added object from the list added. (added list: It contains id of annotator and time of indexed)
         It receives json object set by user and descriptors_list of DATA BASE, as parameters.
         After it returns the modified list of descriptor, as new list. So it can save into DATA BASE directly.
 
-    :param jsonObj: A dict sent by user with information to delete a added object from the list.
+    :param jsonObj: Json object that contains information to remove a descriptor.
     :type jsonObj: dict
-    :return: Modified list of descriptors. The list may contain dict object inside.
-    :rType: list[]
+    :param descriptors_list: List of descriptors that gonna be modified. 
+    :type descriptors_list: list
+    :return: Modified list of descriptors.
+    :rtype: List[dict]   
 
     .. highlight:: python
 
+        # A example of json format file sent by user.
        jsonObj = {
             "decsCode": "101",
             "removedBy": "A99",
@@ -66,51 +54,79 @@ def remove_from_Decriptors(jsonObj, descriptors_list):
 
     # annotator Id from json object,  sent by user.
     removed_by = jsonObj["removedBy"]
+    is_removed = False
 
     # Loop to run each descriptor from descriptors list. Than it can check one by one.
     for descriptor in descriptors_list:
-
+        if is_removed:   #If the descriptor has been removed, it will get out from the loop.
+            break
         if descriptor[DECS_ID] == decsCode: #If user's decs Id match with decs Id from the descriptors list from DATA BASE.
-            for addedOne in descriptor[ADDED]:  #Loop f
-                if addedOne[ADDED_BY_ID] == removed_by:
-                    descriptor[ADDED].remove(addedOne)
+            for added in descriptor[ADDED]:  #Loop of added list to run each added object. 
+                if is_removed:  #If the descriptor has been removed, it will get out from the loop.
+                    break
+                if added[ADDED_BY_ID] == removed_by: # If annotator ID, who sent to remove the descriptor, is matched in the list, so
+                                                     # it will remove this added object form the list.
+                    descriptor[ADDED].remove(added)
+                    is_removed = True   #Changing value of is_removed to True. 
 
-                if len(descriptor[ADDED]) == 0:
-                    descriptors_list.remove(descriptor)
+                    if len(descriptor[ADDED]) == 0: #If descriptor's added list is empty, it will remove the descriptor.
+                        descriptors_list.remove(descriptor)
+
 
     return descriptors_list
 
 
-def add_to_Decriptors(jsonObj, descriptors_list):
-    """{
-        "decsCode": "101",
-        "addedBy": "A99",
-        "addedOn": 1573038300,
-        "articleId": "biblio-985342"
-        }"""
+def add_to_Decriptors(jsonObj: dict, descriptors_list: List[dict]):
+    
+    """ The method add new descriptor into the list of descriptors from DATA BASE. 
+        If the descriptor is already exist, than it will just add annotator ID and time.
+        But if exist both, descriptor and annotator, so it will just update the time.
+        After it return the modified list of descriptors as new list. Tha can overwrite into DATA BASE.
+    
+    :param jsonObj: Json object that contains information to add a descriptor.
+    :type jsonObj: dict
+    :param descriptors_list: List of descriptors that gonna be modified. 
+    :type descriptors_list: list
+    :return: Modified list of descriptors.
+    :rtype: List[dict]   
+    
+    .. highlight:: python
 
-    decsCode = jsonObj["decsCode"]
-    addedBy = jsonObj["addedBy"]
-    addedOn = jsonObj["addedOn"]
+        # A example of json format file sent by user.
+        jsonObj = {
+            "decsCode": "101",
+            "addedBy": "A99",
+            "addedOn": 1573038300,
+            "articleId": "biblio-985342"
+            }
+    """
 
-    is_added = False
+    decsCode = jsonObj["decsCode"]  #descriptor code
+    addedBy = jsonObj["addedBy"]    # Annotator ID
+    addedOn = jsonObj["addedOn"]    # Time when had been inserted by annotator.
 
-    if descriptors_list:
-        for descriptor in descriptors_list:
-            if descriptor[DECS_ID] == decsCode:
-                
+    # Initialize a variable with boolean value "False". It serves to get out from the Loop,
+    # when descriptor is added, because the value will be change by True.
+    is_added = False    
+
+    if descriptors_list:    #If descriptors list of DATA BASE is not empty, than run a loop for each descriptor. 
+                            #Otherwise It will add descriptor directly, creating a list.
+        for descriptor in descriptors_list: # Run each descriptor to check if is already exists.
+
+            if descriptor[DECS_ID] == decsCode: # If exists descriptor, sent by user, So it runs a loop to check annotator ID.   
                 for added in descriptor[ADDED]:
-                    if added[ADDED_BY_ID] == addedBy:
+                    if added[ADDED_BY_ID] == addedBy: # If annotator id is already exists, it will overwrite (update) the time. 
                         added[ADDED_ON] = addedOn
-                        is_added = True
-                        break
+                        is_added = True # variable is added is True now. 
+                        break #getting out from the loop.
 
-                if not is_added:
+                if not is_added: # If variable is_added is false, than it will add add a json object with annotator ID and Time. 
                     descriptor[ADDED].append({ADDED_BY_ID:addedBy,ADDED_ON: addedOn})
                     is_added = True
-                    break
+                    break #getting out from the loop.
 
-        if not is_added:
+        if not is_added: # If variable is_added is false, than it will add json object of descriptor ID 
+                         # and a list of another json object  with annotator ID and Time.
             descriptors_list.append({
                 DECS_ID: decsCode,
                 ADDED: [{
@@ -118,7 +134,8 @@ def add_to_Decriptors(jsonObj, descriptors_list):
                     ADDED_ON: addedOn
                 }]
             })
-    else:
+    else: # If the descriptor is empty or none, Than it creates a descriptor list of json object of ""descriptor ID" and 
+                         #a nested list of another json object  with ""annotator ID and Time"".
         descriptors_list = [{
             DECS_ID: decsCode,
             ADDED: [{
@@ -127,46 +144,61 @@ def add_to_Decriptors(jsonObj, descriptors_list):
             }]
         }]
 
-    return descriptors_list
+    return descriptors_list # modified descriptors list.
 
 
 @APP.route('/articles', methods=['GET'])
 def articles():
-    """The method with get request, it returns articles depeneding on the request. 
+    """ Flask app's method. It works when user send a request with method get. 
+        It can receive arguments like http://#.#.#.#:5000/articles?start=2&total=10. In this case it will sent articles from postion 2 to 12 (total 10).
+        If it doesn't receives any argument, it returns all articles.
 
+        .. Info::
+            - start: Number of starting position of document.
+            - total: Total number of documents.
+
+    :return: A list of json Objects with information about articles like article ID, abstract text, title and descriptors.
+    :rtype: List[dict]
     """
-    args = request.args
+    args = request.args #Save arguments to a variable called args.
 
-    annotatorId = "A1"
+    # annotatorId = ?  
 
     articles_list_output = []
     articles_cursor = mongo.db.selected_importants.find()
 
-    for article in articles_cursor:
-        descriptor_list_to_send = []
-        descriptor_list = article.get(DESCRIPTORS)
+    for article in articles_cursor: #Loop to run each article and extract specific information.
 
-        if descriptor_list:
-            descriptor_list_to_send = [descriptor["id"] for descriptor in descriptor_list
-                                       for added in descriptor[ADDED]
-                                       if added[ADDED_BY_ID] == annotatorId]
+        # Uncomment all steps below, if you want to add a list of descriptor by annotator ID. 
+        # Uncomment also annotatorId above.  
 
+        # descriptor_list_to_send = []
+        # descriptor_list = article.get(DESCRIPTORS)
+
+        # if descriptor_list:
+        #     descriptor_list_to_send = [descriptor["id"] for descriptor in descriptor_list
+        #                                for added in descriptor[ADDED]
+        #                                if added[ADDED_BY_ID] == annotatorId]
+
+        # A dictionary of article Id and tittle. 
         tmp_dict = {"articleId": article[ARTICLE_ID],
                     "title": article["ti_es"],
-                    "abstractText": article["ab_es"],
-                    DESCRIPTORS: descriptor_list_to_send}
+                    #"abstractText": article["ab_es"],
+                    #DESCRIPTORS: descriptor_list_to_send
+                    }
 
-        articles_list_output.append(tmp_dict)
-
-    articles_list_sorted = sorted(articles_list_output, key=lambda k: (k["articleId"]))
-
+        articles_list_output.append(tmp_dict)   # Add each temporal dictionary to the list of articles to send.
+    
+    #Sort list by articleID. It conform that articles are in same order always.
+    articles_list_sorted = sorted(articles_list_output, key=lambda k: (k["articleId"])) 
+    
     total_records_len = len(articles_list_sorted)
 
-    start_record_to_send = args.get('start')
-    total_records_to_send = args.get('total')
+    start_record_to_send = args.get('start')    #Save start postition of articles. It may none or any value.
+    total_records_to_send = args.get('total')   #Save total number of articles to send. It may none or any value.
 
     if start_record_to_send:  # If in the request send me arguments with start position, other wise it will be 0
-        try:
+        try:    
             start_record_to_send = int(start_record_to_send)
         except:
             start_record_to_send = 0
@@ -229,13 +261,13 @@ def remove_descriptor():
 
     descriptors_list = mongoObj.get(DESCRIPTORS)
 
-    new_descriptors_list = remove_from_Decriptors(json_obj, descriptors_list)
+    new_descriptors_list = remove_from_Decriptors(jsonObj=json_obj, descriptors_list=descriptors_list)
 
     mongo.db.selected_importants.update_one({ARTICLE_ID: article_id},
                           {"$set": {DESCRIPTORS: new_descriptors_list}}
                           )
 
-    return "done"
+    return "Ok"
 
     # return jsonify({'message': 'Hello from modify'})
 
@@ -250,13 +282,13 @@ def add_descriptor():
 
     descriptors_list = mongoObj.get(DESCRIPTORS)
 
-    new_descriptors_list = add_to_Decriptors(json_obj, descriptors_list)
+    new_descriptors_list = add_to_Decriptors(jsonObj=json_obj,descriptors_list= descriptors_list)
 
     mongo.db.selected_importants.update_one({ARTICLE_ID: article_id},
                           {"$set": {DESCRIPTORS: new_descriptors_list}}
                           )
 
-    return "done"
+    return "Ok"
 
 
 if __name__ == '__main__':
