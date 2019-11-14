@@ -11,14 +11,21 @@
     "name": "Alejandro",
     "email": "alejandro@test.com",
     "password": "testing",
-    "role": "admin"
+    "role": "admin",
+    "articlesIds": [
+      "ibc-ET2-2298",
+      "ibc-ET1-2921"
+    ]
   },
   {
     "id": "Z2",
     "name": "Ankush",
     "email": "ankush@test.com",
     "password": "testing",
-    "role": "admin"
+    "role": "admin",
+    "articlesIds": [
+      "ibc-FGT-2142"
+    ]
   },
   {
     "id": "Z3",

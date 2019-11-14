@@ -156,6 +156,8 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       removedOn: Date.now(), // milliseconds from the epoch
       removedFrom: this.article.id,
     }
+
+    // --> TODO: Don't remove, just wait for the snackbar to timeout automatic... (Vicky's idea)
     this.appService.removeDescriptor(descriptorToRemove)
 
     // Viasual feedback to user

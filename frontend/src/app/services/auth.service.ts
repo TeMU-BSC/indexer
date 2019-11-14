@@ -60,8 +60,8 @@ export class AuthenticationService {
     return this.http.post<User>('/users/register/one', user)
   }
 
-  public registerMany(users: User[]): Observable<User[]> {
-    return this.http.post<User[]>('/users/register/many', users)
+  public registerMany(users: User[]): Observable<any> {
+    return this.http.post<any>('/users/register/many', users)
   }
 
   public login(user: User): Observable<any> {

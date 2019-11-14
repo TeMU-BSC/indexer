@@ -4,6 +4,11 @@ import { Router } from '@angular/router'
 import { User } from 'src/app/app.model'
 import { MatSnackBar } from '@angular/material'
 
+interface Response {
+  registeredUsers?: number
+  errorMessage?: string
+}
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -14,6 +19,7 @@ export class RegisterComponent implements OnInit {
   user: User = new User()
   users: User[]
   selectedFile: File
+  response: Response
 
   constructor(
     public auth: AuthenticationService,
@@ -24,19 +30,25 @@ export class RegisterComponent implements OnInit {
   ngOnInit() {
   }
 
-  register(user: User) {
+  registerOne(user: User) {
     this.auth.registerOne(user).subscribe(
-      response => this.user = response,
+      response => this.response = response,
       error => console.error(error),
       () => this.snackBar.open(`Usuario registrado correctamente`, 'OK', { duration: 10000 })
     )
   }
 
-  bulkRegister() {
+  registerMany() {
     this.auth.registerMany(this.users).subscribe(
-      response => this.users = response,
+      response => this.response = response,
       error => console.error(error),
-      () => this.snackBar.open(`Usuarios registrados correctamente: ${this.users.length}`, 'OK', { duration: 10000 })
+      () => {
+        if (this.response.errorMessage) {
+          this.snackBar.open(`Error al registrar usuarios: ${this.response.errorMessage}`, 'Revisaré el fichero JSON')
+        } else {
+          this.snackBar.open(`Usuarios registrados: ${this.response.registeredUsers}`, 'OK', { duration: 10000 })
+        }
+      }
     )
   }
 
