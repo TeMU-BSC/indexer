@@ -4,9 +4,6 @@ import { Observable } from 'rxjs'
 import { User, Article, Descriptor } from '../app.model'
 import { Papa } from 'ngx-papaparse'
 import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
-import * as ALL_ANNOTATORS from 'src/assets/annotators_dummy.json'
-
-
 
 
 @Injectable({
@@ -20,12 +17,11 @@ export class AppService {
   headers: HttpHeaders = new HttpHeaders({ Accept: 'application/json' })
   options = { headers: this.headers }
   allDescriptors: Descriptor[] = (ALL_DESCRIPTORS as any).default
-  allAnnotaors: User[] = (ALL_ANNOTATORS as any).default
   currentUser: Observable<User>
 
   constructor(
     private http: HttpClient,
-    private papa: Papa
+    // private papa: Papa
   ) { }
 
   getArticles(total: number, start?: number): Observable<Article[]> {

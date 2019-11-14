@@ -15,8 +15,7 @@ from flask_jwt_extended import (create_access_token)
 
 
 app = Flask(__name__)
-app.config['MONGO_DBNAME'] = 'myNewDatabase'
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/myNewDatabase'
+app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@84.88.52.79:27017/BvSalud'
 app.config['JWT_SECRET_KEY'] = 'secret'
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
@@ -33,7 +32,7 @@ def register():
         'name': request.json['name'],
         'email': request.json['email'],
         'password': bcrypt.generate_password_hash(request.json['password']).decode('utf-8'),
-        'created': datetime.utcnow(),
+        'role': request.json['role'],
     }
     insert_one_result = users.insert_one(user_to_insert)
     return jsonify({'result': str(insert_one_result.inserted_id)})
@@ -51,7 +50,7 @@ def register_many():
             'name': user['name'],
             'email': user['email'],
             'password': bcrypt.generate_password_hash(user['password']).decode('utf-8'),
-            'created': datetime.utcnow(),
+            'role': user['role'],
         }
         users_to_insert.append(user_to_insert)
 
@@ -78,7 +77,6 @@ def login():
                 'name': found_user['name'],
                 'email': found_user['email'],
                 'registered': found_user['_id'].generation_time.timestamp()
-                # 'registered': found_user['_id'].generation_time
             })
             result = jsonify({'token': access_token})
         else:
@@ -86,6 +84,57 @@ def login():
     else:
         result = jsonify({'result': 'No user found'})
     return result
+
+
+@app.route('/articles/all', methods=['GET'])
+def get_all_articles():
+    '''Return all the articles from the 'selected_importants' collection.'''
+    articles = mongo.db.selected_importants.find()
+
+    # Prepare the relevant info from each article
+    result = []
+    for article in articles:
+        article_relevant_info = {
+            'id': article['_id'],
+            'title': article['ti_es'],
+            'abstract': article['ab_es'],
+            'descriptors': article.get('descriptors', []),
+        }
+        result.append(article_relevant_info)
+
+    return jsonify(result)
+
+
+@app.route('/articles/one', methods=['POST'])
+def get_one_article():
+    '''Return the relevant data from the queried article from the 'selected_importants' collection,
+    as well as its descriptors from the 'descriptors' collection.'''
+    article = mongo.db.selected_importants.find_one({'_id': request.json['articleId']})
+    descriptors = list(mongo.db.descriptors.find(article))
+    result = {
+        'id': article['_id'],
+        'title': article['ti_es'],
+        'abstract': article['ab_es'],
+        'descriptors': descriptors,
+    }
+    return jsonify(result)
+
+
+@app.route('/descriptors/add', methods=['POST'])
+def add_descriptor():
+    '''Add a descriptor to the 'descriptors' collection.'''
+    descriptor = request.json
+    result = mongo.db.descriptors.insert_one(descriptor)
+    return jsonify(result)
+
+
+@app.route('/descriptors/remove', methods=['POST'])
+def remove_descriptor():
+    '''Remove a descriptor from the 'descriptors' collection.'''
+    descriptor = request.json
+    result = mongo.db.descriptors.delete_one(descriptor)
+    return jsonify(result)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
