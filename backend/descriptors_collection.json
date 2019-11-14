@@ -1,21 +1,21 @@
 [
     {
-        "id": "12345",
+        "decsCode": "12345",
         "articleId": "ibc-ET2-2298",
         "userId": "Z99"
     },
     {
-        "id": "23456",
+        "decsCode": "23456",
         "articleId": "ibc-ET2-2298",
         "userId": "Z99"
     },
     {
-        "id": "12345",
+        "decsCode": "12345",
         "articleId": "ibc-ET2-2298",
         "userId": "X88"
     },
     {
-        "id": "12345",
+        "decsCode": "12345",
         "articleId": "fake-article-id",
         "userId": "X88"
     }
