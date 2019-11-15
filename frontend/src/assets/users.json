@@ -4,48 +4,28 @@
     "name": "Administrator",
     "email": "admin@test.com",
     "password": "testing",
-    "role": "admin"
+    "role": "admin",
+    "articleIds": []
   },
   {
-    "id": "Z1",
-    "name": "Alejandro",
-    "email": "alejandro@test.com",
+    "id": "A1",
+    "name": "María",
+    "email": "maria@test.com",
     "password": "testing",
-    "role": "admin",
-    "articlesIds": [
+    "role": "annotator",
+    "articleIds": [
       "ibc-ET2-2298",
       "ibc-ET1-2921"
     ]
   },
   {
-    "id": "Z2",
-    "name": "Ankush",
-    "email": "ankush@test.com",
+    "id": "A2",
+    "name": "Carlos",
+    "email": "carlos@test.com",
     "password": "testing",
-    "role": "admin",
-    "articlesIds": [
+    "role": "annotator",
+    "articleIds": [
       "ibc-FGT-2142"
     ]
-  },
-  {
-    "id": "Z3",
-    "name": "Aitor",
-    "email": "aitor@test.com",
-    "password": "testing",
-    "role": "admin"
-  },
-  {
-    "id": "Z4",
-    "name": "Marta",
-    "email": "marta@test.com",
-    "password": "testing",
-    "role": "admin"
-  },
-  {
-    "id": "Z9",
-    "name": "María",
-    "email": "maria@test.com",
-    "password": "testing",
-    "role": "annotator"
   }
 ]

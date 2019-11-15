@@ -3,6 +3,7 @@ import { AuthenticationService } from 'src/app/services/auth.service'
 import { Router } from '@angular/router'
 import { User } from 'src/app/app.model'
 import { MatSnackBar } from '@angular/material'
+import { AppService } from 'src/app/services/app.service'
 
 interface Response {
   registeredUsers?: number
@@ -14,7 +15,7 @@ interface Response {
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
 
   user: User = new User()
   users: User[]
@@ -24,11 +25,9 @@ export class RegisterComponent implements OnInit {
   constructor(
     public auth: AuthenticationService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    public appService: AppService
   ) { }
-
-  ngOnInit() {
-  }
 
   registerOne(user: User) {
     this.auth.registerOne(user).subscribe(
@@ -38,13 +37,13 @@ export class RegisterComponent implements OnInit {
     )
   }
 
-  registerMany() {
+  registerMany(users?: User[]) {
     this.auth.registerMany(this.users).subscribe(
       response => this.response = response,
       error => console.error(error),
       () => {
         if (this.response.errorMessage) {
-          this.snackBar.open(`Error al registrar usuarios: ${this.response.errorMessage}`, 'Revisaré el fichero JSON')
+          this.snackBar.open(`Error al registrar usuarios: ${this.response.errorMessage}`, 'Revisar el fichero JSON')
         } else {
           this.snackBar.open(`Usuarios registrados: ${this.response.registeredUsers}`, 'OK', { duration: 10000 })
         }
@@ -57,6 +56,8 @@ export class RegisterComponent implements OnInit {
    * @param event JSON file upload
    */
   onFileSelected(event) {
+    // this.appService.onFileSelected(event)
+
     this.selectedFile = event.target.files[0]
     const fileReader = new FileReader()
     fileReader.readAsText(this.selectedFile, 'UTF-8')

@@ -88,4 +88,18 @@ export class AppService {
     return this.allDescriptors.find(descriptor => descriptor.decsCode === decsCode)
   }
 
+  /**
+   * Return the JSON parsed content of the selected file read from the event.
+   * @param event file upload event
+   */
+  // public onFileSelected(event): any {
+  //   let parsedContent = {}
+  //   const fileReader = new FileReader()
+  //   fileReader.readAsText(event.target.files[0], 'UTF-8')
+  //   fileReader.onloadend = () => parsedContent = JSON.parse(fileReader.result as string)
+  //   fileReader.onerror = error => console.error(error)
+  //   console.log(parsedContent)
+  //   return parsedContent
+  // }
+
 }
