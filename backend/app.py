@@ -29,25 +29,25 @@ def register_one_user():
     '''Register a new user.'''
     user = request.json
 
-    # Encrypt the user password
+    # Encrypt the password
     user['password'] = bcrypt.generate_password_hash(request.json['password']).decode('utf-8')
 
     # Option 1: Try to insert a new user, except DuplicateKeyError occurs.
-    # try:
-    #     result = mongo.db.users.insert_one(user)
-    #     success = result.acknowledged
-    #     error_message = None
-    #     registered_user = mongo.db.users.find_one({'_id': result.inserted_id}, {'_id': 0})
-    # except DuplicateKeyError:
-    #     success = False
-    #     error_message = f'''There is already an existing user with the id "{user['id']}"'''
-    #     registered_user = None
-    # return jsonify({'success': success, 'errorMessage': error_message, 'registeredUser': registered_user})
+    try:
+        result = mongo.db.users.insert_one(user)
+        success = result.acknowledged
+        error_message = None
+        registered_user = mongo.db.users.find_one({'_id': result.inserted_id}, {'_id': 0})
+    except DuplicateKeyError as error:
+        success = False
+        # error_message_original = error.details['writeErrors'][0]['errmsg']
+        error_message = f'''There is already an existing user with the id "{user['id']}"'''
+        registered_user = None
+    return jsonify({'success': success, 'errorMessage': error_message, 'registeredUser': registered_user})
 
     # Option 2: Update an existing user if exists, insert a new user otherwise.
-    result = mongo.db.users.update_one({'id': user['id']}, {'$set': user}, upsert=True)
-    registered_user = mongo.db.users.find_one({'_id': result.upserted_id}, {'_id': 0})
-    return jsonify(result.raw_result)
+    # result = mongo.db.users.insert_one(user)
+    # return jsonify({'success': result.acknowledged})
 
 
 @app.route('/users/register/many', methods=['POST'])
@@ -64,34 +64,33 @@ def register_many_users():
     # Try to insert many new users, except BulkWriteError occurs.
     try:
         result = mongo.db.users.insert_many(users_with_excrypted_passwords)
+        success = result.acknowledged
+        error_message = None
         registered_users_cursor = mongo.db.users.find({'_id': {'$in': result.inserted_ids}}, {'_id': 0})
-        registered_users = [user for user in registered_users_cursor]
-        return jsonify({'registeredUsers': len(registered_users)})
+        registered_users = len([user for user in registered_users_cursor])
     except BulkWriteError as error:
+        success = False
         error_message = error.details['writeErrors'][0]['errmsg']
-        # write_errors = details['writeErrors']
-        # error_message = write_errors['errmsg']
-        return jsonify({'errorMessage': error_message})
+        registered_users = 0
+    return jsonify({'success': success, 'errorMessage': error_message, 'registeredUsers': registered_users})
 
 
 @app.route('/users/login', methods=['POST'])
 def login():
     '''Log in an existing user.'''
-    users = mongo.db.users
-    email = request.json['email']
-    password = request.json['password']
-    result = ''
+    user = request.json
+    found_user = mongo.db.users.find_one({'email': user['email']}, {'_id': 0})
 
-    found_user = users.find_one({'email': email})
-
+    # Option 1
     if found_user:
-        if bcrypt.check_password_hash(found_user['password'], password):
-            access_token = create_access_token(identity={
-                'id': str(found_user['id']),
-                'name': found_user['name'],
-                'email': found_user['email'],
-                'registered': found_user['_id'].generation_time.timestamp()
-            })
+        if bcrypt.check_password_hash(found_user['password'], user['password']):
+            # access_token = create_access_token(identity={
+            #     'id': str(found_user['id']),
+            #     'name': found_user['name'],
+            #     'email': found_user['email'],
+            #     'registered': found_user['_id'].generation_time.timestamp()
+            # })
+            access_token = create_access_token(identity=dict(found_user))
             result = jsonify({'token': access_token})
         else:
             result = jsonify({'error': 'Invalid email and password'})
@@ -99,19 +98,24 @@ def login():
         result = jsonify({'result': 'No user found'})
     return result
 
+    # Option 2
+    # if found_user and bcrypt.check_password_hash(found_user['password'], user['password']):
+    #     found_user['token'] = create_access_token(found_user)
+    # return jsonify(found_user)
 
-@app.route('/articles/all', methods=['GET'])
+
+@app.route('/articles', methods=['POST'])
 def get_all_articles():
     '''Return all the articles from the 'selected_importants' collection.'''
-    user_articles = mongo.db.users.find_one({'id': request.json['userId']}, {'_id': 0, 'articlesIds': 1})
-    user_articles_ids = user_articles['articlesIds']
+    user = mongo.db.users.find_one({'id': request.json['id']}, {'_id': 0, 'articleIds': 1})
+    article_ids = user['articleIds']
 
-    articles = mongo.db.selected_importants.find({'_id': {'$in': user_articles_ids}})
+    articles = mongo.db.selected_importants.find({'_id': {'$in': article_ids}})
 
     result = []
     for article in articles:
         # Find the decsCodes added by the current user
-        descriptors = mongo.db.descriptors.find({'articleId': article['_id'], 'userId': request.json['userId']}, {'_id': 0, 'decsCode': 1})
+        descriptors = mongo.db.descriptors.find({'articleId': article['_id'], 'userId': request.json['id']}, {'_id': 0, 'decsCode': 1})
         decsCodes = [descriptor['decsCode'] for descriptor in descriptors]
 
         # Prepare the relevant info from each article
@@ -126,7 +130,7 @@ def get_all_articles():
     return jsonify(result)
 
 
-@app.route('/articles/one', methods=['POST'])
+@app.route('/articles/one', methods=['GET'])
 def get_one_article():
     '''Return the relevant data from the queried article from the 'selected_importants' collection,
     as well as its descriptors from the 'descriptors' collection.'''
@@ -155,7 +159,7 @@ def remove_descriptor():
     '''Remove a descriptor from the 'descriptors' collection.'''
     descriptor = request.json
     result = mongo.db.descriptors.delete_one(descriptor)
-    return jsonify(result.deleted_count)
+    return jsonify({'deletedCount': result.deleted_count})
 
 
 if __name__ == '__main__':
