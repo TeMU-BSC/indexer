@@ -1,14 +1,10 @@
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 import { AuthenticationService } from 'src/app/services/auth.service'
 import { Router } from '@angular/router'
-import { User } from 'src/app/app.model'
+import { User, Response } from 'src/app/app.model'
 import { MatSnackBar } from '@angular/material'
 import { AppService } from 'src/app/services/app.service'
-
-interface Response {
-  registeredUsers?: number
-  errorMessage?: string
-}
+import * as EXAMPLE_USER from 'src/assets/user_example.json'
 
 @Component({
   selector: 'app-register',
@@ -19,6 +15,7 @@ export class RegisterComponent {
 
   user: User = new User()
   users: User[]
+  exampleUser: User = (EXAMPLE_USER as any).default
   selectedFile: File
   response: Response
 
@@ -33,7 +30,13 @@ export class RegisterComponent {
     this.auth.registerOne(user).subscribe(
       response => this.response = response,
       error => console.error(error),
-      () => this.snackBar.open(`Usuario registrado correctamente`, 'OK', { duration: 10000 })
+      () => {
+        if (this.response.success) {
+          this.snackBar.open(`Usuario registrado correctamente`, 'OK', { duration: 10000 })
+        } else {
+          this.snackBar.open(`Error: ${this.response.errorMessage}`, 'Revisar los IDs de usuario existentes')
+        }
+      }
     )
   }
 
@@ -42,10 +45,10 @@ export class RegisterComponent {
       response => this.response = response,
       error => console.error(error),
       () => {
-        if (this.response.errorMessage) {
-          this.snackBar.open(`Error al registrar usuarios: ${this.response.errorMessage}`, 'Revisar el fichero JSON')
-        } else {
+        if (this.response.success) {
           this.snackBar.open(`Usuarios registrados: ${this.response.registeredUsers}`, 'OK', { duration: 10000 })
+        } else {
+          this.snackBar.open(`Error: ${this.response.errorMessage}`, 'Revisar los IDs de usuario del fichero JSON')
         }
       }
     )

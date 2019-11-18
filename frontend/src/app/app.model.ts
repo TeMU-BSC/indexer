@@ -1,7 +1,7 @@
 export class User {
   id?: string
   name?: string
-  email: string
+  email?: string
   password?: string
   passwordConfirm?: string
 }
@@ -10,8 +10,8 @@ export class Article {
   // tslint:disable-next-line: variable-name
   id?: string
   title?: string
-  abstractText?: string
-  descriptors?: string[] // Remove after discard old versions 1 and 2 in app.component
+  abstract?: string
+  decsCodes?: string[] // Remove after discard old versions 1 and 2 in app.component
 }
 
 /**
@@ -23,16 +23,6 @@ export class Article {
 export class Descriptor {
   decsCode?: string
 
-  // Attributes for POST HTTP requests
-  addedBy?: User['id']
-  addedOn?: number
-  addedTo?: Article['id']
-
-  // Attributes for DELETE HTTP requests
-  removedBy?: User['id']
-  removedOn?: number
-  removedFrom?: Article['id']
-
   // Attributes for filtering
   termSpanish?: string
   termEnglish?: string
@@ -41,4 +31,11 @@ export class Descriptor {
   treeNumber?: string
   definitionSpanish?: string
   definitionLatin?: string
+}
+
+export interface Response {
+  success?: boolean
+  loggedUser?: User
+  registeredUsers?: number
+  errorMessage?: string
 }

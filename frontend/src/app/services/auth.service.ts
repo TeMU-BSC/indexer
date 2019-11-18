@@ -16,25 +16,19 @@ interface TokenResponse {
 })
 export class AuthenticationService {
 
-  token: string
-
   constructor(
     private http: HttpClient,
     private router: Router) { }
 
   setToken(token: string): void {
-    localStorage.setItem('userToken', token)
-    this.token = token
+    sessionStorage.setItem('userToken', token)
   }
 
   getToken(): string {
-    if (!this.token) {
-      this.token = localStorage.getItem('userToken')
-    }
-    return this.token
+    return sessionStorage.getItem('userToken')
   }
 
-  public getUserDetails(): any {
+  public getUserDetails() {
     const token = this.getToken()
     let payload
     if (token) {
@@ -53,7 +47,6 @@ export class AuthenticationService {
     } else {
       return false
     }
-    // return this.token !== ''
   }
 
   public registerOne(user: User): Observable<any> {
@@ -75,6 +68,8 @@ export class AuthenticationService {
       })
     )
     return request
+
+    // return this.http.post<User>('/users/login', user)
   }
 
   // profile(): Observable<any> {
@@ -85,8 +80,7 @@ export class AuthenticationService {
   // }
 
   public logout(): void {
-    this.token = ''
-    localStorage.removeItem('userToken')
+    sessionStorage.removeItem('userToken')
     this.router.navigateByUrl('/')
   }
 

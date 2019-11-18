@@ -14,7 +14,7 @@ export class AppService {
   ip = '84.88.52.79'
   // ip = 'localhost'
   port = '5000'
-  headers: HttpHeaders = new HttpHeaders({ Accept: 'application/json' })
+  headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' })
   options = { headers: this.headers }
   allDescriptors: Descriptor[] = (ALL_DESCRIPTORS as any).default
   currentUser: Observable<User>
@@ -24,21 +24,24 @@ export class AppService {
     // private papa: Papa
   ) { }
 
-  getArticles(total: number, start?: number): Observable<Article[]> {
-    // Local
-    return this.http.get<Article[]>('assets/articles_dummy.json')
-
-    // Server
-    const baseUrl = `http://${this.ip}:${this.port}/articles`
-    let url = baseUrl
-    if (total !== undefined) {
-      url += `?total=${total}`
-      if (start !== undefined) {
-        url += `?start=${start}`
-      }
-    }
-    return this.http.get<Article[]>(url, this.options)
+  getArticles(user: User): Observable<Article[]> {
+    return this.http.post<Article[]>('http://localhost:5000/articles', user)
   }
+
+  /**
+   * limit the number of articles
+   */
+  // getArticles(total: number, start?: number): Observable<Article[]> {
+  //   const baseUrl = `http://${this.ip}:${this.port}/articles`
+  //   let url = baseUrl
+  //   if (total !== undefined) {
+  //     url += `?total=${total}`
+  //     if (start !== undefined) {
+  //       url += `?start=${start}`
+  //     }
+  //   }
+  //   return this.http.get<Article[]>(url, this.options)
+  // }
 
   /**
    * From JSON file
@@ -64,24 +67,15 @@ export class AppService {
   /**
    * Add a new descriptor to database
    */
-  // addDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-  //   const url = `http://${this.ip}:${this.port}/descriptor/add`
-  //   return this.http.post<Descriptor>(url, descriptor, this.options)
-  // }
-  addDescriptor(descriptor: Descriptor) {
-    console.log('Added: ', descriptor)
+  addDescriptor(descriptor: Descriptor): Observable<Descriptor> {
+    return this.http.post<Descriptor>('http://localhost:5000/descriptors/add', descriptor, this.options)
   }
 
   /**
    * Remove an existing descriptor from database
    */
-  // removeDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-  //   const url = `http://${this.ip}:${this.port}/descriptor/remove`
-  //   const deleteOptions = { headers: this.headers, body: descriptor }
-  //   return this.http.delete<Descriptor>(url, deleteOptions)
-  // }
-  removeDescriptor(descriptor: Descriptor) {
-    console.log('Removed: ', descriptor)
+  removeDescriptor(descriptor: Descriptor): Observable<Descriptor> {
+    return this.http.post<Descriptor>('http://localhost:5000/descriptors/remove', descriptor, this.options)
   }
 
   findDescriptorByDecsCode(decsCode: string): Descriptor {

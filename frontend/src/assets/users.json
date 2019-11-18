@@ -1,7 +1,7 @@
 [
   {
     "id": "A0",
-    "name": "Administrator",
+    "name": "Administrador",
     "email": "admin@test.com",
     "password": "testing",
     "role": "admin",

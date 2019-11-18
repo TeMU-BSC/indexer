@@ -66,8 +66,8 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     this.descriptors = []
 
     // Init the input field with the current descriptors list from parent
-    if (this.article.descriptors) {
-      this.article.descriptors.forEach(decsCode => {
+    if (this.article.decsCodes) {
+      this.article.decsCodes.forEach(decsCode => {
         this.descriptors.push(this.appService.findDescriptorByDecsCode(decsCode))
       })
     }
@@ -129,12 +129,13 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       // by clicking the action button of the snackbar.
       if (descriptorToReAdd) {
         this.descriptors.push(descriptorToReAdd)
-        this.appService.addDescriptor({
-          decsCode: descriptorToReAdd.decsCode,
-          addedBy: this.auth.getUserDetails().identity.id, // TODO: Change it to the current logged user id
-          addedOn: Date.now(), // milliseconds from the epoch
-          addedTo: this.article.id,
-        })
+
+        // this.appService.addDescriptor({
+        //   decsCode: descriptorToReAdd.decsCode,
+        //   userId: this.auth.getUserDetails().identity.id, // TODO: Change it to the current logged user id
+        //   addedTo: this.article.id,
+        // })
+
         // console.log(formatDate(Date.now(), 'yyyy-MM-ddTHH:mm:ss.SSS', 'en-US'))
       }
 
@@ -152,17 +153,19 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // Remove the clicked chip descriptor from database
     const descriptorToRemove = {
       decsCode: descriptor.decsCode,
-      removedBy: this.auth.getUserDetails().identity.id, // TODO: Change it to the current logged user id
-      removedOn: Date.now(), // milliseconds from the epoch
-      removedFrom: this.article.id,
+      userId: this.auth.getUserDetails().identity.id,
+      articleId: this.article.id
     }
 
     // --> TODO: Don't remove, just wait for the snackbar to timeout automatic... (Vicky's idea)
-    this.appService.removeDescriptor(descriptorToRemove)
+    // this.appService.removeDescriptor(descriptorToRemove).subscribe()
 
-    // Viasual feedback to user
+    // Timeout of some seconds to be able to undo the removal
     const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'Deshacer', { duration: 10000 })
-    snackBarRef.onAction().subscribe(() => this.add(null, descriptor))
+    // snackBarRef.onAction().subscribe(() => this.add(null, descriptor))
+
+    // If not clicked the 'undo' action button, finally remove the descriptor
+    snackBarRef.afterDismissed().subscribe(() => this.appService.removeDescriptor(descriptorToRemove).subscribe())
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
@@ -179,11 +182,10 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // Remove the clicked chip descriptor from database
     const descriptorToAdd = {
       decsCode: selectedDescriptor.decsCode,
-      addedBy: 'A9', // TODO: Change it to the current logged user id
-      addedOn: Date.now() / 1000, // seconds from the epoch
+      userId: this.auth.getUserDetails().identity.id,
       articleId: this.article.id
     }
-    this.appService.addDescriptor(descriptorToAdd)
+    this.appService.addDescriptor(descriptorToAdd).subscribe()
 
     // Viasual feedback to user
     // this.snackBar.open(`Añadido: ${selectedDescriptor.termSpanish} (${selectedDescriptor.decsCode})`, 'OK', { duration: 5000 })

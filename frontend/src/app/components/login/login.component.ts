@@ -1,7 +1,6 @@
 import { Component } from '@angular/core'
 import { Router } from '@angular/router'
 import { User } from 'src/app/app.model'
-import { AppService } from 'src/app/services/app.service'
 import { AuthenticationService } from 'src/app/services/auth.service'
 
 @Component({
@@ -14,14 +13,28 @@ export class LoginComponent {
   user: User = new User()
 
   constructor(
-    private auth: AuthenticationService,
+    public auth: AuthenticationService,
     private router: Router
   ) { }
 
   login() {
     this.auth.login(this.user).subscribe(
-      () => this.router.navigateByUrl('/'),
-      (error) => console.error(error)
+      // response => {
+      //   if (response.token !== undefined) {
+      //     this.auth.setCurrentUser(response)
+      //   }
+      // },
+      // error => console.error(error),
+      // () => {
+      //   if (this.user.token !== undefined) {
+      //     console.log(this.user)
+      //     this.router.navigateByUrl('/')
+      //   }
+      // }
+
+      () => {
+        this.router.navigateByUrl('/')
+      }
     )
   }
 

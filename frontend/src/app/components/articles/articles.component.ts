@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'
-import { Article } from 'src/app/app.model'
+import { Article, User } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
+import { AuthenticationService } from 'src/app/services/auth.service'
 
 @Component({
   selector: 'app-articles',
@@ -12,14 +13,19 @@ export class ArticlesComponent implements OnInit {
   article: Article
   articles: Article[]
 
-  constructor(private appService: AppService) { }
+  constructor(
+    private appService: AppService,
+    private auth: AuthenticationService) { }
 
   ngOnInit() {
     this.getArticles()
   }
 
   getArticles() {
-    this.appService.getArticles(10).subscribe(articles => this.articles = articles)
+    const userToSend: User = {
+      id: this.auth.getUserDetails().identity.id
+    }
+    this.appService.getArticles(userToSend).subscribe(articles => this.articles = articles)
   }
 
   selectArticle(article: Article) {

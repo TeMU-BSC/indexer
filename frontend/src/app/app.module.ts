@@ -23,7 +23,6 @@ import { FlexLayoutModule } from '@angular/flex-layout'
 // Own App Components
 import { HeaderComponent } from './components/header/header.component'
 import { LoginComponent } from './components/login/login.component'
-import { AutocompleteAsyncComponent } from './components/autocomplete-async/autocomplete-async.component'
 import { ArticleComponent } from './components/article/article.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
 import { HomeComponent } from './components/home/home.component'
@@ -41,7 +40,6 @@ import { ArticlesComponent } from './components/articles/articles.component'
     AppComponent,
     LoginComponent,
     HeaderComponent,
-    AutocompleteAsyncComponent,
     ArticleComponent,
     DescriptorsComponent,
     HomeComponent,

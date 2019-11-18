@@ -1,16 +1,24 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row fxLayout="row" fxLayoutGap="1em">
     <h1 routerLink="/">{{ title }}</h1>
+
     <span style="flex: 1 1 auto;"></span>
-    <button *ngIf="!auth.isLoggedIn()" mat-button routerLink="login">Login</button>
-    <button mat-button routerLink="register">Register</button>
-    <small *ngIf="auth.isLoggedIn()" mat-button>{{ auth.getUserDetails()?.identity.name }} - Registered on: {{ auth.getUserDetails()?.identity.registered * 1000 | date:'full' }}</small>
-    <button *ngIf="auth.isLoggedIn()" mat-button color="warn" (click)="auth.logout()">Logout</button>
-    <!-- <button mat-button routerLink="logout">Logout</button> -->
-    <!-- <button mat-button routerLink="">Contact</button> -->
-    <a mat-flat-button style="color: #669966" href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
+
+    <button *ngIf="!auth.isLoggedIn()" mat-button routerLink="login">Iniciar sesión</button>
+
+    <!-- <small>{{ auth.getUserDetails()?.identity.name }} - Registered on: {{ auth.getUserDetails()?.identity.registered * 1000 | date:'full' }}</small> -->
+
+    <button *ngIf="auth.isLoggedIn()" mat-raised-button [matMenuTriggerFor]="menu">{{ auth.getUserDetails()?.identity.name }}</button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item routerLink="register">Registrar usuarios</button>
+      <button mat-menu-item style="color: #F44249"
+        (click)="auth.logout()">Cerrar sesión</button>
+    </mat-menu>
+    <a mat-flat-button style="color: #669966"
+      href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
       Buscador DeCS <mat-icon>open_in_new</mat-icon>
     </a>
+
     <!-- <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
       <mat-icon>more_vert</mat-icon>
     </button>

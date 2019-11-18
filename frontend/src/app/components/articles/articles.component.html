@@ -21,8 +21,8 @@
 </mat-sidenav-container> -->
 
 <div fxLayout="row" fxLayoutGap="2em" class="p-3">
-  <div fxLayout="column">
+  <div fxLayout="column" fxFlex="30">
     <button *ngFor="let article of articles" mat-stroked-button (click)="selectArticle(article)">{{ article.title }}</button>
   </div>
-  <app-article *ngIf="article" [article]="article"></app-article>
+  <app-article *ngIf="article" [article]="article" fxFlex="70"></app-article>
 </div>
