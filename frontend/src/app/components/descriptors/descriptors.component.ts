@@ -143,11 +143,12 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       if (descriptorToReAdd) {
         this.descriptors.push(descriptorToReAdd)
 
-        // this.appService.addDescriptor({
-        //   decsCode: descriptorToReAdd.decsCode,
-        //   userId: this.auth.getUserDetails().identity.id, // TODO: Change it to the current logged user id
-        //   addedTo: this.article.id,
-        // })
+        const descriptorToAdd = {
+          decsCode: descriptorToReAdd.decsCode,
+          userId: this.auth.getUserDetails().identity.id,
+          articleId: this.article.id
+        }
+        this.appService.addDescriptor(descriptorToAdd).subscribe()
 
         // console.log(formatDate(Date.now(), 'yyyy-MM-ddTHH:mm:ss.SSS', 'en-US'))
       }
@@ -174,12 +175,12 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // this.appService.removeDescriptor(descriptorToRemove).subscribe()
 
     // Timeout of some seconds to be able to undo the removal
-    const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'Deshacer')
+    const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'DESHACER')
 
-    // If clicked the 'Undo' action button,
-    // snackBarRef.onAction().subscribe(() => this.add(null, descriptor))
+    // If the action button is clicked
+    snackBarRef.onAction().subscribe(() => this.add(null, descriptor))
 
-    // If not clicked the 'Undo' action button, finally remove the descriptor
+    // If the action button is not clicked, remove the descriptor after the timeout
     snackBarRef.afterDismissed().subscribe(() => this.appService.removeDescriptor(descriptorToRemove).subscribe())
   }
 

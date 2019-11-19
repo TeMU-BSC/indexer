@@ -15,7 +15,25 @@
     "role": "annotator",
     "articleIds": [
       "ibc-ET2-2298",
-      "ibc-ET1-2921"
+      "ibc-ET1-2921",
+      "biblio-984861",
+      "biblio-979172",
+      "ibc-FGT-2142",
+      "biblio-975227",
+      "biblio-1004307",
+      "ibc-FGT-1566",
+      "biblio-975234",
+      "ibc-ET2-2183",
+      "biblio-1003448",
+      "biblio-1003170",
+      "ibc-ET2-1651",
+      "biblio-989584",
+      "biblio-1004658",
+      "ibc-ET1-3569",
+      "biblio-984378",
+      "biblio-984894",
+      "biblio-996904",
+      "ibc-FGT-2232"
     ]
   },
   {
@@ -25,7 +43,26 @@
     "password": "testing",
     "role": "annotator",
     "articleIds": [
-      "ibc-FGT-2142"
+      "ibc-ET2-2298",
+      "biblio-1003329",
+      "biblio-986686",
+      "biblio-1003453",
+      "ibc-FGT-1774",
+      "ibc-ET1-3372",
+      "ibc-FGT-1567",
+      "ibc-ET1-3582",
+      "biblio-984871",
+      "ibc-ET1-3047",
+      "biblio-968764",
+      "biblio-983779",
+      "biblio-1002004",
+      "biblio-1002676",
+      "ibc-FGT-2127",
+      "biblio-999642",
+      "biblio-1004648",
+      "biblio-1011715",
+      "ibc-ET1-2876",
+      "ibc-FGT-1131"
     ]
   }
 ]

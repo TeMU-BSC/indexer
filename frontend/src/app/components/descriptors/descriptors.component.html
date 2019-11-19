@@ -1,27 +1,34 @@
-<mat-form-field class="w-100">
+<mat-form-field appearance="outline" class="w-100">
+  <mat-label>Descriptores de Ciencias de la Salud (DeCS)</mat-label>
   <mat-chip-list #chipList aria-label="Descriptor selection">
     <mat-chip *ngFor="let descriptor of descriptors" [selectable]="selectable" [removable]="removable"
       (removed)="remove(descriptor)">
       {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
-    <input placeholder="Descriptores de Ciencias de la Salud (DeCS)" #descriptorInput [formControl]="descriptorCtrl"
-      [matAutocomplete]="auto" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+    <input placeholder="Número del Registro" #descriptorInput [formControl]="descriptorCtrl" [matAutocomplete]="auto"
+      [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
       [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)">
   </mat-chip-list>
   <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="selected($event)">
-    <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
-      {{ descriptor.termSpanish }} / {{ descriptor.termEnglish }} ({{ descriptor.decsCode }})
-    </mat-option>
 
-    <!-- <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor"
-      [innerHTML]="descriptor.termSpanish | bold: toHighlight | noSanitize">
+    <!-- <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
+      {{ descriptor.termSpanish }} ({{ descriptor.decsCode }})
     </mat-option> -->
 
+    <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor"
+      [innerHTML]="descriptor.termSpanish | bold: toHighlight | noSanitize">
+    </mat-option>
+
   </mat-autocomplete>
-  <mat-hint>Número del Registro</mat-hint>
+  <mat-hint>
+    <a style="color: #669966"
+      href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
+      Buscador DeCS <mat-icon>open_in_new</mat-icon>
+    </a>
+  </mat-hint>
 </mat-form-field>
 
 <!-- <pre>Current descriptors: {{ descriptors | json }}</pre> -->
 <!-- <pre>Current date and time: {{ now | date:'fullDate' }}</pre> -->
-<pre>Current descriptors chip list: {{ descriptors | json }}</pre>
+<!-- <pre>Current descriptors chip list: {{ descriptors | json }}</pre> -->

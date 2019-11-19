@@ -1,16 +1,12 @@
 <mat-card class="example-card p-0">
   <mat-card-header class="pt-3" style="background-color: #f2f2f2">
-    <mat-card-title>{{ article?.title }}</mat-card-title>
+    <mat-card-title>
+      {{ article?.title }}
+      <mat-chip>{{ article?.id }}</mat-chip>
+    </mat-card-title>
   </mat-card-header>
   <mat-card-content class="p-3">
-    <p>
-      {{ article?.abstract }}
-    </p>
+    <p [innerHTML]="article?.abstract"></p>
     <app-descriptors [article]="article"></app-descriptors>
   </mat-card-content>
-  <!-- SIN BOTONES! HAREMOS UNA HTTP POST REQUEST EN CADA DeCS SELECTION -->
-  <!-- <mat-card-actions class="p-3">
-    <button mat-flat-button color="warn">Deshacer</button>
-    <button mat-flat-button color="primary">Guardar</button>
-  </mat-card-actions> -->
 </mat-card>

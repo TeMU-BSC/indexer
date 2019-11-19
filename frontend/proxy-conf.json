@@ -1,4 +1,12 @@
 {
+    "/articles": {
+        "target": "http://localhost:5000",
+        "secure": false
+    },
+    "/descriptors": {
+        "target": "http://localhost:5000",
+        "secure": false
+    },
     "/users": {
         "target": "http://localhost:5000",
         "secure": false

@@ -1,66 +1,60 @@
-<main class="h-100 p-3">
+<app-articles></app-articles>
 
-  <app-articles class="h-100"></app-articles>
+<!-- <div>
+  <hr>
+  <h2>Versión Textarea</h2>
+  <form>
+    <mat-form-field floatLabel="never">
+      <mat-label>Select annotator</mat-label>
+      <mat-select name="annotator" [(ngModel)]="annotator">
+        <mat-option *ngFor="let annotator of annotators" [value]="annotator">
+          {{ annotator.name }} ({{ annotator.id }})
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <textarea matInput name="descriptors" placeholder="DeCS codes..." rows="5"
+        [(ngModel)]="descriptorsString"></textarea>
+      <mat-hint>Número del Registro</mat-hint>
+    </mat-form-field>
+  </form>
 
-  
-
-  <!-- <div>
-    <hr>
-    <h2>Versión Textarea</h2>
-    <form>
-      <mat-form-field floatLabel="never">
-        <mat-label>Select annotator</mat-label>
-        <mat-select name="annotator" [(ngModel)]="annotator">
-          <mat-option *ngFor="let annotator of annotators" [value]="annotator">
-            {{ annotator.name }} ({{ annotator.id }})
-          </mat-option>
-        </mat-select>
+  <hr>
+  <h2>Versión Autocomplete + Add DeCS</h2>
+  <form [formGroup]="decsForm">
+    <mat-form-field appearance="fill">
+      <mat-label>User</mat-label>
+      <mat-select formControlName="annotator" required>
+        <mat-option *ngFor="let annotator of annotators; trackBy: trackByFn" [value]="annotator.id">
+          {{ annotator.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field style="width: 50%">
+      <input matInput placeholder="Busca por término en español" aria-label="DeCS Code" [formControl]="myControl"
+        [matAutocomplete]="auto">
+      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn"
+        (optionSelected)="onSelectionChange($event)">
+        <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
+          ({{ descriptor.decsCode }}) {{ descriptor.termSpanish }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+    <div style="display: inline">
+      <button mat-stroked-button color="warn" (click)="resetForm()"
+        [disabled]="descriptors.length === 0">Deshacer</button>
+      <button mat-flat-button class="my-flat-green-button" (click)="saveChanges()"
+        [disabled]="!decsForm.valid">Guardar</button>
+    </div>
+    <div formArrayName="descriptors">
+      <mat-form-field appearance="outline" style="width: 20%"
+        *ngFor="let descriptor of descriptors?.controls; let i=index; trackBy: trackByFn">
+        <mat-label>Número del Registro</mat-label>
+        <input matInput [formControlName]="i" [value]="descriptor.value.id">
+        <button matSuffix mat-icon-button color="warn" (click)="removeDescriptor(i)">
+          <mat-icon>remove_circle</mat-icon>
+        </button>
       </mat-form-field>
-      <mat-form-field appearance="fill">
-        <textarea matInput name="descriptors" placeholder="DeCS codes..." rows="5"
-          [(ngModel)]="descriptorsString"></textarea>
-        <mat-hint>Número del Registro</mat-hint>
-      </mat-form-field>
-    </form>
-
-    <hr>
-    <h2>Versión Autocomplete + Add DeCS</h2>
-    <form [formGroup]="decsForm">
-      <mat-form-field appearance="fill">
-        <mat-label>User</mat-label>
-        <mat-select formControlName="annotator" required>
-          <mat-option *ngFor="let annotator of annotators; trackBy: trackByFn" [value]="annotator.id">
-            {{ annotator.name }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field style="width: 50%">
-        <input matInput placeholder="Busca por término en español" aria-label="DeCS Code" [formControl]="myControl"
-          [matAutocomplete]="auto">
-        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn"
-          (optionSelected)="onSelectionChange($event)">
-          <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
-            ({{ descriptor.decsCode }}) {{ descriptor.termSpanish }}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-      <div style="display: inline">
-        <button mat-stroked-button color="warn" (click)="resetForm()"
-          [disabled]="descriptors.length === 0">Deshacer</button>
-        <button mat-flat-button class="my-flat-green-button" (click)="saveChanges()"
-          [disabled]="!decsForm.valid">Guardar</button>
-      </div>
-      <div formArrayName="descriptors">
-        <mat-form-field appearance="outline" style="width: 20%"
-          *ngFor="let descriptor of descriptors?.controls; let i=index; trackBy: trackByFn">
-          <mat-label>Número del Registro</mat-label>
-          <input matInput [formControlName]="i" [value]="descriptor.value.id">
-          <button matSuffix mat-icon-button color="warn" (click)="removeDescriptor(i)">
-            <mat-icon>remove_circle</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
-    </form>
-  </div> -->
-
-</main>
+    </div>
+  </form>
+</div> -->

@@ -25,7 +25,7 @@ export class AppService {
   ) { }
 
   getArticles(user: User): Observable<Article[]> {
-    return this.http.post<Article[]>('http://localhost:5000/articles', user)
+    return this.http.post<Article[]>('/articles', user)
   }
 
   /**
@@ -68,14 +68,14 @@ export class AppService {
    * Add a new descriptor to database
    */
   addDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-    return this.http.post<Descriptor>('http://localhost:5000/descriptors/add', descriptor)
+    return this.http.post<Descriptor>('/descriptors/add', descriptor)
   }
 
   /**
    * Remove an existing descriptor from database
    */
   removeDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-    return this.http.post<Descriptor>('http://localhost:5000/descriptors/remove', descriptor)
+    return this.http.post<Descriptor>('/descriptors/remove', descriptor)
   }
 
   findDescriptorByDecsCode(decsCode: string): Descriptor {
