@@ -48,7 +48,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
     // Filter descriptors on any typing change of input field
     this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
-      debounceTime(300),
+      debounceTime(100),
       startWith(''),
       // https://material.angular.io/components/autocomplete
       // map((value: string | null) => value ? this._filter(value) : this.allDescriptors.slice()),
@@ -87,15 +87,28 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     const normalizedValue = this._normalize(stringifiedValue.toLowerCase())
 
     // [Option 1] Filter by the whole stringified and lowercased descriptor object
-    // return this.allDescriptors.filter(descriptor => this._normalize(JSON.stringify(descriptor).toLowerCase()).includes(normalizedValue))
+    // return this.allDescriptors.filter(
+    //   descriptor => {
+    //     // !JSON.stringify(this.descriptors).includes(normalizedValue) &&
+    //     this._normalize(JSON.stringify(descriptor).toLowerCase()).includes(normalizedValue)
+    //   }
+    // )
 
     // [Option 2] Filter only by some attributes
-    return this.allDescriptors.filter(descriptor =>
-      this._normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
-      this._normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
-      this._normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
-      this._normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
-      this._normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
+    return this.allDescriptors.filter(
+      descriptor =>
+        // Not showing the already added descriptors to this article regarding the current descriptor decsCode
+        // tslint:disable-next-line: no-unused-expression
+        !this.descriptors.some(d => d.decsCode.toLowerCase() === descriptor.decsCode) &&
+
+        // Keep filtering by these fields
+        (
+          this._normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
+        )
     )
   }
 
@@ -161,10 +174,12 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // this.appService.removeDescriptor(descriptorToRemove).subscribe()
 
     // Timeout of some seconds to be able to undo the removal
-    const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'Deshacer', { duration: 10000 })
+    const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'Deshacer')
+
+    // If clicked the 'Undo' action button,
     // snackBarRef.onAction().subscribe(() => this.add(null, descriptor))
 
-    // If not clicked the 'undo' action button, finally remove the descriptor
+    // If not clicked the 'Undo' action button, finally remove the descriptor
     snackBarRef.afterDismissed().subscribe(() => this.appService.removeDescriptor(descriptorToRemove).subscribe())
   }
 

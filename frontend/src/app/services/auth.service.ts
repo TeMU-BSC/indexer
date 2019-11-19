@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
 import { map } from 'rxjs/operators'
-import { User } from '../app.model'
+import { User } from 'src/app/app.model'
 import { Observable } from 'rxjs'
 
 interface TokenResponse {

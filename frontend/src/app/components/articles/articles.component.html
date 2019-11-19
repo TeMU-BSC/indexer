@@ -1,28 +1,16 @@
-<!-- <mat-sidenav-container>
-  <mat-drawer mode="side" opened>
-    <h4>My articles list:</h4>
-    <div *ngFor="let article of articles">{{ article.title }}</div>
-  </mat-drawer>
-  <mat-drawer-content>
-    <app-article [article]="article"></app-article>
-  </mat-drawer-content>
-</mat-sidenav-container> -->
 
-<!-- <mat-sidenav-container autosize class="h-100">
-  <mat-sidenav #drawer mode="side" opened class="p-3">
-    <p>My articles list</p>
-    <div fxLayout="column">
-      <button *ngFor="let article of articles" mat-stroked-button>{{ article.title }}</button>
-    </div>
-  </mat-sidenav>
-  <mat-sidenav-content class="p-3">
-    <app-article [article]="article"></app-article>
-  </mat-sidenav-content>
-</mat-sidenav-container> -->
-
+<!-- Option 1: Button list with card on the side -->
 <div fxLayout="row" fxLayoutGap="2em" class="p-3">
   <div fxLayout="column" fxFlex="30">
-    <button *ngFor="let article of articles" mat-stroked-button (click)="selectArticle(article)">{{ article.title }}</button>
+    <button *ngFor="let article of articles; let i = index" mat-flat-button style="text-align: left"
+      (click)="selectArticle(article)">
+      {{ i + 1 + '.' }} {{ (article.title.length > 61) ? (article.title | slice:0:61) + '...' : (article.title) }}
+    </button>
   </div>
   <app-article *ngIf="article" [article]="article" fxFlex="70"></app-article>
 </div>
+
+<!-- Option 2: Table -->
+<!-- <smc-simplemattable [data]="articles" [columns]="columns" [paginator]="true" [sorting]="true"
+  class="mat-elevation-z2 m-2">
+</smc-simplemattable> -->

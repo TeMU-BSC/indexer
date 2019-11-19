@@ -20,6 +20,9 @@ import { MaterialModule } from './material.module'
 // Angular Flex-Layout
 import { FlexLayoutModule } from '@angular/flex-layout'
 
+// Simple Material Table
+import { SimplemattableModule } from 'simplemattable'
+
 // Own App Components
 import { HeaderComponent } from './components/header/header.component'
 import { LoginComponent } from './components/login/login.component'
@@ -59,6 +62,7 @@ import { ArticlesComponent } from './components/articles/articles.component'
     ReactiveFormsModule,
     MaterialModule,
     FlexLayoutModule,
+    SimplemattableModule
   ],
   providers: [AuthenticationService, AuthGuardService],
   bootstrap: [AppComponent]

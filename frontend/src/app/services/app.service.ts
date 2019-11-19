@@ -68,14 +68,14 @@ export class AppService {
    * Add a new descriptor to database
    */
   addDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-    return this.http.post<Descriptor>('http://localhost:5000/descriptors/add', descriptor, this.options)
+    return this.http.post<Descriptor>('http://localhost:5000/descriptors/add', descriptor)
   }
 
   /**
    * Remove an existing descriptor from database
    */
   removeDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-    return this.http.post<Descriptor>('http://localhost:5000/descriptors/remove', descriptor, this.options)
+    return this.http.post<Descriptor>('http://localhost:5000/descriptors/remove', descriptor)
   }
 
   findDescriptorByDecsCode(decsCode: string): Descriptor {

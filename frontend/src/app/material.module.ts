@@ -20,13 +20,14 @@ import {
   MatExpansionModule,
   MatTabsModule,
   MatGridListModule,
-  MatSnackBarModule,
   MatProgressBarModule,
   MatTooltipModule,
   MatStepperModule,
   MatButtonToggleModule,
   MatAutocompleteModule,
   MatMenuModule,
+  MatSnackBarModule,
+  MAT_SNACK_BAR_DEFAULT_OPTIONS,
 } from '@angular/material'
 
 const material = [
@@ -62,7 +63,9 @@ const material = [
   ],
   imports: material,
   exports: material,
-  providers: [],
+  providers: [
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 5000 } }
+  ],
   bootstrap: []
 })
 export class MaterialModule { }
