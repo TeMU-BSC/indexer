@@ -38,7 +38,8 @@
 <!-- Option 4: Table with action button that shows the article card on the side -->
 <div fxLayout="row" fxLayoutGap="1em" class="p-3">
   <smc-simplemattable [data]="articles" [columns]="columns" [paginator]="true" [sorting]="true" [paginatorPageSize]="5"
-    [rowClickable]="true" (rowClick)="selectArticle($event)" class="mat-elevation-z2" fxFlex="35">
+    [paginatorPageSizeOptions]="[5, 10, 25, 100]" [rowClickable]="true" (rowClick)="selectArticle($event)"
+    class="mat-elevation-z2" fxFlex="35">
   </smc-simplemattable>
   <app-article *ngIf="article" [article]="article" fxFlex="65"></app-article>
 </div>

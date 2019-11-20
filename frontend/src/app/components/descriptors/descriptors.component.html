@@ -6,20 +6,15 @@
       {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
-    <input placeholder="Número del Registro" #descriptorInput [formControl]="descriptorCtrl" [matAutocomplete]="auto"
-      [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+    <input placeholder="Término o Número de Registro..." #descriptorInput [formControl]="descriptorCtrl"
+      [matAutocomplete]="auto" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
       [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)">
   </mat-chip-list>
   <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="selected($event)">
-
-    <!-- <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
-      {{ descriptor.termSpanish }} ({{ descriptor.decsCode }})
-    </mat-option> -->
-
-    <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor"
-      [innerHTML]="descriptor.termSpanish | bold: toHighlight | noSanitize">
+    <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
+      <span [innerHTML]="descriptor.termSpanish | highlight: descriptorCtrl.value"></span>
+      (<span [innerHTML]="descriptor.decsCode | highlight: descriptorCtrl.value"></span>)
     </mat-option>
-
   </mat-autocomplete>
   <mat-hint>
     <a style="color: #669966"
@@ -31,4 +26,3 @@
 
 <!-- <pre>Current descriptors: {{ descriptors | json }}</pre> -->
 <!-- <pre>Current date and time: {{ now | date:'fullDate' }}</pre> -->
-<!-- <pre>Current descriptors chip list: {{ descriptors | json }}</pre> -->

@@ -18,11 +18,15 @@ export class ArticlesComponent implements OnInit {
 
   // Columns for articles table
   columns = [
-    new TableColumn<Article, 'id'>('Article ID', 'id').withColFilter()
+    // new TableColumn<Article, 'status'>('Status', 'status').withColFilter().withWidth(Width.pct(10))
+    //   .withTransform((status, article) => article.decsCodes.length ? 'done' : 'pending'),
+    new TableColumn<Article, 'id'>('Article ID', 'id').withColFilter().withWidth(Width.pct(10))
       .withButton(ButtonType.BASIC)
+      // .withButtonColor('primary')
+      // .withNgClass((id, article) => article.decsCodes.length ? 'mat-success' : '' )
       .withNgStyle((id, article) => ({ color: article.decsCodes.length ? '#669966' : '' })),
-    new TableColumn<Article, 'title'>('Title', 'title').withColFilter()
-      // .withTransform(title => title.length > 41 ? title.slice(0, 41) + '...' : title)
+    new TableColumn<Article, 'title'>('Title', 'title').withColFilter().withWidth(Width.pct(80))
+    // .withTransform(title => title.length > 41 ? title.slice(0, 41) + '...' : title)
   ]
 
   constructor(

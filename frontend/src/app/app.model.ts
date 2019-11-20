@@ -7,11 +7,10 @@ export class User {
 }
 
 export class Article {
-  // tslint:disable-next-line: variable-name
   id?: string
   title?: string
   abstract?: string
-  decsCodes?: string[] // Remove after discard old versions 1 and 2 in app.component
+  decsCodes?: string[]
 }
 
 /**

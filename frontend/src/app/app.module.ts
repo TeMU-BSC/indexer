@@ -30,8 +30,8 @@ import { ArticleComponent } from './components/article/article.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
 import { HomeComponent } from './components/home/home.component'
 import { BulkEditComponent } from './components/bulk-edit/bulk-edit.component'
-import { BoldPipe } from './bold.pipe'
-import { NoSanitizePipe } from './no-sanitize.pipe'
+import { HighlightPipe } from './pipes/highlight.pipe'
+import { NoSanitizePipe } from './pipes/no-sanitize.pipe'
 import { ProfileComponent } from './components/profile/profile.component'
 import { AuthenticationService } from './services/auth.service'
 import { AuthGuardService } from './services/auth-guard.service'
@@ -47,7 +47,7 @@ import { ArticlesComponent } from './components/articles/articles.component'
     DescriptorsComponent,
     HomeComponent,
     BulkEditComponent,
-    BoldPipe,
+    HighlightPipe,
     NoSanitizePipe,
     ProfileComponent,
     RegisterComponent,

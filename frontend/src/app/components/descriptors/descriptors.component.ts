@@ -8,8 +8,10 @@ import { Observable } from 'rxjs'
 import { map, startWith, debounceTime } from 'rxjs/operators'
 import { Article, Descriptor } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
-import { formatDate } from '@angular/common'
 import { AuthenticationService } from 'src/app/services/auth.service'
+
+// TODO: Reordenar la lista completa de DeCS (JSON) para que los descriptores más comunes aparezcan
+//       primero en las sugerencias del autocomplete.
 
 @Component({
   selector: 'app-descriptors',
@@ -18,20 +20,18 @@ import { AuthenticationService } from 'src/app/services/auth.service'
 })
 export class DescriptorsComponent implements OnInit, OnChanges {
 
-  visible = true
+  @Input() article: Article
+  @ViewChild('descriptorInput', { static: false }) descriptorInput: ElementRef<HTMLInputElement>
+  @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete
+  // visible = true
   selectable = true
   removable = true
   addOnBlur = true
   separatorKeysCodes: number[] = [ENTER, COMMA]
-  descriptorCtrl = new FormControl()  // input form field to search among descriptors
-  filteredDescriptors: Observable<Descriptor[]>  // filtered options to easily pick an appropiate descriptor
+  descriptorCtrl = new FormControl()  // text input form field to search among descriptors
+  filteredDescriptors: Observable<Descriptor[]>  // suggested options
   descriptors: Descriptor[] = []  // chips list
   allDescriptors: Descriptor[]  // all available descriptors to pick
-  @ViewChild('descriptorInput', { static: false }) descriptorInput: ElementRef<HTMLInputElement>
-  @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete
-  @Input() article: Article
-  toHighlight = ''
-  isLoading = false
 
   constructor(
     private appService: AppService,
@@ -78,37 +78,21 @@ export class DescriptorsComponent implements OnInit, OnChanges {
    * @param value Manually typed text (string) or entire object (Descriptor) when selected from autocomplete list.
    */
   private _filter(value: string | Descriptor): Descriptor[] {
-    // Highlight match substring
-    this.toHighlight = value.toString()
-
     // Prepare the value to filter
     const stringifiedValue = typeof value === 'object' ? JSON.stringify(value) : value
+
     // const normalizedValue = this._normalize(stringifiedValue.toLowerCase().trim())
     const normalizedValue = this._normalize(stringifiedValue.toLowerCase())
 
-    // [Option 1] Filter by the whole stringified and lowercased descriptor object
-    // return this.allDescriptors.filter(
-    //   descriptor => {
-    //     // !JSON.stringify(this.descriptors).includes(normalizedValue) &&
-    //     this._normalize(JSON.stringify(descriptor).toLowerCase()).includes(normalizedValue)
-    //   }
-    // )
-
-    // [Option 2] Filter only by some attributes
-    return this.allDescriptors.filter(
-      descriptor =>
-        // Not showing the already added descriptors to this article regarding the current descriptor decsCode
-        // tslint:disable-next-line: no-unused-expression
-        !this.descriptors.some(d => d.decsCode.toLowerCase() === descriptor.decsCode) &&
-
-        // Keep filtering by these fields
-        (
-          this._normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
-          this._normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
-          this._normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
-          this._normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
-          this._normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
-        )
+    // Not showing the already added decsCodes to the current article and keep filtering by some specific fields
+    return this.allDescriptors.filter(descriptor =>
+      !this.descriptors.some(d => d.decsCode.toLowerCase() === descriptor.decsCode) && (
+        this._normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
+        this._normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
+        this._normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
+        this._normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
+        this._normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
+      )
     )
   }
 
