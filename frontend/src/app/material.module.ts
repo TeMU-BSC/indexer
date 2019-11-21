@@ -28,6 +28,8 @@ import {
   MatMenuModule,
   MatSnackBarModule,
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
+  MatRippleModule,
+  MatSlideToggleModule,
 } from '@angular/material'
 
 const material = [
@@ -55,7 +57,9 @@ const material = [
   MatStepperModule,
   MatButtonToggleModule,
   MatAutocompleteModule,
-  MatMenuModule
+  MatMenuModule,
+  MatRippleModule,
+  MatSlideToggleModule
 ]
 
 @NgModule({

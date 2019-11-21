@@ -3,6 +3,8 @@ import { Article, User } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
 import { AuthenticationService } from 'src/app/services/auth.service'
 import { TableColumn, Width, ButtonType } from 'simplemattable'
+import { ArticleComponent } from '../article/article.component'
+import { SlideToggleComponent } from '../slide-toggle/slide-toggle.component'
 
 @Component({
   selector: 'app-articles',
@@ -16,17 +18,29 @@ export class ArticlesComponent implements OnInit {
   currentArticles: Article[]
   color: string
 
-  // Columns for articles table
+  // Columns of articles simplemattable
+  completedCol = new TableColumn<Article, 'completed'>('Completado', 'completed').isDirectEdit(true)
+
   columns = [
-    // new TableColumn<Article, 'status'>('Status', 'status').withColFilter().withWidth(Width.pct(10))
-    //   .withTransform((status, article) => article.decsCodes.length ? 'done' : 'pending'),
-    new TableColumn<Article, 'id'>('Article ID', 'id').withColFilter().withWidth(Width.pct(10))
-      .withButton(ButtonType.BASIC)
-      // .withButtonColor('primary')
-      // .withNgClass((id, article) => article.decsCodes.length ? 'mat-success' : '' )
+    new TableColumn<Article, 'id'>('ID Artículo', 'id')
+      .withColFilter()
+      .withWidth(Width.pct(20))
       .withNgStyle((id, article) => ({ color: article.decsCodes.length ? '#669966' : '' })),
-    new TableColumn<Article, 'title'>('Title', 'title').withColFilter().withWidth(Width.pct(80))
-    // .withTransform(title => title.length > 41 ? title.slice(0, 41) + '...' : title)
+    // .withNgComponent(ArticleComponent)
+    // .withNgComponentInput((component: ArticleComponent, data, dataParent) => component.article = dataParent),
+    new TableColumn<Article, 'title'>('Título', 'title')
+      .withColFilter()
+      .isTextHiddenXs(true),
+    // .withWidth(Width.pct(80))
+    // .withTransform(title => title.length > 30 ? title.slice(0, 30) + '...' : title),
+
+    // new TableColumn<Article, 'completed'>('Completado', 'completed')
+    //   .withColFilter()
+    //   .withWidth(Width.pct(20))
+    //   .withNgComponent(SlideToggleComponent)
+    //   .withNgComponentInput((component: SlideToggleComponent, data, dataParent) => component.checked = dataParent.completed),
+
+    this.completedCol
   ]
 
   constructor(
@@ -35,6 +49,7 @@ export class ArticlesComponent implements OnInit {
 
   ngOnInit() {
     this.getArticles()
+    this.completedCol.withFormField(this.completedCol.getCheckboxFormField())
   }
 
   getArticles() {

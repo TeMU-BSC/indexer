@@ -16,6 +16,9 @@ interface TokenResponse {
 })
 export class AuthenticationService {
 
+  ip = 'localhost'
+  port = '5000'
+
   constructor(
     private http: HttpClient,
     private router: Router) { }
@@ -50,15 +53,15 @@ export class AuthenticationService {
   }
 
   public registerOne(user: User): Observable<any> {
-    return this.http.post<User>('/users/register/one', user)
+    return this.http.post<User>(`http://${this.ip}:${this.port}/users/register/one`, user)
   }
 
   public registerMany(users: User[]): Observable<any> {
-    return this.http.post<any>('/users/register/many', users)
+    return this.http.post<any>(`http://${this.ip}:${this.port}/users/register/many`, users)
   }
 
   public login(user: User): Observable<any> {
-    const base = this.http.post('/users/login', user)
+    const base = this.http.post(`http://${this.ip}:${this.port}/users/login`, user)
     const request = base.pipe(
       map((data: TokenResponse) => {
         if (data.token) {

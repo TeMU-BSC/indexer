@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BulkEditComponent } from './bulk-edit.component';
+import { ArticlesTableComponent } from './articles-table.component';
 
-describe('BulkEditComponent', () => {
-  let component: BulkEditComponent;
-  let fixture: ComponentFixture<BulkEditComponent>;
+describe('ArticlesTableComponent', () => {
+  let component: ArticlesTableComponent;
+  let fixture: ComponentFixture<ArticlesTableComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BulkEditComponent ]
+      declarations: [ ArticlesTableComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BulkEditComponent);
+    fixture = TestBed.createComponent(ArticlesTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

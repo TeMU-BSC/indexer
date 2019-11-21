@@ -1,8 +1,15 @@
+<!-- Option 1: Simple -->
+<!-- <h5>{{ article?.title }}</h5>
+<span>{{ article?.id }}</span>
+<p>{{ article?.abstract }}</p>
+<app-descriptors [article]="article"></app-descriptors> -->
+
+<!-- Option 2: Card -->
 <mat-card class="example-card p-0">
   <mat-card-header class="pt-3" style="background-color: #f2f2f2">
     <mat-card-title>
       {{ article?.title }}
-      <mat-chip>{{ article?.id }}</mat-chip>
+      ({{ article?.id }})
     </mat-card-title>
   </mat-card-header>
   <mat-card-content class="p-3">
@@ -10,3 +17,19 @@
     <app-descriptors [article]="article"></app-descriptors>
   </mat-card-content>
 </mat-card>
+
+<!-- Option 3: Expansion Panel -->
+<!-- <mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ article?.id }}
+      </mat-panel-title>
+      <mat-panel-description>
+        {{ article?.title }}
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <p>{{ article?.abstract }}</p>
+    <app-descriptors [article]="article"></app-descriptors>
+  </mat-expansion-panel>
+</mat-accordion> -->

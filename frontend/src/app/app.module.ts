@@ -29,14 +29,16 @@ import { LoginComponent } from './components/login/login.component'
 import { ArticleComponent } from './components/article/article.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
 import { HomeComponent } from './components/home/home.component'
-import { BulkEditComponent } from './components/bulk-edit/bulk-edit.component'
 import { HighlightPipe } from './pipes/highlight.pipe'
-import { NoSanitizePipe } from './pipes/no-sanitize.pipe'
 import { ProfileComponent } from './components/profile/profile.component'
 import { AuthenticationService } from './services/auth.service'
 import { AuthGuardService } from './services/auth-guard.service'
 import { RegisterComponent } from './components/register/register.component'
 import { ArticlesComponent } from './components/articles/articles.component'
+import { ArticlesTableLikeComponent } from './components/articles-table-like/articles-table-like.component'
+import { ArticlesTableComponent } from './components/articles-table/articles-table.component'
+import { CdkDetailRowDirective } from './components/articles-table/cdk-detail-row.directive'
+import { SlideToggleComponent } from './components/slide-toggle/slide-toggle.component'
 
 @NgModule({
   declarations: [
@@ -46,12 +48,14 @@ import { ArticlesComponent } from './components/articles/articles.component'
     ArticleComponent,
     DescriptorsComponent,
     HomeComponent,
-    BulkEditComponent,
     HighlightPipe,
-    NoSanitizePipe,
     ProfileComponent,
     RegisterComponent,
     ArticlesComponent,
+    ArticlesTableLikeComponent,
+    ArticlesTableComponent,
+    CdkDetailRowDirective,
+    SlideToggleComponent
   ],
   imports: [
     BrowserModule,
@@ -63,6 +67,10 @@ import { ArticlesComponent } from './components/articles/articles.component'
     MaterialModule,
     FlexLayoutModule,
     SimplemattableModule
+  ],
+  entryComponents: [
+    ArticleComponent,
+    SlideToggleComponent
   ],
   providers: [AuthenticationService, AuthGuardService],
   bootstrap: [AppComponent]

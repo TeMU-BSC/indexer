@@ -3,7 +3,8 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-.my-flat-green-button {
+
+/* .my-flat-green-button {
     color: white;
     background-color: #669966;
 }
@@ -11,16 +12,16 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .my-stroked-green-button {
     color: #669966;
     background-color: white;
-}
+} */
 
 /* Usage:
  * <button mat-raised-button color="success">Custom success</button>
  */
-.mat-success {
+/* .mat-success {
     color: #fff !important;
-    background-color: #28a745 !important; /* DeCS green: #669966 */
+    background-color: #669966 !important;
 }
 
 .mat-success[disabled] {
     background-color: rgba(0, 0, 0, 0.12) !important;
-}
+} */

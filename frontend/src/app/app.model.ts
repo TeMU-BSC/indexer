@@ -11,6 +11,7 @@ export class Article {
   title?: string
   abstract?: string
   decsCodes?: string[]
+  completed?: boolean
 }
 
 /**

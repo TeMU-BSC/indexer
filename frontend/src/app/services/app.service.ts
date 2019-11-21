@@ -11,8 +11,8 @@ import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
 })
 export class AppService {
 
-  ip = '84.88.52.79'
-  // ip = 'localhost'
+  // ip = '84.88.52.79'
+  ip = 'localhost'
   port = '5000'
   headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' })
   options = { headers: this.headers }
@@ -25,7 +25,7 @@ export class AppService {
   ) { }
 
   getArticles(user: User): Observable<Article[]> {
-    return this.http.post<Article[]>('/articles', user)
+    return this.http.post<Article[]>(`http://${this.ip}:${this.port}/articles`, user)
   }
 
   /**
@@ -68,14 +68,14 @@ export class AppService {
    * Add a new descriptor to database
    */
   addDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-    return this.http.post<Descriptor>('/descriptors/add', descriptor)
+    return this.http.post<Descriptor>(`http://${this.ip}:${this.port}/descriptors/add`, descriptor)
   }
 
   /**
    * Remove an existing descriptor from database
    */
   removeDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-    return this.http.post<Descriptor>('/descriptors/remove', descriptor)
+    return this.http.post<Descriptor>(`http://${this.ip}:${this.port}/descriptors/remove`, descriptor)
   }
 
   findDescriptorByDecsCode(decsCode: string): Descriptor {
