@@ -16,6 +16,9 @@
     <p [innerHTML]="article?.abstract"></p>
     <app-descriptors [article]="article"></app-descriptors>
   </mat-card-content>
+  <mat-card-actions class="p-3" fxLayout="row" fxLayoutAlign="end">
+    <button mat-button style="color: green">Marcar como completado</button>
+  </mat-card-actions>
 </mat-card>
 
 <!-- Option 3: Expansion Panel -->
