@@ -16,23 +16,15 @@
     <p [innerHTML]="article?.abstract"></p>
     <app-descriptors [article]="article"></app-descriptors>
   </mat-card-content>
-  <mat-card-actions class="p-3" fxLayout="row" fxLayoutAlign="end">
-    <button mat-button style="color: green">Marcar como completado</button>
+  <mat-card-actions fxLayout="row" fxLayoutAlign="space-between" class="px-4">
+    <a mat-button style="color: #669966; text-decoration: none;"
+      href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
+      Abrir el buscador DeCS <mat-icon class="h4">open_in_new</mat-icon>
+    </a>
+    <mat-slide-toggle color="accent" [checked]="article.completed" [disabled]="!article.decsCodes.length"
+      (change)="onChange($event)">
+      Completado
+      <!-- {{ completedArticle }} -->
+    </mat-slide-toggle>
   </mat-card-actions>
 </mat-card>
-
-<!-- Option 3: Expansion Panel -->
-<!-- <mat-accordion>
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{ article?.id }}
-      </mat-panel-title>
-      <mat-panel-description>
-        {{ article?.title }}
-      </mat-panel-description>
-    </mat-expansion-panel-header>
-    <p>{{ article?.abstract }}</p>
-    <app-descriptors [article]="article"></app-descriptors>
-  </mat-expansion-panel>
-</mat-accordion> -->

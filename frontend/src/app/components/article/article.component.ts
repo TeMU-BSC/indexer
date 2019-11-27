@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core'
 import { Article } from 'src/app/app.model'
+import { MatSlideToggleChange, MatSnackBar } from '@angular/material'
 
 @Component({
   selector: 'app-article',
@@ -9,19 +10,22 @@ import { Article } from 'src/app/app.model'
 export class ArticleComponent {
 
   @Input() article: Article
+  completedArticle: string
 
-  step = 0
+  constructor(private snackBar: MatSnackBar) { }
 
-  setStep(index: number) {
-    this.step = index
-  }
+  /**
+   * If article is uncompleted, mark as completed; and the other way around.
+   */
+  onChange(event: MatSlideToggleChange): void {
+    // Check if descriptors list is empty
+    // if (!this.article.decsCodes.length) {
+    //   this.snackBar.open('Atención: No se puede marcar como completado un artículo sin descriptores.', 'OK')
+    // } else {
+    //   this.article.completed = event.checked
+    // }
 
-  nextStep() {
-    this.step++
-  }
-
-  prevStep() {
-    this.step--
+    this.article.completed = event.checked
   }
 
 }

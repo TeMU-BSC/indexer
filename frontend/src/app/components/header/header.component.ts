@@ -9,6 +9,7 @@ import { AuthenticationService } from 'src/app/services/auth.service'
 export class HeaderComponent {
 
   title = 'Indizador de Descriptores de Ciencias de la Salud'
+  // title = 'Indizador DeCS'
 
   constructor(public auth: AuthenticationService) { }
 

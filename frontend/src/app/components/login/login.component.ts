@@ -33,7 +33,7 @@ export class LoginComponent {
       // }
 
       () => {
-        this.router.navigateByUrl('/')
+        this.router.navigateByUrl('/home')
       }
     )
   }

@@ -5,6 +5,7 @@ import { AuthenticationService } from 'src/app/services/auth.service'
 import { TableColumn, Width, ButtonType } from 'simplemattable'
 import { ArticleComponent } from '../article/article.component'
 import { SlideToggleComponent } from '../slide-toggle/slide-toggle.component'
+import { AbstractControl } from '@angular/forms'
 
 @Component({
   selector: 'app-articles',
@@ -17,19 +18,25 @@ export class ArticlesComponent implements OnInit {
   articles: Article[]
   currentArticles: Article[]
   color: string
+  // pastDateValidator: AbstractControl => control.value < this.article.decsCodes.length ? null : { }
+
 
   // Columns of articles simplemattable
-  completedCol = new TableColumn<Article, 'completed'>('Completado', 'completed').isDirectEdit(true)
+  completedCol = new TableColumn<Article, 'completed'>('Completado', 'completed')
+  // .withColFilter()
+    .isDirectEdit(true)
+    .withWidth(Width.pct(10))
 
   columns = [
     new TableColumn<Article, 'id'>('ID Artículo', 'id')
       .withColFilter()
-      .withWidth(Width.pct(20))
-      .withNgStyle((id, article) => ({ color: article.decsCodes.length ? '#669966' : '' })),
+      .withWidth(Width.pct(10)),
+    // .withNgStyle((id, article) => ({ color: article.decsCodes.length ? '#669966' : '' })),
     // .withNgComponent(ArticleComponent)
     // .withNgComponentInput((component: ArticleComponent, data, dataParent) => component.article = dataParent),
     new TableColumn<Article, 'title'>('Título', 'title')
       .withColFilter()
+      .withWidth(Width.pct(70))
       .isTextHiddenXs(true),
     // .withWidth(Width.pct(80))
     // .withTransform(title => title.length > 30 ? title.slice(0, 30) + '...' : title),
@@ -40,6 +47,10 @@ export class ArticlesComponent implements OnInit {
     //   .withNgComponent(SlideToggleComponent)
     //   .withNgComponentInput((component: SlideToggleComponent, data, dataParent) => component.checked = dataParent.completed),
 
+    new TableColumn<Article, 'decsCodes'>('Núm. descriptores', 'decsCodes')
+      .withColFilter()
+      .withWidth(Width.pct(10))
+      .withTransform(data => data.length.toString()),
     this.completedCol
   ]
 
@@ -49,7 +60,9 @@ export class ArticlesComponent implements OnInit {
 
   ngOnInit() {
     this.getArticles()
-    this.completedCol.withFormField(this.completedCol.getCheckboxFormField())
+    this.completedCol.withFormField(this.completedCol.getCheckboxFormField()
+      // .withValidators([this.pastDateValidator])
+    )
   }
 
   getArticles() {

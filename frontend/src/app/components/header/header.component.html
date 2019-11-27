@@ -8,18 +8,30 @@
 
     <!-- <small>{{ auth.getUserDetails()?.identity.name }} - Registered on: {{ auth.getUserDetails()?.identity.registered * 1000 | date:'full' }}</small> -->
 
-    <button *ngIf="auth.isLoggedIn()" mat-button [matMenuTriggerFor]="menu">{{ auth.getUserDetails()?.identity.name }}</button>
+    <!-- Option 1 -->
+    <!-- <button *ngIf="auth.isLoggedIn()" mat-button [matMenuTriggerFor]="menu">{{ auth.getUserDetails()?.identity.name }}</button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item routerLink="register">Registrar usuarios</button>
-      <button mat-menu-item style="color: #F44249"
-        (click)="auth.logout()">Cerrar sesión</button>
+      <button mat-menu-item style="color: #F44249" (click)="auth.logout()">Cerrar sesión</button>
     </mat-menu>
     <a *ngIf="auth.isLoggedIn()" mat-flat-button style="color: #669966"
       href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
       Buscador DeCS <mat-icon>open_in_new</mat-icon>
-    </a>
+    </a> -->
 
-    <!-- <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+    <div *ngIf="auth.isLoggedIn()">
+      <small>Hola, {{ auth.getUserDetails()?.identity.name }}</small>
+      <!-- <button mat-button color="warn" (click)="auth.logout()">Cerrar sesión</button> -->
+      <button mat-icon-button color="warn" matTooltip="Cerrar sesión" aria-label="Logout icon" (click)="auth.logout()">
+        <mat-icon>power_settings_new</mat-icon>
+      </button>
+      <!-- <a mat-flat-button style="color: #669966"
+        href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
+        Buscador DeCS <mat-icon>open_in_new</mat-icon>
+      </a> -->
+    </div>
+
+      <!-- <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #menu="matMenu">

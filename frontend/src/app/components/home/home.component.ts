@@ -5,6 +5,7 @@ import { Observable } from 'rxjs'
 import { map, startWith } from 'rxjs/operators'
 import { User, Article, Descriptor } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
+import { AuthenticationService } from 'src/app/services/auth.service'
 
 // TODO implementar login contra bbdd
 // TODO enviar al backend un descriptor cada vez que el anotador seleccione uno del autocompletar
@@ -15,89 +16,91 @@ import { AppService } from 'src/app/services/app.service'
 })
 export class HomeComponent implements OnInit {
 
-  // user: User
-  annotators: User[] = []
-  articles: Article[] = []
-  article: Article = {}
-  allDescriptors: Descriptor[] = []
-  filteredDescriptors: Observable<Descriptor[]>
-  myControl = new FormControl()
-  decsForm: FormGroup
-
-  // VERISON 1: AUTOCOMPLETAR FUNCIONA OK
-  descriptorsString = ''
-  descriptorsSimpleArray: string[]
-  articleUpdatedDescriptors: Descriptor[] = []
-
-  constructor(
-    private snackBar: MatSnackBar,
-    private fb: FormBuilder
-  ) {
-    this.initForm()
-  }
-
-  get annotator() { return this.decsForm.get('annotator') as FormControl }
-  get descriptors() { return this.decsForm.get('descriptors') as FormArray }
+  constructor(public auth: AuthenticationService) { }
 
   ngOnInit() {
   }
 
-  initForm() {
-    this.decsForm = this.fb.group({
-      id: '',
-      annotator: ['', Validators.required],
-      descriptors: this.fb.array([])
-    })
-  }
+  // // user: User
+  // annotators: User[] = []
+  // articles: Article[] = []
+  // article: Article = {}
+  // allDescriptors: Descriptor[] = []
+  // filteredDescriptors: Observable<Descriptor[]>
+  // myControl = new FormControl()
+  // decsForm: FormGroup
 
-  resetForm() {
-    window.location.reload()
-  }
+  // // VERISON 1: AUTOCOMPLETAR FUNCIONA OK
+  // descriptorsString = ''
+  // descriptorsSimpleArray: string[]
+  // articleUpdatedDescriptors: Descriptor[] = []
 
-  addDescriptor() {
-    this.descriptors.push(this.fb.control(''))
-  }
-
-  removeDescriptor(index: number) {
-    this.descriptors.removeAt(index)
-  }
-
-  // getUsers() {
-  //   this.appService.getUsers().subscribe(data => this.annotators = data)
+  // constructor(
+  //   private snackBar: MatSnackBar,
+  //   private fb: FormBuilder
+  // ) {
+  //   this.initForm()
   // }
 
+  // get annotator() { return this.decsForm.get('annotator') as FormControl }
+  // get descriptors() { return this.decsForm.get('descriptors') as FormArray }
+
+  // initForm() {
+  //   this.decsForm = this.fb.group({
+  //     id: '',
+  //     annotator: ['', Validators.required],
+  //     descriptors: this.fb.array([])
+  //   })
+  // }
+
+  // resetForm() {
+  //   window.location.reload()
+  // }
+
+  // addDescriptor() {
+  //   this.descriptors.push(this.fb.control(''))
+  // }
+
+  // removeDescriptor(index: number) {
+  //   this.descriptors.removeAt(index)
+  // }
+
+  // // getUsers() {
+  // //   this.appService.getUsers().subscribe(data => this.annotators = data)
+  // // }
 
 
-  toArray() {
-    this.descriptorsSimpleArray = this.descriptorsString.split(/[\s\.\-,;:]+/)
-  }
 
-  onSelectionChange(event: MatAutocompleteSelectedEvent) {
-    this.descriptors.push(this.fb.control({
-      id: event.option.value.id,
-      added: {
-        by: this.annotator.value,
-        on: Date.now() / 1000
-      }
-    }))
-  }
+  // toArray() {
+  //   this.descriptorsSimpleArray = this.descriptorsString.split(/[\s\.\-,;:]+/)
+  // }
 
-  saveChanges() {
-    this.decsForm.controls.id.setValue(this.article.id)
-    console.log(this.decsForm.value)
+  // onSelectionChange(event: MatAutocompleteSelectedEvent) {
+  //   this.descriptors.push(this.fb.control({
+  //     id: event.option.value.id,
+  //     added: {
+  //       by: this.annotator.value,
+  //       on: Date.now() / 1000
+  //     }
+  //   }))
+  // }
 
-    // Send request to backend
-    // this.appService.updateArticle(this.article).subscribe(bu => console.trace(bu))
+  // saveChanges() {
+  //   this.decsForm.controls.id.setValue(this.article.id)
+  //   console.log(this.decsForm.value)
 
-    this.snackBar.open('DeCS saved successfully.', 'OK', {
-      duration: 5000
-    })
+  //   // Send request to backend
+  //   // this.appService.updateArticle(this.article).subscribe(bu => console.trace(bu))
 
-  }
+  //   this.snackBar.open('DeCS saved successfully.', 'OK', {
+  //     duration: 5000
+  //   })
 
-  // https://www.freecodecamp.org/news/best-practices-for-a-clean-and-performant-angular-application-288e7b39eb6f/
-  trackByFn(index: number, item: any) {
-    return item.id // unique id corresponding to the item
-  }
+  // }
+
+  // // https://www.freecodecamp.org/news/best-practices-for-a-clean-and-performant-angular-application-288e7b39eb6f/
+  // trackByFn(index: number, item: any) {
+  //   return item.id // unique id corresponding to the item
+  // }
 
 }

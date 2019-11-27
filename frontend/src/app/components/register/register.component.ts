@@ -1,6 +1,5 @@
 import { Component } from '@angular/core'
 import { AuthenticationService } from 'src/app/services/auth.service'
-import { Router } from '@angular/router'
 import { User, Response } from 'src/app/app.model'
 import { MatSnackBar } from '@angular/material'
 import { AppService } from 'src/app/services/app.service'
@@ -21,24 +20,23 @@ export class RegisterComponent {
 
   constructor(
     public auth: AuthenticationService,
-    private router: Router,
     private snackBar: MatSnackBar,
     public appService: AppService
   ) { }
 
-  registerOne(user: User) {
-    this.auth.registerOne(user).subscribe(
-      response => this.response = response,
-      error => console.error(error),
-      () => {
-        if (this.response.success) {
-          this.snackBar.open(`Usuario registrado correctamente`, 'OK', { duration: 10000 })
-        } else {
-          this.snackBar.open(`Error: ${this.response.errorMessage}`, 'Revisar los IDs de usuario existentes')
-        }
-      }
-    )
-  }
+  // registerOne(user: User) {
+  //   this.auth.registerOne(user).subscribe(
+  //     response => this.response = response,
+  //     error => console.error(error),
+  //     () => {
+  //       if (this.response.success) {
+  //         this.snackBar.open(`Usuario registrado correctamente`, 'OK', { duration: 10000 })
+  //       } else {
+  //         this.snackBar.open(`Error: ${this.response.errorMessage}`, 'REVISAR FICHERO', { duration: 30000 })
+  //       }
+  //     }
+  //   )
+  // }
 
   registerMany(users?: User[]) {
     this.auth.registerMany(this.users).subscribe(
@@ -48,7 +46,7 @@ export class RegisterComponent {
         if (this.response.success) {
           this.snackBar.open(`Usuarios registrados: ${this.response.registeredUsers}`, 'OK', { duration: 10000 })
         } else {
-          this.snackBar.open(`Error: ${this.response.errorMessage}`, 'Revisar los IDs de usuario del fichero JSON')
+          this.snackBar.open(`Error: ${this.response.errorMessage}`, 'REVISAR FICHERO', { duration: 60000 })
         }
       }
     )
