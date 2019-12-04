@@ -16,7 +16,7 @@ import { AuthenticationService } from 'src/app/services/auth.service'
 @Component({
   selector: 'app-descriptors',
   templateUrl: './descriptors.component.html',
-  styleUrls: ['./descriptors.component.css']
+  styleUrls: ['./descriptors.component.scss']
 })
 export class DescriptorsComponent implements OnInit, OnChanges {
 
@@ -32,6 +32,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   filteredDescriptors: Observable<Descriptor[]>  // suggested options
   descriptors: Descriptor[] = []  // chips list
   allDescriptors: Descriptor[]  // all available descriptors to pick
+  chipSelected = true
 
   constructor(
     private appService: AppService,
@@ -91,7 +92,8 @@ export class DescriptorsComponent implements OnInit, OnChanges {
         this._normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
         this._normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
         this._normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
-        this._normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
+        this._normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)  // ||
+        // this._normalize(descriptor.definitionSpanish.toLowerCase()).includes(normalizedValue)
       )
     )
   }

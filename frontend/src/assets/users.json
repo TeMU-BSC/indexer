@@ -8,6 +8,14 @@
     "articleIds": []
   },
   {
+    "id": "Z0",
+    "name": "Admin Z",
+    "email": "adminz@test.com",
+    "password": "testing",
+    "role": "admin",
+    "articleIds": []
+  },
+  {
     "id": "A1",
     "name": "María",
     "email": "maria@test.com",

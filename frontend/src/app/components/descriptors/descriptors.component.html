@@ -1,27 +1,30 @@
 <mat-form-field appearance="outline" class="w-100">
   <mat-label>Descriptores de Ciencias de la Salud (DeCS)</mat-label>
   <mat-chip-list #chipList aria-label="Descriptor selection">
-    <mat-chip *ngFor="let descriptor of descriptors" [selectable]="selectable" [removable]="removable"
-      (removed)="remove(descriptor)">
+    <mat-chip *ngFor="let descriptor of descriptors" class="mat-chip-decs" (click)="chip.select()" #chip="matChip"
+      [removable]="removable" (removed)="remove(descriptor)" [selectable]="selectable" [selected]="chipSelected">
       {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
     <input placeholder="Término o Número de Registro..." #descriptorInput [formControl]="descriptorCtrl"
-      [matAutocomplete]="auto" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-      [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)">
+      [matAutocomplete]="auto" matAutocompletePosition="auto" [matChipInputFor]="chipList"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+      (matChipInputTokenEnd)="add($event)">
   </mat-chip-list>
   <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="selected($event)">
     <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
       <span [innerHTML]="descriptor.termSpanish | highlight: descriptorCtrl.value"></span>
       (<span [innerHTML]="descriptor.decsCode | highlight: descriptorCtrl.value"></span>)
+      - <span [innerHTML]="descriptor.definitionSpanish | highlight: descriptorCtrl.value"></span>
     </mat-option>
   </mat-autocomplete>
-  <!-- <mat-hint>
-    <a style="color: #669966"
+  <mat-hint>
+    <a class="mat-green"
       href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
-      Buscador DeCS <mat-icon>open_in_new</mat-icon>
+      Buscador DeCS
+      <!-- <mat-icon>open_in_new</mat-icon> -->
     </a>
-  </mat-hint> -->
+  </mat-hint>
 </mat-form-field>
 
 <!-- <pre>Current descriptors: {{ descriptors | json }}</pre> -->
