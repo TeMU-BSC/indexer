@@ -32,7 +32,6 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   filteredDescriptors: Observable<Descriptor[]>  // suggested options
   descriptors: Descriptor[] = []  // chips list
   allDescriptors: Descriptor[]  // all available descriptors to pick
-  chipSelected = true
 
   constructor(
     private appService: AppService,
@@ -42,6 +41,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     // TEST
+    // console.log(formatDate(Date.now(), 'yyyy-MM-ddTHH:mm:ss.SSS', 'en-US'))
     // this.appService.getDescriptorsFromTSV()
 
     // Get all descriptors from local JSON file
@@ -107,42 +107,6 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   }
 
-  /**
-   * Add descriptor only when MatAutocomplete is not open
-   * to make sure this does not conflict with OptionSelected Event.
-   */
-  add(event: MatChipInputEvent, descriptorToReAdd?: Descriptor): void {
-    if (!this.matAutocomplete.isOpen) {
-      // [DISABLED] Add custom typed text
-      // const value = event.value
-      // if ((value || '').trim()) {
-      //   this.descriptors.push(value)
-      // }
-
-      // Clear the text in input field
-      if (event) {
-        event.input.value = event.input ? '' : null
-      }
-
-      // Add a descriptor that has been recently removed but inmediately undone
-      // by clicking the action button of the snackbar.
-      if (descriptorToReAdd) {
-        this.descriptors.push(descriptorToReAdd)
-
-        const descriptorToAdd = {
-          decsCode: descriptorToReAdd.decsCode,
-          userId: this.auth.getUserDetails().identity.id,
-          articleId: this.article.id
-        }
-        this.appService.addDescriptor(descriptorToAdd).subscribe()
-
-        // console.log(formatDate(Date.now(), 'yyyy-MM-ddTHH:mm:ss.SSS', 'en-US'))
-      }
-
-      this.descriptorCtrl.setValue('')
-    }
-  }
-
   remove(descriptor: Descriptor): void {
     // Remove chip from input field
     const index = this.descriptors.indexOf(descriptor)
@@ -156,18 +120,16 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       userId: this.auth.getUserDetails().identity.id,
       articleId: this.article.id
     }
+    this.appService.removeDescriptor(descriptorToRemove).subscribe()
 
-    // --> TODO: Don't remove, just wait for the snackbar to timeout automatic... (Vicky's idea)
-    // this.appService.removeDescriptor(descriptorToRemove).subscribe()
-
-    // Timeout of some seconds to be able to undo the removal
+    // Visual information to the user
     const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'DESHACER')
 
-    // If the action button is clicked
-    snackBarRef.onAction().subscribe(() => this.add(null, descriptor))
-
-    // If the action button is not clicked, remove the descriptor after the timeout
-    snackBarRef.afterDismissed().subscribe(() => this.appService.removeDescriptor(descriptorToRemove).subscribe())
+    // If the action button is clicked, re-add the recently removed descriptor
+    snackBarRef.onAction().subscribe(() => {
+      this.descriptors.push(descriptor)
+      this.appService.addDescriptor(descriptorToRemove).subscribe()
+    })
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
@@ -181,16 +143,13 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     this.descriptorInput.nativeElement.value = ''
     this.descriptorCtrl.setValue('')
 
-    // Remove the clicked chip descriptor from database
+    // Add the clicked chip descriptor to database
     const descriptorToAdd = {
       decsCode: selectedDescriptor.decsCode,
       userId: this.auth.getUserDetails().identity.id,
       articleId: this.article.id
     }
     this.appService.addDescriptor(descriptorToAdd).subscribe()
-
-    // Viasual feedback to user
-    // this.snackBar.open(`Añadido: ${selectedDescriptor.termSpanish} (${selectedDescriptor.decsCode})`, 'OK', { duration: 5000 })
   }
 
 }

@@ -30,9 +30,9 @@ export class RegisterComponent {
   //     error => console.error(error),
   //     () => {
   //       if (this.response.success) {
-  //         this.snackBar.open(`Usuario registrado correctamente`, 'OK', { duration: 10000 })
+  //         this.snackBar.open(`Usuario registrado correctamente`, 'OK')
   //       } else {
-  //         this.snackBar.open(`Error: ${this.response.errorMessage}`, 'REVISAR FICHERO', { duration: 30000 })
+  //         this.snackBar.open(`Error: ${this.response.errorMessage}`, 'OK')
   //       }
   //     }
   //   )
@@ -44,9 +44,9 @@ export class RegisterComponent {
       error => console.error(error),
       () => {
         if (this.response.success) {
-          this.snackBar.open(`Usuarios registrados: ${this.response.registeredUsers}`, 'OK', { duration: 10000 })
+          this.snackBar.open(`Usuarios registrados: ${this.response.registeredUsers}`, 'OK')
         } else {
-          this.snackBar.open(`Error: ${this.response.errorMessage}`, 'REVISAR FICHERO', { duration: 60000 })
+          this.snackBar.open(`Error: ${this.response.errorMessage}`, 'REVISAR FICHERO')
         }
       }
     )

@@ -9,22 +9,24 @@
   <mat-card-header class="pt-3" style="background-color: #f2f2f2">
     <mat-card-title>
       {{ article?.title }}
-      ({{ article?.id }})
+      <span class="text-muted">({{ article?.id }})</span>
     </mat-card-title>
   </mat-card-header>
   <mat-card-content class="p-3">
     <p [innerHTML]="article?.abstract"></p>
     <app-descriptors [article]="article"></app-descriptors>
   </mat-card-content>
-  <mat-card-actions fxLayout="row" fxLayoutAlign="space-between" class="p-4">
+  <mat-card-actions fxLayout="row" fxLayoutAlign="end" class="p-4">
     <!-- <a mat-button style="color: #669966; text-decoration: none;"
       href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
       Abrir el buscador DeCS <mat-icon class="h4">open_in_new</mat-icon>
     </a> -->
     <mat-slide-toggle color="accent" [checked]="article.completed" [disabled]="!article.decsCodes.length"
       (change)="onChange($event)">
-      Completado
-      <!-- {{ completedArticle }} -->
+      Marcar como completado
     </mat-slide-toggle>
+    <!-- <mat-slide-toggle color="accent" [checked]="article.completed" (change)="onChange($event)">
+      Marcar como completado
+    </mat-slide-toggle> -->
   </mat-card-actions>
 </mat-card>

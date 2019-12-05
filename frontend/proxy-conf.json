@@ -1,13 +1,13 @@
 {
-    "/articles": {
+    "/article": {
         "target": "http://localhost:5000",
         "secure": false
     },
-    "/descriptors": {
+    "/descriptor": {
         "target": "http://localhost:5000",
         "secure": false
     },
-    "/users": {
+    "/user": {
         "target": "http://localhost:5000",
         "secure": false
     }

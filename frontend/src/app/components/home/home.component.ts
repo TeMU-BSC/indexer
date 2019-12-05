@@ -57,20 +57,6 @@ export class HomeComponent implements OnInit {
   //   window.location.reload()
   // }
 
-  // addDescriptor() {
-  //   this.descriptors.push(this.fb.control(''))
-  // }
-
-  // removeDescriptor(index: number) {
-  //   this.descriptors.removeAt(index)
-  // }
-
-  // // getUsers() {
-  // //   this.appService.getUsers().subscribe(data => this.annotators = data)
-  // // }
-
-
-
   // toArray() {
   //   this.descriptorsSimpleArray = this.descriptorsString.split(/[\s\.\-,;:]+/)
   // }
@@ -92,9 +78,7 @@ export class HomeComponent implements OnInit {
   //   // Send request to backend
   //   // this.appService.updateArticle(this.article).subscribe(bu => console.trace(bu))
 
-  //   this.snackBar.open('DeCS saved successfully.', 'OK', {
-  //     duration: 5000
-  //   })
+  //   this.snackBar.open('DeCS saved successfully.', 'OK')
 
   // }
 

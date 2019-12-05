@@ -25,7 +25,7 @@ export class AppService {
   ) { }
 
   getArticles(user: User): Observable<Article[]> {
-    return this.http.post<Article[]>(`http://${this.ip}:${this.port}/articles`, user)
+    return this.http.post<Article[]>(`http://${this.ip}:${this.port}/article/all`, user)
   }
 
   /**
@@ -68,14 +68,14 @@ export class AppService {
    * Add a new descriptor to database
    */
   addDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-    return this.http.post<Descriptor>(`http://${this.ip}:${this.port}/descriptors/add`, descriptor)
+    return this.http.post<Descriptor>(`http://${this.ip}:${this.port}/descriptor/add`, descriptor)
   }
 
   /**
    * Remove an existing descriptor from database
    */
   removeDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-    return this.http.post<Descriptor>(`http://${this.ip}:${this.port}/descriptors/remove`, descriptor)
+    return this.http.post<Descriptor>(`http://${this.ip}:${this.port}/descriptor/remove`, descriptor)
   }
 
   findDescriptorByDecsCode(decsCode: string): Descriptor {
@@ -95,5 +95,19 @@ export class AppService {
   //   console.log(parsedContent)
   //   return parsedContent
   // }
+
+  /**
+   * Mark an articleId as completed by the current user in database
+   */
+  addCompletedArticle(article): Observable<Article> {
+    return this.http.post<Article>(`http://${this.ip}:${this.port}/article/complete/add`, article)
+  }
+
+  /**
+   * Mark an articleId as uncompleted by the current user in database
+   */
+  removeCompletedArticle(article): Observable<Article> {
+    return this.http.post<Article>(`http://${this.ip}:${this.port}/article/complete/remove`, article)
+  }
 
 }

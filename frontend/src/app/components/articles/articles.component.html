@@ -39,7 +39,7 @@
 <div fxLayout="column" fxLayoutGap="1em" class="p-3">
   <smc-simplemattable [data]="articles" [columns]="columns" [filter]="false" [paginator]="true" [sorting]="true"
     [paginatorPageSize]="5" [paginatorPageSizeOptions]="[5, 10, 25, 100]" [rowClickable]="true"
-    (rowClick)="selectArticle($event)" fxFlex="30">
+    (rowClick)="selectArticle($event)">
   </smc-simplemattable>
-  <app-article *ngIf="article" [article]="article" fxFlex="70"></app-article>
+  <app-article *ngIf="article" [article]="article"></app-article>
 </div>

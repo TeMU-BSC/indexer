@@ -4,16 +4,14 @@
     "name": "Administrador",
     "email": "admin@test.com",
     "password": "testing",
-    "role": "admin",
-    "articleIds": []
+    "role": "admin"
   },
   {
     "id": "Z0",
     "name": "Admin Z",
     "email": "adminz@test.com",
     "password": "testing",
-    "role": "admin",
-    "articleIds": []
+    "role": "admin"
   },
   {
     "id": "A1",
@@ -21,7 +19,7 @@
     "email": "maria@test.com",
     "password": "testing",
     "role": "annotator",
-    "articleIds": [
+    "assignedArticles": [
       "ibc-ET2-2298",
       "ibc-ET1-2921",
       "biblio-984861",
@@ -42,6 +40,10 @@
       "biblio-984894",
       "biblio-996904",
       "ibc-FGT-2232"
+    ],
+    "completedArticles": [
+      "ibc-ET2-2298",
+      "ibc-ET1-2921"
     ]
   },
   {
@@ -50,7 +52,7 @@
     "email": "carlos@test.com",
     "password": "testing",
     "role": "annotator",
-    "articleIds": [
+    "assignedArticles": [
       "ibc-ET2-2298",
       "biblio-1003329",
       "biblio-986686",
@@ -71,6 +73,10 @@
       "biblio-1011715",
       "ibc-ET1-2876",
       "ibc-FGT-1131"
+    ],
+    "completedArticles": [
+      "biblio-1003329",
+      "biblio-986686"
     ]
   }
 ]

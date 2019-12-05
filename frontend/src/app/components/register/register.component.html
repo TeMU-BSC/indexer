@@ -1,50 +1,41 @@
-<div fxLayout="row" fxLayoutAlign="center center" class="p-3">
-
-  <div fxLayout="column">
-
-    <!-- <mat-card fxFlex="25">
-      <mat-card-content fxLayout="column" class="p-3">
-        <mat-form-field>
-          <input matInput placeholder="Id" [(ngModel)]="user.id" name="id" required>
-        </mat-form-field>
-        <mat-form-field>
-          <input matInput placeholder="Name" [(ngModel)]="user.name" name="name" required>
-        </mat-form-field>
-        <mat-form-field>
-          <input matInput placeholder="Email" [(ngModel)]="user.email" name="email" required>
-        </mat-form-field>
-        <mat-form-field>
-          <input matInput placeholder="Contraseña" [(ngModel)]="user.password" type="password" name="password" required>
-        </mat-form-field>
-        <mat-form-field>
-          <input matInput placeholder="Confirma contraseña" [(ngModel)]="user.passwordConfirm" type="password"
-            name="passwordConfirm" required>
-        </mat-form-field>
-        <button mat-raised-button color="primary" (click)="registerOne(user)">Register New User</button>
-      </mat-card-content>
-    </mat-card>
-
-    <small fxFlex="25" fxFlexAlign="center">- or -</small> -->
-
-    <mat-card fxFlex="25">
-      <mat-card-content fxLayout="column" class="p-3">
-        <h6>Elige un fichero JSON que contenga una lista de usuarios con el siguiente formato:</h6>
-        <pre>{{ exampleUser | json }}</pre>
-      </mat-card-content>
-      <mat-card-actions fxLayout="column">
-        <mat-form-field>
-          <ngx-mat-file-input #removableInput placeholder="Seleccionar fichero JSON" [accept]="'.json'"
-            (change)="onFileSelected($event)">
-          </ngx-mat-file-input>
-          <button mat-icon-button matSuffix *ngIf="!removableInput.empty" (click)="removableInput.clear($event)">
-            <mat-icon>clear</mat-icon>
-          </button>
-          <mat-icon matSuffix>attach_file</mat-icon>
-        </mat-form-field>
-        <button mat-raised-button color="accent" (click)="registerMany()" class="mt-3">Registro Masivo</button>
-      </mat-card-actions>
-    </mat-card>
-
+<section class="p-5">
+  <h3 class="pb-3">Registro de usuarios</h3>
+  <h6>Elige un fichero JSON que contenga una lista de usuarios con el siguiente formato:</h6>
+  <pre class="mat-elevation-z2 p-2">{{ exampleUser | json }}</pre>
+  <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="start start">
+    <mat-form-field>
+      <ngx-mat-file-input #removableInput placeholder="Seleccionar fichero JSON" [accept]="'.json'"
+        (change)="onFileSelected($event)">
+      </ngx-mat-file-input>
+      <button mat-icon-button matSuffix *ngIf="!removableInput.empty" (click)="removableInput.clear($event)">
+        <mat-icon>clear</mat-icon>
+      </button>
+      <mat-icon matSuffix>attach_file</mat-icon>
+    </mat-form-field>
+    <button mat-raised-button color="accent" [disabled]="removableInput.empty" (click)="registerMany()">
+      Registrar usuarios
+    </button>
   </div>
+</section>
 
-</div>
+<!-- <mat-card fxFlex="25">
+  <mat-card-content fxLayout="column" class="p-3">
+    <mat-form-field>
+      <input matInput placeholder="Id" [(ngModel)]="user.id" name="id" required>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Name" [(ngModel)]="user.name" name="name" required>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Email" [(ngModel)]="user.email" name="email" required>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Contraseña" [(ngModel)]="user.password" type="password" name="password" required>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Confirma contraseña" [(ngModel)]="user.passwordConfirm" type="password"
+        name="passwordConfirm" required>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="registerOne(user)">Register New User</button>
+  </mat-card-content>
+</mat-card> -->

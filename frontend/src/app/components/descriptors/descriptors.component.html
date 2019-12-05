@@ -1,15 +1,15 @@
 <mat-form-field appearance="outline" class="w-100">
   <mat-label>Descriptores de Ciencias de la Salud (DeCS)</mat-label>
   <mat-chip-list #chipList aria-label="Descriptor selection">
-    <mat-chip *ngFor="let descriptor of descriptors" class="mat-chip-decs" (click)="chip.select()" #chip="matChip"
-      [removable]="removable" (removed)="remove(descriptor)" [selectable]="selectable" [selected]="chipSelected">
+    <mat-chip *ngFor="let descriptor of descriptors" (click)="chip.select()" #chip="matChip"
+      [removable]="removable" (removed)="remove(descriptor)" [selectable]="selectable">
       {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
     <input placeholder="Término o Número de Registro..." #descriptorInput [formControl]="descriptorCtrl"
       [matAutocomplete]="auto" matAutocompletePosition="auto" [matChipInputFor]="chipList"
       [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
-      (matChipInputTokenEnd)="add($event)">
+      >
   </mat-chip-list>
   <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="selected($event)">
     <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">

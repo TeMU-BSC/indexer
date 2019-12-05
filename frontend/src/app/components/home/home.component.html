@@ -1,6 +1,6 @@
-<div *ngIf="auth.getUserDetails()?.identity.role === 'admin'">
-  <h3>Admin panel</h3>
-  <button mat-raised-button routerLink="/register">Registrar usuarios</button>
+<div *ngIf="auth.getUserDetails()?.identity.role === 'admin'" class="p-5">
+  <h3 class="pb-3">Admin panel</h3>
+  <button mat-stroked-button color="primary" routerLink="/register">Registrar usuarios</button>
 </div>
 
 <app-articles *ngIf="auth.getUserDetails()?.identity.role === 'annotator'"></app-articles>

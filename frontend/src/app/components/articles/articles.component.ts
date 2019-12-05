@@ -18,41 +18,7 @@ export class ArticlesComponent implements OnInit {
   articles: Article[]
   currentArticles: Article[]
   color: string
-  // pastDateValidator: AbstractControl => control.value < this.article.decsCodes.length ? null : { }
-
-
-  // Columns of articles simplemattable
-  completedCol = new TableColumn<Article, 'completed'>('Completado', 'completed')
-  // .withColFilter()
-    .isDirectEdit(true)
-    .withWidth(Width.pct(10))
-
-  columns = [
-    new TableColumn<Article, 'id'>('ID Artículo', 'id')
-      .withColFilter()
-      .withWidth(Width.pct(10)),
-    // .withNgStyle((id, article) => ({ color: article.decsCodes.length ? '#669966' : '' })),
-    // .withNgComponent(ArticleComponent)
-    // .withNgComponentInput((component: ArticleComponent, data, dataParent) => component.article = dataParent),
-    new TableColumn<Article, 'title'>('Título', 'title')
-      .withColFilter()
-      .withWidth(Width.pct(70))
-      .isTextHiddenXs(true),
-    // .withWidth(Width.pct(80))
-    // .withTransform(title => title.length > 30 ? title.slice(0, 30) + '...' : title),
-
-    // new TableColumn<Article, 'completed'>('Completado', 'completed')
-    //   .withColFilter()
-    //   .withWidth(Width.pct(20))
-    //   .withNgComponent(SlideToggleComponent)
-    //   .withNgComponentInput((component: SlideToggleComponent, data, dataParent) => component.checked = dataParent.completed),
-
-    new TableColumn<Article, 'decsCodes'>('Núm. descriptores', 'decsCodes')
-      .withColFilter()
-      .withWidth(Width.pct(10))
-      .withTransform(data => data.length.toString()),
-    this.completedCol
-  ]
+  columns = []
 
   constructor(
     private appService: AppService,
@@ -60,9 +26,40 @@ export class ArticlesComponent implements OnInit {
 
   ngOnInit() {
     this.getArticles()
-    this.completedCol.withFormField(this.completedCol.getCheckboxFormField()
-      // .withValidators([this.pastDateValidator])
-    )
+
+    const completedCol = new TableColumn<Article, 'completed'>('Completado', 'completed')
+    completedCol.withFormField(completedCol.getCheckboxFormField())
+
+    this.columns = [
+      new TableColumn<Article, 'title'>('Título', 'title')
+        .withWidth(Width.pct(70))
+        .withColFilter()
+        .isHiddenXs(true),
+      // .isTextHiddenXs(true),
+      // .withTransform(title => title.length > 30 ? title.slice(0, 30) + '...' : title),
+      new TableColumn<Article, 'id'>('ID Artículo', 'id')
+        .withWidth(Width.pct(10))
+        .withColFilter(),
+      // .withNgStyle((id, article) => ({ color: article.decsCodes.length ? '#669966' : '' })),
+      // .withNgComponent(ArticleComponent)
+      // .withNgComponentInput((component: ArticleComponent, data, dataParent) => component.article = dataParent),
+      new TableColumn<Article, 'decsCodes'>('Núm. descriptores', 'decsCodes')
+        .withWidth(Width.pct(10))
+        .withColFilter()
+        .withTransform(data => data.length.toString()),
+      // new TableColumn<Article, 'completed'>('Completado', 'completed')
+      //   .withColFilter()
+      //   .withNgComponent(SlideToggleComponent)
+      //   .withNgComponentInput((component: SlideToggleComponent, data, dataParent) => component.checked = dataParent.completed),
+      // completedCol
+      //   .withWidth(Width.pct(10))
+      //   .isDirectEdit(true)
+      //   .withColFilter()
+      new TableColumn<Article, 'completed'>('Completado', 'completed')
+        .withWidth(Width.pct(10))
+        .withColFilter()
+        .withTransform(data => data.toString()),
+    ]
   }
 
   getArticles() {
@@ -73,19 +70,19 @@ export class ArticlesComponent implements OnInit {
     })
   }
 
-  onPageChange($event) {
-    this.currentArticles = this.articles.slice(
-      $event.pageIndex * $event.pageSize,
-      $event.pageIndex * $event.pageSize + $event.pageSize
-    )
-  }
-
   selectArticle(article: Article) {
     this.article = article
   }
 
-  setColor(article: Article): string {
-    return article.decsCodes.length ? '' : 'primary'
-  }
+  // onPageChange($event) {
+  //   this.currentArticles = this.articles.slice(
+  //     $event.pageIndex * $event.pageSize,
+  //     $event.pageIndex * $event.pageSize + $event.pageSize
+  //   )
+  // }
+
+  // setColor(article: Article): string {
+  //   return article.decsCodes.length ? '' : 'primary'
+  // }
 
 }
