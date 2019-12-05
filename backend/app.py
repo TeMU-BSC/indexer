@@ -24,20 +24,22 @@ jwt = JWTManager(app)
 CORS(app)
 
 
-@app.route('/users/register/one', methods=['POST'])
+@app.route('/user/register/one', methods=['POST'])
 def register_one_user():
     '''Register a new user.'''
     user = request.json
 
     # Encrypt the password
-    user['password'] = bcrypt.generate_password_hash(request.json['password']).decode('utf-8')
+    user['password'] = bcrypt.generate_password_hash(
+        request.json['password']).decode('utf-8')
 
     # Option 1: Try to insert a new user, except DuplicateKeyError occurs.
     try:
         result = mongo.db.users.insert_one(user)
         success = result.acknowledged
         error_message = None
-        registered_user = mongo.db.users.find_one({'_id': result.inserted_id}, {'_id': 0})
+        registered_user = mongo.db.users.find_one(
+            {'_id': result.inserted_id}, {'_id': 0})
     except DuplicateKeyError as error:
         success = False
         # error_message_original = error.details['writeErrors'][0]['errmsg']
@@ -50,7 +52,7 @@ def register_one_user():
     # return jsonify({'success': result.acknowledged})
 
 
-@app.route('/users/register/many', methods=['POST'])
+@app.route('/user/register/many', methods=['POST'])
 def register_many_users():
     '''Register many users.'''
     users = request.json
@@ -58,15 +60,17 @@ def register_many_users():
     # Encrypt all the passwords
     users_with_excrypted_passwords = []
     for user in users:
-        user['password'] = bcrypt.generate_password_hash(user['password']).decode('utf-8')
+        user['password'] = bcrypt.generate_password_hash(
+            user['password']).decode('utf-8')
         users_with_excrypted_passwords.append(user)
-    
+
     # Try to insert many new users, except BulkWriteError occurs.
     try:
         result = mongo.db.users.insert_many(users_with_excrypted_passwords)
         success = result.acknowledged
         error_message = None
-        registered_users_cursor = mongo.db.users.find({'_id': {'$in': result.inserted_ids}}, {'_id': 0})
+        registered_users_cursor = mongo.db.users.find(
+            {'_id': {'$in': result.inserted_ids}}, {'_id': 0})
         registered_users = len([user for user in registered_users_cursor])
     except BulkWriteError as error:
         success = False
@@ -75,7 +79,7 @@ def register_many_users():
     return jsonify({'success': success, 'errorMessage': error_message, 'registeredUsers': registered_users})
 
 
-@app.route('/users/login', methods=['POST'])
+@app.route('/user/login', methods=['POST'])
 def login():
     '''Log in an existing user.'''
     user = request.json
@@ -104,49 +108,79 @@ def login():
     # return jsonify(found_user)
 
 
-@app.route('/articles', methods=['POST'])
+@app.route('/article/all', methods=['POST'])
 def get_all_articles():
-    '''Return all the articles from the 'selected_importants' collection.'''
-    user = mongo.db.users.find_one({'id': request.json['id']}, {'_id': 0, 'articleIds': 1})
-    article_ids = user['articleIds']
-
-    articles = mongo.db.selected_importants.find({'_id': {'$in': article_ids}})
+    '''Return all the assigned articles to the current user, retrieving data
+    from the 'selected_importants' collection.'''
+    user = mongo.db.users.find_one({'id': request.json['id']}, {
+                                   '_id': 0, 'assignedArticles': 1, 'completedArticles': 1})
+    assigned_articles_ids = user['assignedArticles']
+    articles = mongo.db.selected_importants.find(
+        {'_id': {'$in': assigned_articles_ids}})
+    completed_articles = user['completedArticles']
 
     result = []
     for article in articles:
         # Find the decsCodes added by the current user
-        descriptors = mongo.db.descriptors.find({'articleId': article['_id'], 'userId': request.json['id']}, {'_id': 0, 'decsCode': 1})
+        descriptors = mongo.db.descriptors.find(
+            {'articleId': article['_id'], 'userId': request.json['id']}, {'_id': 0, 'decsCode': 1})
         decsCodes = [descriptor['decsCode'] for descriptor in descriptors]
 
-        # Prepare the relevant info from each article
+        # Check if this article has been 'marked as completed' by the current user
+        completed = article['_id'] in completed_articles
+
+        # Prepare the relevant info to be returned
         article_relevant_info = {
             'id': article['_id'],
             'title': article['ti_es'],
             'abstract': article['ab_es'],
             'decsCodes': decsCodes,
+            'completed': completed
         }
         result.append(article_relevant_info)
 
     return jsonify(result)
 
 
-@app.route('/articles/one', methods=['GET'])
-def get_one_article():
-    '''Return the relevant data from the queried article from the 'selected_importants' collection,
-    as well as its descriptors from the 'descriptors' collection.'''
-    article = mongo.db.selected_importants.find_one({'_id': request.json['articleId']})
-    descriptors = mongo.db.descriptors.find(request.json, {'_id': 0, 'decsCode': 1})
-    decsCodes = [descriptor['decsCode'] for descriptor in descriptors]
-    result = {
-        'id': article['_id'],
-        'title': article['ti_es'],
-        'abstract': article['ab_es'],
-        'decsCodes': decsCodes,
-    }
-    return jsonify(result)
+# @app.route('/articles/one', methods=['GET'])
+# def get_one_article():
+#     '''Return the relevant data from the queried article from the 'selected_importants' collection,
+#     as well as its descriptors from the 'descriptors' collection.'''
+#     article = mongo.db.selected_importants.find_one({'_id': request.json['articleId']})
+#     descriptors = mongo.db.descriptors.find(request.json, {'_id': 0, 'decsCode': 1})
+#     decsCodes = [descriptor['decsCode'] for descriptor in descriptors]
+#     result = {
+#         'id': article['_id'],
+#         'title': article['ti_es'],
+#         'abstract': article['ab_es'],
+#         'decsCodes': decsCodes,
+#     }
+#     return jsonify(result)
 
 
-@app.route('/descriptors/add', methods=['POST'])
+@app.route('/article/complete/add', methods=['POST'])
+def mark_article_as_completed():
+    '''Add a new articleId in the 'completedArticles' key on the current user
+    document in the 'users' collection.'''
+    result = mongo.db.users.update_one(
+        {'id': request.json['userId']},
+        {'$push': {'completedArticles': request.json['articleId']}}
+    )
+    return jsonify({'success': result.acknowledged})
+
+
+@app.route('/article/complete/remove', methods=['POST'])
+def mark_article_as_uncompleted():
+    '''Remove an existing articleId in the 'completedArticles' key on the
+    current user document in the 'users' collection.'''
+    result = mongo.db.users.update_one(
+        {'id': request.json['userId']},
+        {'$pull': {'completedArticles': request.json['articleId']}}
+    )
+    return jsonify({'success': result.acknowledged})
+
+
+@app.route('/descriptor/add', methods=['POST'])
 def add_descriptor():
     '''Add a descriptor to the 'descriptors' collection.'''
     descriptor = request.json
@@ -154,7 +188,7 @@ def add_descriptor():
     return jsonify({'success': result.acknowledged})
 
 
-@app.route('/descriptors/remove', methods=['POST'])
+@app.route('/descriptor/remove', methods=['POST'])
 def remove_descriptor():
     '''Remove a descriptor from the 'descriptors' collection.'''
     descriptor = request.json
