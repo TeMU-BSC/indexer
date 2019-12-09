@@ -16,7 +16,7 @@ import { AuthenticationService } from 'src/app/services/auth.service'
 @Component({
   selector: 'app-descriptors',
   templateUrl: './descriptors.component.html',
-  styleUrls: ['./descriptors.component.scss']
+  styleUrls: ['./descriptors.component.css']
 })
 export class DescriptorsComponent implements OnInit, OnChanges {
 

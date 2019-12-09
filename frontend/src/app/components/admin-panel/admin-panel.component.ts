@@ -1,16 +1,16 @@
 import { Component } from '@angular/core'
-import { AuthenticationService } from 'src/app/services/auth.service'
 import { User, BackendResponse } from 'src/app/app.model'
+import { AuthenticationService } from 'src/app/services/auth.service'
 import { MatSnackBar } from '@angular/material'
 import { AppService } from 'src/app/services/app.service'
 import * as EXAMPLE_USER from 'src/assets/user_example.json'
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  selector: 'app-admin-panel',
+  templateUrl: './admin-panel.component.html',
+  styleUrls: ['./admin-panel.component.css']
 })
-export class RegisterComponent {
+export class AdminPanelComponent {
 
   user: User = new User()
   users: User[]

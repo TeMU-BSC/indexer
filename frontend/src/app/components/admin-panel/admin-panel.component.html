@@ -1,0 +1,38 @@
+<div class="p-5">
+  <h4 class="mb-3">Admin panel</h4>
+
+  <!-- <button mat-stroked-button color="primary" routerLink="/register">Registrar usuarios</button>
+  <button mat-stroked-button color="accent" routerLink="/upload-decs">Registrar descriptores indizados</button>
+  <button mat-stroked-button color="warn" routerLink="/upload-suggestions">Registrar sugerencias</button> -->
+
+  <mat-tab-group>
+    <mat-tab label="Registrar usuarios">
+      <section class="mt-4">
+        <h3 class="mb-3">Registro de usuarios</h3>
+        <p>Elige un fichero JSON que contenga una lista de usuarios con el siguiente formato:</p>
+        <pre class="mat-elevation-z2 p-3">{{ exampleUser | json }}</pre>
+        <div fxLayout="column" fxLayoutAlign="start start">
+          <mat-form-field>
+            <ngx-mat-file-input #removableInput placeholder="Seleccionar fichero JSON" [accept]="'.json'"
+              (change)="onFileSelected($event)">
+            </ngx-mat-file-input>
+            <button mat-icon-button matSuffix *ngIf="!removableInput.empty" (click)="removableInput.clear($event)">
+              <mat-icon>clear</mat-icon>
+            </button>
+            <mat-icon matSuffix>attach_file</mat-icon>
+          </mat-form-field>
+          <button mat-raised-button color="accent" [disabled]="removableInput.empty" (click)="registerMany()">
+            Registrar usuarios
+          </button>
+        </div>
+      </section>
+    </mat-tab>
+    <mat-tab label="Subir DeCS indizados">
+      
+    </mat-tab>
+    <mat-tab label="Subir sugerencias DeCS">
+
+    </mat-tab>
+  </mat-tab-group>
+
+</div>

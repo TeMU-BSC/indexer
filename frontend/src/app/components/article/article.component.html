@@ -21,12 +21,8 @@
       href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
       Abrir el buscador DeCS <mat-icon class="h4">open_in_new</mat-icon>
     </a> -->
-    <mat-slide-toggle color="accent" [checked]="article.completed" [disabled]="!article.decsCodes.length"
-      (change)="onChange($event)">
+    <mat-slide-toggle color="green" [checked]="article.completed" (change)="onChange($event)" class="">
       Marcar como completado
     </mat-slide-toggle>
-    <!-- <mat-slide-toggle color="accent" [checked]="article.completed" (change)="onChange($event)">
-      Marcar como completado
-    </mat-slide-toggle> -->
   </mat-card-actions>
 </mat-card>

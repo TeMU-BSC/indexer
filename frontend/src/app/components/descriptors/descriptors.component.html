@@ -1,6 +1,6 @@
 <mat-form-field appearance="outline" class="w-100">
   <mat-label>Descriptores de Ciencias de la Salud (DeCS)</mat-label>
-  <mat-chip-list #chipList aria-label="Descriptor selection">
+  <mat-chip-list #chipList aria-label="Lista de descriptores">
     <mat-chip *ngFor="let descriptor of descriptors" (click)="chip.select()" #chip="matChip"
       [removable]="removable" (removed)="remove(descriptor)" [selectable]="selectable">
       {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
@@ -19,13 +19,25 @@
     </mat-option>
   </mat-autocomplete>
   <mat-hint>
-    <a class="mat-green"
-      href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
+    <a href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
       Buscador DeCS
-      <!-- <mat-icon>open_in_new</mat-icon> -->
     </a>
   </mat-hint>
 </mat-form-field>
 
 <!-- <pre>Current descriptors: {{ descriptors | json }}</pre> -->
 <!-- <pre>Current date and time: {{ now | date:'fullDate' }}</pre> -->
+
+<!-- <mat-form-field appearance="fill" class="w-100 mt-3">
+  <mat-label>Sugerencias</mat-label>
+  <mat-chip-list #chipList aria-label="Lista de DeCS sugeridos">
+    <mat-chip *ngFor="let descriptor of suggestions"
+      [removable]="removable" (removed)="remove(descriptor)" [selectable]="selectable">
+      {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
+      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+    </mat-chip>
+    <input readonly placeholder="Término o Número de Registro..." #descriptorInput [formControl]="descriptorCtrl"
+      [matAutocomplete]="auto" matAutocompletePosition="auto" [matChipInputFor]="chipList"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur">
+  </mat-chip-list>
+</mat-form-field> -->

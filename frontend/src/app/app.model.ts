@@ -1,6 +1,6 @@
 export class User {
   id?: string
-  name?: string
+  fullname?: string
   email?: string
   password?: string
   passwordConfirm?: string
@@ -33,7 +33,7 @@ export class Descriptor {
   definitionLatin?: string
 }
 
-export interface Response {
+export interface BackendResponse {
   success?: boolean
   loggedUser?: User
   registeredUsers?: number

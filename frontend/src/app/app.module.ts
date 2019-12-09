@@ -39,7 +39,8 @@ import { ArticlesTableLikeComponent } from './components/articles-table-like/art
 import { ArticlesTableComponent } from './components/articles-table/articles-table.component'
 import { CdkDetailRowDirective } from './components/articles-table/cdk-detail-row.directive'
 import { SlideToggleComponent } from './components/slide-toggle/slide-toggle.component';
-import { FooterComponent } from './components/footer/footer.component'
+import { FooterComponent } from './components/footer/footer.component';
+import { AdminPanelComponent } from './components/admin-panel/admin-panel.component'
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { FooterComponent } from './components/footer/footer.component'
     ArticlesTableComponent,
     CdkDetailRowDirective,
     SlideToggleComponent,
-    FooterComponent
+    FooterComponent,
+    AdminPanelComponent
   ],
   imports: [
     BrowserModule,

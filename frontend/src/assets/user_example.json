@@ -1,12 +1,8 @@
 [
   {
     "id": "Z1",
-    "name": "María López",
-    "email": "maria.lopez@ejemplo.com",
-    "password": "contraseña-de-ejemplo",
-    "articleIds": [
-      "ibc-ET2-2298",
-      "ibc-ET1-2921"
-    ]
+    "fullname": "Nombre Apellido",
+    "email": "nombre.apellido@ejemplo.com",
+    "password": "contraseña-de-ejemplo"
   }
 ]

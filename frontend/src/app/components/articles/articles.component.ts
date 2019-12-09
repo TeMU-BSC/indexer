@@ -58,7 +58,8 @@ export class ArticlesComponent implements OnInit {
       new TableColumn<Article, 'completed'>('Completado', 'completed')
         .withWidth(Width.pct(10))
         .withColFilter()
-        .withTransform(data => data.toString()),
+        .withTransform(data => data ? 'Completado' : 'Pendiente')
+        .withNgStyle(data => ({color: data ? 'green' : 'red'}))
     ]
   }
 

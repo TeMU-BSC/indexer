@@ -20,7 +20,7 @@
     </a> -->
 
     <div *ngIf="auth.isLoggedIn()">
-      <small>Hola, {{ auth.getUserDetails()?.identity.name }}</small>
+      <small>Hola, {{ auth.getUserDetails()?.identity.fullname }}</small>
       <!-- <button mat-button color="warn" (click)="auth.logout()">Cerrar sesión</button> -->
       <button mat-icon-button color="warn" matTooltip="Cerrar sesión" aria-label="Logout icon" (click)="auth.logout()">
         <mat-icon>power_settings_new</mat-icon>
