@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { User, Article, Descriptor } from '../app.model'
+import { User, Doc, Descriptor } from '../app.model'
 import { Papa } from 'ngx-papaparse'
 import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
 
@@ -24,15 +24,15 @@ export class AppService {
     // private papa: Papa
   ) { }
 
-  getArticles(user: User): Observable<Article[]> {
-    return this.http.post<Article[]>(`http://${this.ip}:${this.port}/article/all`, user)
+  getDocs(user: User): Observable<Doc[]> {
+    return this.http.post<Doc[]>(`http://${this.ip}:${this.port}/doc/assigned`, user)
   }
 
   /**
-   * limit the number of articles
+   * limit the number of docs
    */
-  // getArticles(total: number, start?: number): Observable<Article[]> {
-  //   const baseUrl = `http://${this.ip}:${this.port}/articles`
+  // getDocs(total: number, start?: number): Observable<Doc[]> {
+  //   const baseUrl = `http://${this.ip}:${this.port}/docs`
   //   let url = baseUrl
   //   if (total !== undefined) {
   //     url += `?total=${total}`
@@ -40,7 +40,7 @@ export class AppService {
   //       url += `?start=${start}`
   //     }
   //   }
-  //   return this.http.get<Article[]>(url, this.options)
+  //   return this.http.get<Doc[]>(url, this.options)
   // }
 
   /**
@@ -97,17 +97,17 @@ export class AppService {
   // }
 
   /**
-   * Mark an articleId as completed by the current user in database
+   * Mark an docId as completed by the current user in database
    */
-  addCompletedArticle(article): Observable<Article> {
-    return this.http.post<Article>(`http://${this.ip}:${this.port}/article/complete/add`, article)
+  addCompletedDoc(doc): Observable<Doc> {
+    return this.http.post<Doc>(`http://${this.ip}:${this.port}/doc/complete/add`, doc)
   }
 
   /**
-   * Mark an articleId as uncompleted by the current user in database
+   * Mark an docId as uncompleted by the current user in database
    */
-  removeCompletedArticle(article): Observable<Article> {
-    return this.http.post<Article>(`http://${this.ip}:${this.port}/article/complete/remove`, article)
+  removeCompletedDoc(doc): Observable<Doc> {
+    return this.http.post<Doc>(`http://${this.ip}:${this.port}/doc/complete/remove`, doc)
   }
 
 }

@@ -1,18 +1,18 @@
 import { Component, Input } from '@angular/core'
-import { Article } from 'src/app/app.model'
+import { Doc } from 'src/app/app.model'
 import { MatSlideToggleChange, MatSnackBar } from '@angular/material'
 import { AppService } from 'src/app/services/app.service'
 import { AuthenticationService } from 'src/app/services/auth.service'
 
 @Component({
-  selector: 'app-article',
-  templateUrl: './article.component.html',
-  styleUrls: ['./article.component.css']
+  selector: 'app-doc',
+  templateUrl: './doc.component.html',
+  styleUrls: ['./doc.component.css']
 })
-export class ArticleComponent {
+export class DocComponent {
 
-  @Input() article: Article
-  // completedArticle: string
+  @Input() doc: Doc
+  // completedDoc: string
 
   constructor(
     private appService: AppService,
@@ -21,47 +21,47 @@ export class ArticleComponent {
   ) { }
 
   /**
-   * If article is uncompleted, mark as completed; and the other way around.
+   * If doc is uncompleted, mark as completed; and the other way around.
    */
   // onChange(event: MatSlideToggleChange): void {
-  //   if (!this.article.decsCodes.length) {
+  //   if (!this.doc.decsCodes.length) {
   //     // Warn the user that DeCS list is empty
   //     this.snackBar.open('Atención: El artículo debe tener al menos un DeCS para marcarlo como completado.', 'OK')
   //     // and change back the toggle slide
-  //     // console.log(this.article.completed)
-  //     // this.article.completed = false
+  //     // console.log(this.doc.completed)
+  //     // this.doc.completed = false
   //   } else {
   //     // Visualy toggle the completed property (true / false)
-  //     this.article.completed = event.checked
+  //     this.doc.completed = event.checked
   //     // Make that change permanent to database
-  //     const articleToMark = {
+  //     const docToMark = {
   //       userId: this.auth.getUserDetails().identity.id,
-  //       articleId: this.article.id
+  //       docId: this.doc.id
   //     }
-  //     if (this.article.completed) {
-  //       this.appService.addCompletedArticle(articleToMark).subscribe()
+  //     if (this.doc.completed) {
+  //       this.appService.addCompletedDoc(docToMark).subscribe()
   //     } else {
-  //       this.appService.removeCompletedArticle(articleToMark).subscribe()
+  //       this.appService.removeCompletedDoc(docToMark).subscribe()
   //     }
   //   }
   // }
 
   /**
-   * If article is uncompleted, mark as completed; and the other way around.
+   * If doc is uncompleted, mark as completed; and the other way around.
    */
   onChange(event: MatSlideToggleChange): void {
     // Visualy toggle the completed property (true / false)
-    this.article.completed = event.checked
+    this.doc.completed = event.checked
 
     // Make that change permanent to database
-    const articleToMark = {
+    const docToMark = {
       userId: this.auth.getUserDetails().identity.id,
-      articleId: this.article.id
+      docId: this.doc.id
     }
-    if (this.article.completed) {
-      this.appService.addCompletedArticle(articleToMark).subscribe()
+    if (this.doc.completed) {
+      this.appService.addCompletedDoc(docToMark).subscribe()
     } else {
-      this.appService.removeCompletedArticle(articleToMark).subscribe()
+      this.appService.removeCompletedDoc(docToMark).subscribe()
     }
   }
 

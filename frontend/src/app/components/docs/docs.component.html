@@ -1,0 +1,45 @@
+<!-- Option 1: Button list with card on the side -->
+<!-- <div fxLayout="row" fxLayoutGap="2em" class="p-3">
+  <div fxLayout="column" fxFlex="30">
+    <button *ngFor="let doc of currentDocs; let i = index" mat-stroked-button [color]="setColor(doc)"
+      style="text-align: left" (click)="selectDoc(doc)" matTooltip="{{ doc.id }}"
+      matTooltipPosition="after">
+      {{ i + 1 + '.' }} {{ (doc.title.length > 61) ? (doc.title | slice:0:61) + '...' : (doc.title) }}
+    </button>
+    <mat-paginator [length]="docs?.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="onPageChange($event)" class="mat-elevation-z2 m-2 w-100">
+    </mat-paginator>
+  </div>
+  <app-doc *ngIf="doc" [doc]="doc" fxFlex="70"></app-doc>
+</div> -->
+
+<!-- Option 2: Table -->
+<!-- <smc-simplemattable [data]="docs" [columns]="columns" [paginator]="true" [sorting]="true"
+  class="mat-elevation-z2 m-2">
+</smc-simplemattable> -->
+
+<!-- Option 3: Expansion Panel list -->
+<!-- <div fxLayout="row" class="p-5">
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let doc of docs; let i = index">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{ doc.id }}
+        </mat-panel-title>
+        <mat-panel-description style="text-align: left">
+          {{ i + 1 + '.' }} {{ (doc.title.length > 100) ? (doc.title | slice:0:100) + '...' : (doc.title) }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <app-doc *ngIf="doc" [doc]="doc"></app-doc>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div> -->
+
+<!-- Option 4: Table with action button that shows the doc card on the side -->
+<div fxLayout="column" fxLayoutGap="1em" class="p-3">
+  <smc-simplemattable [data]="docs" [columns]="columns" [filter]="false" [paginator]="true" [sorting]="true"
+    [paginatorPageSize]="5" [paginatorPageSizeOptions]="[5, 10, 25, 100]" [rowClickable]="true"
+    (rowClick)="selectDoc($event)">
+  </smc-simplemattable>
+  <app-doc *ngIf="doc" [doc]="doc"></app-doc>
+</div>

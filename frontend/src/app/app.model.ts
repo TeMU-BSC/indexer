@@ -6,7 +6,7 @@ export class User {
   passwordConfirm?: string
 }
 
-export class Article {
+export class Doc {
   id?: string
   title?: string
   abstract?: string

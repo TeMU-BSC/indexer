@@ -6,7 +6,7 @@ import { MatChipInputEvent } from '@angular/material/chips'
 import { MatSnackBar } from '@angular/material'
 import { Observable } from 'rxjs'
 import { map, startWith, debounceTime } from 'rxjs/operators'
-import { Article, Descriptor } from 'src/app/app.model'
+import { Doc, Descriptor } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
 import { AuthenticationService } from 'src/app/services/auth.service'
 
@@ -20,7 +20,7 @@ import { AuthenticationService } from 'src/app/services/auth.service'
 })
 export class DescriptorsComponent implements OnInit, OnChanges {
 
-  @Input() article: Article
+  @Input() doc: Doc
   @ViewChild('descriptorInput', { static: false }) descriptorInput: ElementRef<HTMLInputElement>
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete
   // visible = true
@@ -60,15 +60,15 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   }
 
   /**
-   * This descriptors component implements OnChanges so it can react to parent changes on article attribute.
+   * This descriptors component implements OnChanges so it can react to parent changes on doc attribute.
    */
   ngOnChanges() {
     // Reset the chips list
     this.descriptors = []
 
     // Init the input field with the current descriptors list from parent
-    if (this.article.decsCodes) {
-      this.article.decsCodes.forEach(decsCode => {
+    if (this.doc.decsCodes) {
+      this.doc.decsCodes.forEach(decsCode => {
         this.descriptors.push(this.appService.findDescriptorByDecsCode(decsCode))
       })
     }
@@ -85,7 +85,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // const normalizedValue = this._normalize(stringifiedValue.toLowerCase().trim())
     const normalizedValue = this._normalize(stringifiedValue.toLowerCase())
 
-    // Not showing the already added decsCodes to the current article and keep filtering by some specific fields
+    // Not showing the already added decsCodes to the current doc and keep filtering by some specific fields
     return this.allDescriptors.filter(descriptor =>
       !this.descriptors.some(d => d.decsCode.toLowerCase() === descriptor.decsCode) && (
         this._normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
@@ -118,7 +118,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     const descriptorToRemove = {
       decsCode: descriptor.decsCode,
       userId: this.auth.getUserDetails().identity.id,
-      articleId: this.article.id
+      docId: this.doc.id
     }
     this.appService.removeDescriptor(descriptorToRemove).subscribe()
 
@@ -147,7 +147,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     const descriptorToAdd = {
       decsCode: selectedDescriptor.decsCode,
       userId: this.auth.getUserDetails().identity.id,
-      articleId: this.article.id
+      docId: this.doc.id
     }
     this.appService.addDescriptor(descriptorToAdd).subscribe()
   }

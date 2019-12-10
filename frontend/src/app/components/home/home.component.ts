@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core'
+import { AuthenticationService } from 'src/app/services/auth.service'
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatAutocompleteSelectedEvent, MatSnackBar } from '@angular/material'
 import { Observable } from 'rxjs'
 import { map, startWith } from 'rxjs/operators'
-import { User, Article, Descriptor } from 'src/app/app.model'
+import { User, Doc, Descriptor } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
-import { AuthenticationService } from 'src/app/services/auth.service'
 
 // TODO implementar login contra bbdd
 // TODO enviar al backend un descriptor cada vez que el anotador seleccione uno del autocompletar
@@ -23,8 +23,8 @@ export class HomeComponent implements OnInit {
 
   // // user: User
   // annotators: User[] = []
-  // articles: Article[] = []
-  // article: Article = {}
+  // docs: Doc[] = []
+  // doc: Doc = {}
   // allDescriptors: Descriptor[] = []
   // filteredDescriptors: Observable<Descriptor[]>
   // myControl = new FormControl()
@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
   // // VERISON 1: AUTOCOMPLETAR FUNCIONA OK
   // descriptorsString = ''
   // descriptorsSimpleArray: string[]
-  // articleUpdatedDescriptors: Descriptor[] = []
+  // docUpdatedDescriptors: Descriptor[] = []
 
   // constructor(
   //   private snackBar: MatSnackBar,
@@ -72,11 +72,11 @@ export class HomeComponent implements OnInit {
   // }
 
   // saveChanges() {
-  //   this.decsForm.controls.id.setValue(this.article.id)
+  //   this.decsForm.controls.id.setValue(this.doc.id)
   //   console.log(this.decsForm.value)
 
   //   // Send request to backend
-  //   // this.appService.updateArticle(this.article).subscribe(bu => console.trace(bu))
+  //   // this.appService.updateDoc(this.doc).subscribe(bu => console.trace(bu))
 
   //   this.snackBar.open('DeCS saved successfully.', 'OK')
 

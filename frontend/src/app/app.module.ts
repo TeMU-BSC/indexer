@@ -26,7 +26,7 @@ import { SimplemattableModule } from 'simplemattable'
 // Own App Components
 import { HeaderComponent } from './components/header/header.component'
 import { LoginComponent } from './components/login/login.component'
-import { ArticleComponent } from './components/article/article.component'
+import { DocComponent } from './components/doc/doc.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
 import { HomeComponent } from './components/home/home.component'
 import { HighlightPipe } from './pipes/highlight.pipe'
@@ -34,10 +34,7 @@ import { ProfileComponent } from './components/profile/profile.component'
 import { AuthenticationService } from './services/auth.service'
 import { AuthGuardService } from './services/auth-guard.service'
 import { RegisterComponent } from './components/register/register.component'
-import { ArticlesComponent } from './components/articles/articles.component'
-import { ArticlesTableLikeComponent } from './components/articles-table-like/articles-table-like.component'
-import { ArticlesTableComponent } from './components/articles-table/articles-table.component'
-import { CdkDetailRowDirective } from './components/articles-table/cdk-detail-row.directive'
+import { DocsComponent } from './components/docs/docs.component'
 import { SlideToggleComponent } from './components/slide-toggle/slide-toggle.component'
 import { FooterComponent } from './components/footer/footer.component'
 import { AdminComponent } from './components/admin/admin.component'
@@ -47,16 +44,13 @@ import { AdminComponent } from './components/admin/admin.component'
     AppComponent,
     LoginComponent,
     HeaderComponent,
-    ArticleComponent,
+    DocComponent,
     DescriptorsComponent,
     HomeComponent,
     HighlightPipe,
     ProfileComponent,
     RegisterComponent,
-    ArticlesComponent,
-    ArticlesTableLikeComponent,
-    ArticlesTableComponent,
-    CdkDetailRowDirective,
+    DocsComponent,
     SlideToggleComponent,
     FooterComponent,
     AdminComponent
@@ -73,7 +67,7 @@ import { AdminComponent } from './components/admin/admin.component'
     SimplemattableModule
   ],
   entryComponents: [
-    ArticleComponent,
+    DocComponent,
     SlideToggleComponent
   ],
   providers: [AuthenticationService, AuthGuardService],

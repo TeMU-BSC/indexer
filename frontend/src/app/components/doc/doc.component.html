@@ -1,27 +1,27 @@
 <!-- Option 1: Simple -->
-<!-- <h5>{{ article?.title }}</h5>
-<span>{{ article?.id }}</span>
-<p>{{ article?.abstract }}</p>
-<app-descriptors [article]="article"></app-descriptors> -->
+<!-- <h5>{{ doc?.title }}</h5>
+<span>{{ doc?.id }}</span>
+<p>{{ doc?.abstract }}</p>
+<app-descriptors [doc]="doc"></app-descriptors> -->
 
 <!-- Option 2: Card -->
 <mat-card class="example-card p-0">
   <mat-card-header class="pt-3" style="background-color: #f2f2f2">
     <mat-card-title>
-      {{ article?.title }}
-      <span class="text-muted">({{ article?.id }})</span>
+      {{ doc?.title }}
+      <span class="text-muted">({{ doc?.id }})</span>
     </mat-card-title>
   </mat-card-header>
   <mat-card-content class="p-3">
-    <p [innerHTML]="article?.abstract"></p>
-    <app-descriptors [article]="article"></app-descriptors>
+    <p [innerHTML]="doc?.abstract"></p>
+    <app-descriptors [doc]="doc"></app-descriptors>
   </mat-card-content>
   <mat-card-actions fxLayout="row" fxLayoutAlign="end" class="p-4">
     <!-- <a mat-button style="color: #669966; text-decoration: none;"
       href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
       Abrir el buscador DeCS <mat-icon class="h4">open_in_new</mat-icon>
     </a> -->
-    <mat-slide-toggle color="green" [checked]="article.completed" (change)="onChange($event)" class="">
+    <mat-slide-toggle color="green" [checked]="doc.completed" (change)="onChange($event)" class="">
       Marcar como completado
     </mat-slide-toggle>
   </mat-card-actions>

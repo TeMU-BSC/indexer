@@ -1,5 +1,5 @@
 {
-    "/article": {
+    "/document": {
         "target": "http://localhost:5000",
         "secure": false
     },
