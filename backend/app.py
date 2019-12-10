@@ -108,74 +108,85 @@ def login():
     # return jsonify(found_user)
 
 
-@app.route('/article/all', methods=['POST'])
-def get_all_articles():
-    '''Return all the assigned articles to the current user, retrieving data
-    from the 'selected_importants' collection.'''
-    user = mongo.db.users.find_one({'id': request.json['id']}, {
-                                   '_id': 0, 'assignedArticles': 1, 'completedArticles': 1})
-    assigned_articles_ids = user['assignedArticles']
-    articles = mongo.db.selected_importants.find(
-        {'_id': {'$in': assigned_articles_ids}})
-    completed_articles = user['completedArticles']
+@app.route('/doc/assigned', methods=['POST'])
+def get_assigned_docs():
+    '''Find the assigned docs IDs to the current user, and then retrieving
+    the doc data from the 'selected_importants' collection.'''
+    assigned_doc_ids = mongo.db.assigned_documents.find_one({'userId': request.json['id']}).get('docIds')
+    completed_doc_ids = mongo.db.assigned_documents.find_one({'userId': request.json['id']}).get('completedDocIds')
+    docs = mongo.db.selected_importants.find({'_id': {'$in': assigned_doc_ids}})
 
     result = []
-    for article in articles:
+    for doc in docs:
         # Find the decsCodes added by the current user
         descriptors = mongo.db.descriptors.find(
-            {'articleId': article['_id'], 'userId': request.json['id']}, {'_id': 0, 'decsCode': 1})
+            {'docId': doc['_id'], 'userId': request.json['id']}, {'_id': 0, 'decsCode': 1})
         decsCodes = [descriptor['decsCode'] for descriptor in descriptors]
 
-        # Check if this article has been 'marked as completed' by the current user
-        completed = article['_id'] in completed_articles
+        # Check if this doc has been 'marked as completed' by the current user
+        completed = doc['_id'] in completed_doc_ids
 
         # Prepare the relevant info to be returned
-        article_relevant_info = {
-            'id': article['_id'],
-            'title': article['ti_es'],
-            'abstract': article['ab_es'],
+        doc_relevant_info = {
+            'id': doc['_id'],
+            'title': doc['ti_es'],
+            'abstract': doc['ab_es'],
             'decsCodes': decsCodes,
             'completed': completed
         }
-        result.append(article_relevant_info)
+        result.append(doc_relevant_info)
 
     return jsonify(result)
 
 
-# @app.route('/articles/one', methods=['GET'])
-# def get_one_article():
-#     '''Return the relevant data from the queried article from the 'selected_importants' collection,
+# @app.route('/docs/one', methods=['GET'])
+# def get_one_doc():
+#     '''Return the relevant data from the queried doc from the 'selected_importants' collection,
 #     as well as its descriptors from the 'descriptors' collection.'''
-#     article = mongo.db.selected_importants.find_one({'_id': request.json['articleId']})
+#     doc = mongo.db.selected_importants.find_one({'_id': request.json['docId']})
 #     descriptors = mongo.db.descriptors.find(request.json, {'_id': 0, 'decsCode': 1})
 #     decsCodes = [descriptor['decsCode'] for descriptor in descriptors]
 #     result = {
-#         'id': article['_id'],
-#         'title': article['ti_es'],
-#         'abstract': article['ab_es'],
+#         'id': doc['_id'],
+#         'title': doc['ti_es'],
+#         'abstract': doc['ab_es'],
 #         'decsCodes': decsCodes,
 #     }
 #     return jsonify(result)
 
 
-@app.route('/article/complete/add', methods=['POST'])
-def mark_article_as_completed():
-    '''Add a new articleId in the 'completedArticles' key on the current user
-    document in the 'users' collection.'''
-    result = mongo.db.users.update_one(
-        {'id': request.json['userId']},
-        {'$push': {'completedArticles': request.json['articleId']}}
+@app.route('/doc/assign', methods=['POST'])
+def assign_docs_to_users():
+    '''Add some documents IDs to the userId key in the 'assigned_documents' collection.'''
+    # userIds = [assignment['userId'] for assignment in request.json]
+    # result = mongo.db.assigned_documents.insert_many(
+    #     {'userId': {'$in': userIds}},
+    #    # {'userId': request.json['userId'], 'docIds': request.json['docIds']},
+    #     {'$set': {'x': 3}},
+    #     upsert=True
+    # )
+    result = mongo.db.assigned_documents.insert_many(request.json)
+    return jsonify({'success': result.acknowledged})
+
+
+@app.route('/doc/complete/add', methods=['POST'])
+def mark_doc_as_completed():
+    '''Add a new docId to the 'completedDocIds' array of the current user in
+    the 'assigned_documents' collection.'''
+    result = mongo.db.assigned_documents.update_one(
+        {'userId': request.json['userId']},
+        {'$push': {'completedDocIds': request.json['docId']}}
     )
     return jsonify({'success': result.acknowledged})
 
 
-@app.route('/article/complete/remove', methods=['POST'])
-def mark_article_as_uncompleted():
-    '''Remove an existing articleId in the 'completedArticles' key on the
-    current user document in the 'users' collection.'''
-    result = mongo.db.users.update_one(
-        {'id': request.json['userId']},
-        {'$pull': {'completedArticles': request.json['articleId']}}
+@app.route('/doc/complete/remove', methods=['POST'])
+def mark_doc_as_uncompleted():
+    '''Remove an existing docId from the 'completedDocIds' array of the current
+    user in the 'assigned_documents' collection.'''
+    result = mongo.db.assigned_documents.update_one(
+        {'userId': request.json['userId']},
+        {'$pull': {'completedDocIds': request.json['docId']}}
     )
     return jsonify({'success': result.acknowledged})
 
