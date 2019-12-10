@@ -2,10 +2,9 @@ import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
 import { AuthGuardService } from './services/auth-guard.service'
 import { HomeComponent } from './components/home/home.component'
-// import { RegisterComponent } from './components/register/register.component'
 import { LoginComponent } from './components/login/login.component'
 import { ProfileComponent } from './components/profile/profile.component'
-import { AdminPanelComponent } from './components/admin-panel/admin-panel.component'
+import { AdminComponent } from './components/admin/admin.component'
 
 // https://medium.com/@philip_lysenko/initial-auth-with-angular-oauth2-a8740efe9264
 // const lazyPathValue = 'lazy'
@@ -14,10 +13,9 @@ import { AdminPanelComponent } from './components/admin-panel/admin-panel.compon
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  // { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'admin-panel', component: AdminPanelComponent },
+  { path: 'admin', component: AdminComponent },
   // { path: 'profile', component: ProfileComponent, canActivate: [AuthGuardService] }
 ]
 

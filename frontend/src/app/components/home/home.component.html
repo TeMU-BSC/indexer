@@ -1,4 +1,4 @@
-<app-admin-panel *ngIf="auth.getUserDetails()?.identity.role === 'admin'"></app-admin-panel>
+<app-admin *ngIf="auth.getUserDetails()?.identity.role === 'admin'"></app-admin>
 <app-articles *ngIf="auth.getUserDetails()?.identity.role === 'annotator'"></app-articles>
 
 <!-- <app-articles-table-like></app-articles-table-like> -->

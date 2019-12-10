@@ -1,4 +1,4 @@
-<div fxLayout="row" fxLayoutAlign="center center" class="p-3">
+<!-- <div fxLayout="row" fxLayoutAlign="center center" class="p-3">
   <mat-card fxFlex="25">
     <mat-card-content fxLayout="column" class="p-3">
       <mat-form-field>
@@ -11,4 +11,16 @@
       <button mat-raised-button color="primary" (click)="login()">Login</button>
     </mat-card-content>
   </mat-card>
-</div>
+</div> -->
+
+
+
+<form fxLayout="column" fxLayoutAlign="space-around" class="p-3">
+  <mat-form-field>
+    <input matInput placeholder="Email" [(ngModel)]="user.email" name="email" required>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Contraseña" [(ngModel)]="user.password" type="password" name="password" required>
+  </mat-form-field>
+  <button mat-raised-button color="primary" (click)="login()">Login</button>
+</form>

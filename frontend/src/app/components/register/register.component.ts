@@ -3,7 +3,7 @@ import { AuthenticationService } from 'src/app/services/auth.service'
 import { User, BackendResponse } from 'src/app/app.model'
 import { MatSnackBar } from '@angular/material'
 import { AppService } from 'src/app/services/app.service'
-import * as EXAMPLE_USER from 'src/assets/user_example.json'
+import * as EXAMPLE_USER from 'src/assets/examples/user.json'
 
 @Component({
   selector: 'app-register',
