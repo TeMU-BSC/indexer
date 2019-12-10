@@ -3,7 +3,6 @@ import { Doc, User } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
 import { AuthenticationService } from 'src/app/services/auth.service'
 import { TableColumn, Width, ButtonType } from 'simplemattable'
-import { DocComponent } from '../doc/doc.component'
 import { SlideToggleComponent } from '../slide-toggle/slide-toggle.component'
 import { AbstractControl } from '@angular/forms'
 
@@ -27,8 +26,8 @@ export class DocsComponent implements OnInit {
   ngOnInit() {
     this.getDocs()
 
-    const completedCol = new TableColumn<Doc, 'completed'>('Completado', 'completed')
-    completedCol.withFormField(completedCol.getCheckboxFormField())
+    // const completedCol = new TableColumn<Doc, 'completed'>('Completado', 'completed')
+    // completedCol.withFormField(completedCol.getCheckboxFormField())
 
     this.columns = [
       new TableColumn<Doc, 'title'>('Título', 'title')
@@ -37,7 +36,7 @@ export class DocsComponent implements OnInit {
         .isHiddenXs(true),
       // .isTextHiddenXs(true),
       // .withTransform(title => title.length > 30 ? title.slice(0, 30) + '...' : title),
-      new TableColumn<Doc, 'id'>('ID Artículo', 'id')
+      new TableColumn<Doc, 'id'>('ID documento', 'id')
         .withWidth(Width.pct(10))
         .withColFilter(),
       // .withNgStyle((id, doc) => ({ color: doc.decsCodes.length ? '#669966' : '' })),
@@ -64,7 +63,9 @@ export class DocsComponent implements OnInit {
   }
 
   getDocs() {
-    const userToSend: User = { id: this.auth.getUserDetails().identity.id }
+    const userToSend: User = {
+      id: this.auth.getUserDetails().identity.id
+    }
     this.appService.getDocs(userToSend).subscribe(docs => {
       this.docs = docs
       this.currentDocs = this.docs.slice(0, 10)

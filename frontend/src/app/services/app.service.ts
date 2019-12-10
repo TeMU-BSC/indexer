@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { User, Doc, Descriptor } from '../app.model'
+import { User, Doc, Descriptor, Assignment } from '../app.model'
 import { Papa } from 'ngx-papaparse'
 import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
 
@@ -26,6 +26,10 @@ export class AppService {
 
   getDocs(user: User): Observable<Doc[]> {
     return this.http.post<Doc[]>(`http://${this.ip}:${this.port}/doc/assigned`, user)
+  }
+
+  assignDocs(assignments: Assignment[]): Observable<any> {
+    return this.http.post<any>(`http://${this.ip}:${this.port}/doc/assign`, assignments)
   }
 
   /**

@@ -28,7 +28,7 @@ export class AdminComponent {
       title: 'Asignar documentos a usuarios',
       keywords: 'asignaciones de documentos',
       exampleJson: (EXAMPLE_DOCUMENT as any).default,
-      action: 'registerManyUsers()'
+      action: 'assignDocsToUsers()'
     },
     {
       title: 'Cargar DeCS indizados',
@@ -68,7 +68,7 @@ export class AdminComponent {
         this.registerManyUsers()
         break
       case 'Asignar documentos a usuarios':
-        console.log('panel 2')
+        this.assignDocsToUsers()
         break
       case 'Cargar DeCS indizados':
         console.log('panel 3')
@@ -83,6 +83,20 @@ export class AdminComponent {
 
   registerManyUsers() {
     this.auth.registerMany(this.dataFromFile).subscribe(
+      response => this.response = response,
+      error => console.error(error),
+      () => {
+        if (this.response.success) {
+          this.snackBar.open(`Usuarios registrados: ${this.response.registeredUsers}`, 'OK')
+        } else {
+          this.snackBar.open(`Error: ${this.response.errorMessage}`, 'REVISAR FICHERO')
+        }
+      }
+    )
+  }
+
+  assignDocsToUsers() {
+    this.appService.assignDocs(this.dataFromFile).subscribe(
       response => this.response = response,
       error => console.error(error),
       () => {
