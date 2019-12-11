@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { User, Doc, Descriptor, Assignment } from '../app.model'
+import { User, Doc, Descriptor, Assignment, BackendResponse } from '../app.model'
 import { Papa } from 'ngx-papaparse'
 import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
 
@@ -13,7 +13,7 @@ export class AppService {
 
   // ip = '84.88.52.79'
   ip = 'localhost'
-  port = '5000'
+  port = '8080'
   headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' })
   options = { headers: this.headers }
   allDescriptors: Descriptor[] = (ALL_DESCRIPTORS as any).default
@@ -29,7 +29,7 @@ export class AppService {
   }
 
   assignDocs(assignments: Assignment[]): Observable<any> {
-    return this.http.post<any>(`http://${this.ip}:${this.port}/doc/assign`, assignments)
+    return this.http.post<any>(`http://${this.ip}:${this.port}/doc/assign/many`, assignments)
   }
 
   /**
@@ -71,15 +71,15 @@ export class AppService {
   /**
    * Add a new descriptor to database
    */
-  addDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-    return this.http.post<Descriptor>(`http://${this.ip}:${this.port}/descriptor/add`, descriptor)
+  addDescriptor(descriptor: Descriptor): Observable<BackendResponse> {
+    return this.http.post<BackendResponse>(`http://${this.ip}:${this.port}/descriptor/add`, descriptor)
   }
 
   /**
    * Remove an existing descriptor from database
    */
-  removeDescriptor(descriptor: Descriptor): Observable<Descriptor> {
-    return this.http.post<Descriptor>(`http://${this.ip}:${this.port}/descriptor/remove`, descriptor)
+  removeDescriptor(descriptor: Descriptor): Observable<BackendResponse> {
+    return this.http.post<BackendResponse>(`http://${this.ip}:${this.port}/descriptor/remove`, descriptor)
   }
 
   findDescriptorByDecsCode(decsCode: string): Descriptor {

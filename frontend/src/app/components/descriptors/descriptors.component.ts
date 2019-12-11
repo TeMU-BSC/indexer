@@ -150,6 +150,13 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       docId: this.doc.id
     }
     this.appService.addDescriptor(descriptorToAdd).subscribe()
+    // this.appService.addDescriptor(descriptorToAdd).subscribe(
+    //   response => {
+    //     if (!response.success) {
+    //       alert('El servicio está temporalmente inactivo. Por favor, contacta con el administrador: alejandro.asensio@bsc.es')
+    //     }
+    //   }
+    // )
   }
 
 }

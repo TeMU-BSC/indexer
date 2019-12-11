@@ -12,12 +12,12 @@ import { AuthenticationService } from 'src/app/services/auth.service'
 export class DocComponent {
 
   @Input() doc: Doc
-  // completedDoc: string
+  // toggleText: string
 
   constructor(
     private appService: AppService,
     private auth: AuthenticationService,
-    private snackBar: MatSnackBar
+    // private snackBar: MatSnackBar
   ) { }
 
   /**
@@ -59,8 +59,10 @@ export class DocComponent {
       docId: this.doc.id
     }
     if (this.doc.completed) {
+      // this.toggleText = 'Completado'
       this.appService.addCompletedDoc(docToMark).subscribe()
     } else {
+      // this.toggleText = 'Marcar como completado'
       this.appService.removeCompletedDoc(docToMark).subscribe()
     }
   }

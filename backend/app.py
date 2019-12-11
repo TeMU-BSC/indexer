@@ -155,7 +155,7 @@ def get_assigned_docs():
 #     return jsonify(result)
 
 
-@app.route('/doc/assign', methods=['POST'])
+@app.route('/doc/assign/many', methods=['POST'])
 def assign_docs_to_users():
     '''Add some documents IDs to the userId key in the 'assigned_documents' collection.'''
     # userIds = [assignment['userId'] for assignment in request.json]

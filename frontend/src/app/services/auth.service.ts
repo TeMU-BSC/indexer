@@ -17,18 +17,21 @@ interface TokenResponse {
 export class AuthenticationService {
 
   ip = 'localhost'
-  port = '5000'
+  // port = '5000'
+  port = '8080'
 
   constructor(
     private http: HttpClient,
     private router: Router) { }
 
   setToken(token: string): void {
-    sessionStorage.setItem('userToken', token)
+    localStorage.setItem('userToken', token)
+    // sessionStorage.setItem('userToken', token)
   }
 
   getToken(): string {
-    return sessionStorage.getItem('userToken')
+    return localStorage.getItem('userToken')
+    // return sessionStorage.getItem('userToken')
   }
 
   public getUserDetails() {
@@ -83,7 +86,8 @@ export class AuthenticationService {
   // }
 
   public logout(): void {
-    sessionStorage.removeItem('userToken')
+    localStorage.removeItem('userToken')
+    // sessionStorage.removeItem('userToken')
     this.router.navigateByUrl('/')
   }
 
