@@ -15,11 +15,13 @@ services:
       - ./backend:/app
 
   # nginx:
-  #   build: ./nginx
+  #   build: ./server
   #   container_name: nginx_dev
   #   restart: always
   #   ports:
   #     - "8080:80"
+  #   volumes:
+  #     - ./server:/app
 
   angular:
     build: ./frontend

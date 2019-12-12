@@ -11,7 +11,7 @@ services:
     command: uwsgi app.ini
 
   nginx:
-    build: ./nginx
+    build: ./server
     container_name: nginx_prod
     restart: always
     ports:
