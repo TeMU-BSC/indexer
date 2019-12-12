@@ -36,7 +36,7 @@
 </div> -->
 
 <!-- Option 4: Table with action button that shows the doc card on the side -->
-<div fxLayout="column" fxLayoutGap="1em" class="p-3">
+<div *ngIf="auth.isLoggedIn()" fxLayout="column" fxLayoutGap="1em" class="p-3">
   <smc-simplemattable [data]="docs" [columns]="columns" [filter]="false" [paginator]="true" [sorting]="true"
     [paginatorPageSize]="5" [paginatorPageSizeOptions]="[5, 10, 25, 100]" [rowClickable]="true"
     (rowClick)="selectDoc($event)">

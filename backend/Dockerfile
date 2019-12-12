@@ -11,5 +11,9 @@ ADD . /app
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-# run the command to start uWSGI
-CMD ["uwsgi", "app.ini"]
+# [Production] Run the command to start uWSGI
+# CMD ["uwsgi", "app.ini"]
+
+# [Development] Run the flask server
+# ENV FLASK_ENV=development
+# CMD flask run --host 0.0.0.0

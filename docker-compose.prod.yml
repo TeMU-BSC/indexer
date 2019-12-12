@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+
+  flask:
+    build: ./backend
+    container_name: flask_prod
+    restart: always
+    expose:
+      - 8080
+    command: uwsgi app.ini
+
+  nginx:
+    build: ./nginx
+    container_name: nginx_prod
+    restart: always
+    ports:
+      - "8080:80"
+
+  angular:
+    build: ./frontend
+    container_name: angular_prod
+    restart: always
+    expose:
+      - 4200
+    ports:
+      - 80:4200
+    command: ng serve --host 0.0.0.0

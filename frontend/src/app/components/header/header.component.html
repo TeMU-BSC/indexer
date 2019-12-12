@@ -2,9 +2,10 @@
   <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="1em">
     <h1 routerLink="/">
       <span fxHide.gt-sm>Indizador DeCS</span>
-      <span fxHide fxShow.gt-sm>Indizador de Descriptores de Ciencias de la Salud</span>
+      <span fxHide fxShow.gt-sm>Indizador de Descriptores de Ciencias de la Salud HOLA</span>
     </h1>
-    <button *ngIf="!auth.isLoggedIn()" mat-button routerLink="login">Iniciar sesión</button>
+    <!-- <button *ngIf="!auth.isLoggedIn()" mat-button routerLink="login">Iniciar sesión (component)</button> -->
+    <button *ngIf="!auth.isLoggedIn()" mat-button (click)="openLoginDialog()">Iniciar sesión</button>
 
     <!-- <small>{{ auth.getUserDetails()?.identity.name }} - Registered on: {{ auth.getUserDetails()?.identity.registered * 1000 | date:'full' }}</small> -->
 

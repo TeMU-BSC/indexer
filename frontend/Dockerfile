@@ -1,13 +1,14 @@
-FROM node:lts-alpine
+# FROM node:lts-alpine
+# WORKDIR /app
+# COPY package.json ./
+# RUN npm install
+# RUN npm install -g @angular/cli
+# COPY . .
+# EXPOSE 4200
+# CMD ng serve --host 0.0.0.0
+
+FROM node:12-alpine
 WORKDIR /app
-COPY package.json ./
+ADD . /app
 RUN npm install
 RUN npm install -g @angular/cli
-COPY . .
-EXPOSE 4200
-CMD ng serve --host 0.0.0.0
-
-# FROM node:12-alpine
-# WORKDIR /app
-# ADD . /app
-# RUN npm install

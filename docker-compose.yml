@@ -3,29 +3,30 @@ version: "3.7"
 services:
 
   flask:
-    build: ./flask
-    container_name: flask
-    restart: always
-    environment:
-      - APP_NAME=MyFlaskApp
-    expose:
-      - 8080
-    # volumes:
-    #   - ./flask:/app
-
-  nginx:
-    build: ./nginx
-    container_name: nginx
+    build: ./backend
+    container_name: flask_dev
     restart: always
     ports:
-      - "8080:80"
-  
+      - 8080:8080
+    environment:
+      - FLASK_ENV=development
+    command: flask run --port 8080 --host 0.0.0.0
+    volumes:
+      - ./backend:/app
+
+  # nginx:
+  #   build: ./nginx
+  #   container_name: nginx_dev
+  #   restart: always
+  #   ports:
+  #     - "8080:80"
+
   angular:
     build: ./frontend
-    container_name: frontend
+    container_name: angular_dev
     restart: always
-    # volumes:
-    #   # - /app/node_modules
-    #   - ./frontend:/app
     ports:
-      - 4201:4200
+      - 80:4200
+    command: ng serve --host 0.0.0.0
+    volumes:
+      - ./frontend:/app

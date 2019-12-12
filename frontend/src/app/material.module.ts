@@ -30,6 +30,7 @@ import {
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
   MatRippleModule,
   MatSlideToggleModule,
+  MatDialogModule
 } from '@angular/material'
 import { MaterialFileInputModule } from 'ngx-material-file-input'
 
@@ -61,7 +62,8 @@ const material = [
   MatMenuModule,
   MatRippleModule,
   MatSlideToggleModule,
-  MaterialFileInputModule
+  MaterialFileInputModule,
+  MatDialogModule
 ]
 
 @NgModule({

@@ -21,10 +21,15 @@ export class DocsComponent implements OnInit {
 
   constructor(
     private appService: AppService,
-    private auth: AuthenticationService) { }
+    public auth: AuthenticationService
+  ) { }
 
   ngOnInit() {
-    this.getDocs()
+    // this.getDocs()
+
+    if (this.auth.isLoggedIn()) {
+      this.getDocs()
+    }
 
     // const completedCol = new TableColumn<Doc, 'completed'>('Completado', 'completed')
     // completedCol.withFormField(completedCol.getCheckboxFormField())

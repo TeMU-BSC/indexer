@@ -24,7 +24,7 @@ import { FlexLayoutModule } from '@angular/flex-layout'
 import { SimplemattableModule } from 'simplemattable'
 
 // Own App Components
-import { HeaderComponent } from './components/header/header.component'
+import { HeaderComponent, LoginDialogComponent } from './components/header/header.component'
 import { LoginComponent } from './components/login/login.component'
 import { DocComponent } from './components/doc/doc.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
@@ -53,7 +53,8 @@ import { AdminComponent } from './components/admin/admin.component'
     DocsComponent,
     SlideToggleComponent,
     FooterComponent,
-    AdminComponent
+    AdminComponent,
+    LoginDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -68,7 +69,8 @@ import { AdminComponent } from './components/admin/admin.component'
   ],
   entryComponents: [
     DocComponent,
-    SlideToggleComponent
+    SlideToggleComponent,
+    LoginDialogComponent
   ],
   providers: [AuthenticationService, AuthGuardService],
   bootstrap: [AppComponent]
