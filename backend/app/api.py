@@ -18,8 +18,8 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from app import app
 
 
-# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@84.88.52.79:27017/BvSalud'
-app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'
+app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@84.88.52.79:27017/BvSalud'
+# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'
 app.config['JWT_SECRET_KEY'] = 'secret'
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
@@ -28,7 +28,7 @@ CORS(app)
 
 @app.route('/hello')
 def test():
-    return "Hello from Flask. Testing docker-compose volumes (continuous integration)"
+    return "Hello from Flask. - Alejandro."
 
 
 @app.route('/user/register/one', methods=['POST'])
