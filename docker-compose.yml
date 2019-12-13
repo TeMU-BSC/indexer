@@ -6,11 +6,11 @@ services:
     build: ./backend
     container_name: flask_dev
     restart: always
-    # ports:
-    #   - 5000:5000
     environment:
       - FLASK_ENV=development
     command: flask run --host 0.0.0.0
+    ports:
+      - 5000:5000
     volumes:
       - ./backend:/app
 
@@ -18,8 +18,8 @@ services:
     build: ./frontend
     container_name: angular_dev
     restart: always
-    # ports:
-    #   - 4201:4200
     command: ng serve --host 0.0.0.0
+    ports:
+      - 4200:4200
     volumes:
       - ./frontend:/app
