@@ -17,8 +17,9 @@ interface TokenResponse {
 export class AuthenticationService {
 
   ip = 'localhost'
-  // port = '5000'
-  port = '8080'
+  port = '5000'
+  // ip = '84.88.52.79'
+  // port = '8080'
 
   constructor(
     private http: HttpClient,

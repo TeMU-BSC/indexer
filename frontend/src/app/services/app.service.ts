@@ -11,9 +11,11 @@ import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
 })
 export class AppService {
 
-  // ip = '84.88.52.79'
   ip = 'localhost'
-  port = '8080'
+  port = '5000'
+  // ip = '84.88.52.79'
+  // port = '8080'
+
   headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' })
   options = { headers: this.headers }
   allDescriptors: Descriptor[] = (ALL_DESCRIPTORS as any).default
