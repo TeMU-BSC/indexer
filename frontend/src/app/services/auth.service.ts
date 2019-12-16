@@ -16,10 +16,12 @@ interface TokenResponse {
 })
 export class AuthenticationService {
 
+  // ip = 'localhost'
   // ip = '84.88.52.79'
-  ip = 'localhost'
-  port = '8080'
+  ip = 'temu.bsc.es'
+
   // port = '5000'
+  port = '8080'
 
   constructor(
     private http: HttpClient,
