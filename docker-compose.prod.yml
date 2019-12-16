@@ -15,7 +15,7 @@ services:
     container_name: nginx
     restart: always
     ports:
-      - "8080:80"
+      - "8080:443"
 
   angular:
     build: ./frontend
