@@ -14,12 +14,12 @@ services:
     volumes:
       - ./backend:/app
 
-  angular:
-    build: ./frontend
-    container_name: angular_dev
-    restart: always
-    command: ng serve --host 0.0.0.0
-    ports:
-      - 4200:4200
-    volumes:
-      - ./frontend:/app
+  # angular:
+  #   build: ./frontend
+  #   container_name: angular_dev
+  #   restart: always
+  #   command: ng serve --host 0.0.0.0
+  #   ports:
+  #     - 4200:4200
+  #   volumes:
+  #     - ./frontend:/app

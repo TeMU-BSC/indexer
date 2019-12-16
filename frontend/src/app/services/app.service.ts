@@ -17,7 +17,7 @@ export class AppService {
   ip = 'temu.bsc.es'
 
   // port = '5000'
-  port = '443'
+  port = '8080'
 
   headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' })
   options = { headers: this.headers }

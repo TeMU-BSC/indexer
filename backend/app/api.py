@@ -85,6 +85,9 @@ def register_many_users():
         registered_users = 0
     return jsonify({'success': success, 'errorMessage': error_message, 'registeredUsers': registered_users})
 
+@app.route('/user/login', methods=['GET'])
+def l():
+    return "vicky"
 
 @app.route('/user/login', methods=['POST'])
 def login():
