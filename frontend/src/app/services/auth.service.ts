@@ -22,7 +22,7 @@ export class AuthenticationService {
   ip = 'temu.bsc.es'
 
   // port = '5000'
-  port = '8080'
+  port = '443'
 
   constructor(
     private http: HttpClient,
