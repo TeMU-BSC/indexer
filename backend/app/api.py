@@ -18,8 +18,8 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from app import app
 
 
-# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'  # 84.88.52.79
-app.config['MONGO_URI'] = 'mongodb://root:secret@127.0.0.1:27017/BvSalud'  # 84.88.52.79
+app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'  # 84.88.52.79
+# app.config['MONGO_URI'] = 'mongodb://root:secret@127.0.0.1:27017/BvSalud'  # 84.88.52.79
 app.config['JWT_SECRET_KEY'] = 'secret'
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
