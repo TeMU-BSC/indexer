@@ -15,14 +15,14 @@ services:
     container_name: nginx
     restart: always
     ports:
-      - "8080:443"
+      - "8080:80"
 
   angular:
     build: ./frontend
     container_name: angular
     restart: always
     ports:
-      - 4201:4200
+      - 80:4200
     command: ng serve --host 0.0.0.0 --disableHostCheck
 
     # expose:

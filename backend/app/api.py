@@ -18,8 +18,8 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from app import app
 
 
-app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@84.88.52.79:27017/BvSalud'
-# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'
+# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'  # 84.88.52.79
+app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@localhost:27017/BvSalud'  # 84.88.52.79
 app.config['JWT_SECRET_KEY'] = 'secret'
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
@@ -85,9 +85,6 @@ def register_many_users():
         registered_users = 0
     return jsonify({'success': success, 'errorMessage': error_message, 'registeredUsers': registered_users})
 
-@app.route('/user/login', methods=['GET'])
-def l():
-    return "vicky"
 
 @app.route('/user/login', methods=['POST'])
 def login():
