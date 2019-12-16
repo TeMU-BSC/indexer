@@ -13,8 +13,9 @@ export class AppService {
 
   // ip = 'localhost'
   // ip = '84.88.53.221'
-  ip = 'myapp.local'
+  // ip = 'myapp.local'
   // ip = 'temu.bsc.es'
+  ip = 'bsccnio01.bsc.es'
 
   // port = '5000'
   port = '8080'
