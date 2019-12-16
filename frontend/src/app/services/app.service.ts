@@ -12,9 +12,9 @@ import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
 export class AppService {
 
   // ip = 'localhost'
-  ip = '84.88.53.221'
-  // ip = 'temu.bsc.es'
+  // ip = '84.88.53.221'
   // ip = 'myapp.local'
+  ip = 'temu.bsc.es'
 
   // port = '5000'
   port = '8080'
