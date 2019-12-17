@@ -18,13 +18,14 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from app import app
 
 
-app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'  # 84.88.52.79
-# app.config['MONGO_URI'] = 'mongodb://root:secret@127.0.0.1:27017/BvSalud'  # 84.88.52.79
+# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@84.88.52.79:27017/BvSalud'
+app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'
 app.config['JWT_SECRET_KEY'] = 'secret'
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 CORS(app)
+
 
 @app.route('/hello')
 def test():
@@ -115,13 +116,16 @@ def login():
     # return jsonify(found_user)
 
 
-@app.route('/doc/assigned', methods=['POST'])
+@app.route('/document/assigned', methods=['POST'])
 def get_assigned_docs():
     '''Find the assigned docs IDs to the current user, and then retrieving
     the doc data from the 'selected_importants' collection.'''
-    assigned_doc_ids = mongo.db.assigned_documents.find_one({'userId': request.json['id']}).get('docIds')
-    completed_doc_ids = mongo.db.assigned_documents.find_one({'userId': request.json['id']}).get('completedDocIds')
-    docs = mongo.db.selected_importants.find({'_id': {'$in': assigned_doc_ids}})
+    assigned_doc_ids = mongo.db.assigned_documents.find_one(
+        {'userId': request.json['id']}).get('docIds')
+    completed_doc_ids = mongo.db.assigned_documents.find_one(
+        {'userId': request.json['id']}).get('completedDocIds')
+    docs = mongo.db.selected_importants.find(
+        {'_id': {'$in': assigned_doc_ids}})
 
     result = []
     for doc in docs:
@@ -162,7 +166,7 @@ def get_assigned_docs():
 #     return jsonify(result)
 
 
-@app.route('/doc/assign/many', methods=['POST'])
+@app.route('/document/assign/many', methods=['POST'])
 def assign_docs_to_users():
     '''Add some documents IDs to the userId key in the 'assigned_documents' collection.'''
     # userIds = [assignment['userId'] for assignment in request.json]
@@ -176,7 +180,7 @@ def assign_docs_to_users():
     return jsonify({'success': result.acknowledged})
 
 
-@app.route('/doc/complete/add', methods=['POST'])
+@app.route('/document/complete/add', methods=['POST'])
 def mark_doc_as_completed():
     '''Add a new docId to the 'completedDocIds' array of the current user in
     the 'assigned_documents' collection.'''
@@ -187,7 +191,7 @@ def mark_doc_as_completed():
     return jsonify({'success': result.acknowledged})
 
 
-@app.route('/doc/complete/remove', methods=['POST'])
+@app.route('/document/complete/remove', methods=['POST'])
 def mark_doc_as_uncompleted():
     '''Remove an existing docId from the 'completedDocIds' array of the current
     user in the 'assigned_documents' collection.'''

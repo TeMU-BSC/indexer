@@ -4,8 +4,11 @@ import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
 import { map } from 'rxjs/operators'
-import { User } from 'src/app/app.model'
 import { Observable } from 'rxjs'
+
+import { User } from 'src/app/app.model'
+import { HOSTNAME, PORT } from './api'
+
 
 interface TokenResponse {
   token: string
@@ -20,10 +23,10 @@ export class AuthenticationService {
   // ip = '84.88.53.221'
   // ip = 'myapp.local'
   // ip = 'temu.bsc.es'
-  ip = 'bsccnio01.bsc.es'
+  // ip = 'bsccnio01.bsc.es'
 
   // port = '5000'
-  port = '8080'
+  // port = '8080'
 
   constructor(
     private http: HttpClient,
@@ -60,27 +63,29 @@ export class AuthenticationService {
     }
   }
 
-  public registerOne(user: User): Observable<any> {
-    return this.http.post<User>(`http://${this.ip}:${this.port}/user/register/one`, user)
-  }
+  // public registerOne(user: User): Observable<any> {
+  //   return this.http.post<User>(`/user/register/one`, user)
+  //   return this.http.post<User>(`http://${HOSTNAME}:${PORT}/user/register/one`, user)
+  // }
 
   public registerMany(users: User[]): Observable<any> {
-    return this.http.post<any>(`http://${this.ip}:${this.port}/user/register/many`, users)
+    // return this.http.post<any>(`/user/register/many`, users)
+    return this.http.post<any>(`http://${HOSTNAME}:${PORT}/user/register/many`, users)
   }
 
   public login(user: User): Observable<any> {
-    const base = this.http.post(`http://${this.ip}:${this.port}/user/login`, user)
-    const request = base.pipe(
-      map((data: TokenResponse) => {
-        if (data.token) {
-          this.setToken(data.token)
-        }
-        return data
-      })
-    )
-    return request
+    // const base = this.http.post(`http://${HOSTNAME}:${PORT}/user/login`, user)
+    // const request = base.pipe(
+    //   map((data: TokenResponse) => {
+    //     if (data.token) {
+    //       this.setToken(data.token)
+    //     }
+    //     return data
+    //   })
+    // )
+    // return request
 
-    // return this.http.post<User>('/users/login', user)
+    return this.http.post<User>(`http://${HOSTNAME}:${PORT}/user/login`, user)
   }
 
   // profile(): Observable<any> {

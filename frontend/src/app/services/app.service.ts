@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
-import { User, Doc, Descriptor, Assignment, BackendResponse } from '../app.model'
 import { Papa } from 'ngx-papaparse'
+
 import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
+import { HOSTNAME, PORT } from './api'
+import { User, Doc, Descriptor, Assignment, BackendResponse } from '../app.model'
 
 
 @Injectable({
@@ -15,10 +17,10 @@ export class AppService {
   // ip = '84.88.53.221'
   // ip = 'myapp.local'
   // ip = 'temu.bsc.es'
-  ip = 'bsccnio01.bsc.es'
+  // ip = 'bsccnio01.bsc.es'
 
   // port = '5000'
-  port = '8080'
+  // port = '8080'
 
   headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' })
   options = { headers: this.headers }
@@ -31,18 +33,18 @@ export class AppService {
   ) { }
 
   getDocs(user: User): Observable<Doc[]> {
-    return this.http.post<Doc[]>(`http://${this.ip}:${this.port}/doc/assigned`, user)
+    return this.http.post<Doc[]>(`http://${HOSTNAME}:${PORT}/doc/assigned`, user)
   }
 
   assignDocs(assignments: Assignment[]): Observable<any> {
-    return this.http.post<any>(`http://${this.ip}:${this.port}/doc/assign/many`, assignments)
+    return this.http.post<any>(`http://${HOSTNAME}:${PORT}/doc/assign/many`, assignments)
   }
 
   /**
    * limit the number of docs
    */
   // getDocs(total: number, start?: number): Observable<Doc[]> {
-  //   const baseUrl = `http://${this.ip}:${this.port}/docs`
+  //   const baseUrl = `http://${HOSTNAME}:${PORT}/docs`
   //   let url = baseUrl
   //   if (total !== undefined) {
   //     url += `?total=${total}`
@@ -78,14 +80,14 @@ export class AppService {
    * Add a new descriptor to database
    */
   addDescriptor(descriptor: Descriptor): Observable<BackendResponse> {
-    return this.http.post<BackendResponse>(`http://${this.ip}:${this.port}/descriptor/add`, descriptor)
+    return this.http.post<BackendResponse>(`http://${HOSTNAME}:${PORT}/descriptor/add`, descriptor)
   }
 
   /**
    * Remove an existing descriptor from database
    */
   removeDescriptor(descriptor: Descriptor): Observable<BackendResponse> {
-    return this.http.post<BackendResponse>(`http://${this.ip}:${this.port}/descriptor/remove`, descriptor)
+    return this.http.post<BackendResponse>(`http://${HOSTNAME}:${PORT}/descriptor/remove`, descriptor)
   }
 
   findDescriptorByDecsCode(decsCode: string): Descriptor {
@@ -110,14 +112,14 @@ export class AppService {
    * Mark an docId as completed by the current user in database
    */
   addCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`http://${this.ip}:${this.port}/doc/complete/add`, doc)
+    return this.http.post<Doc>(`http://${HOSTNAME}:${PORT}/doc/complete/add`, doc)
   }
 
   /**
    * Mark an docId as uncompleted by the current user in database
    */
   removeCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`http://${this.ip}:${this.port}/doc/complete/remove`, doc)
+    return this.http.post<Doc>(`http://${HOSTNAME}:${PORT}/doc/complete/remove`, doc)
   }
 
 }

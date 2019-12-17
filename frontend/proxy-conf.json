@@ -1,14 +1,14 @@
 {
-    "/document": {
-        "target": "http://localhost:5000",
-        "secure": false
-    },
-    "/descriptor": {
-        "target": "http://localhost:5000",
-        "secure": false
-    },
-    "/user": {
-        "target": "http://localhost:5000",
-        "secure": false
-    }
+  "/document": {
+    "target": "http://localhost:5000",
+    "secure": false
+  },
+  "/descriptor": {
+    "target": "http://localhost:5000",
+    "secure": false
+  },
+  "/user": {
+    "target": "http://localhost:5000",
+    "secure": false
+  }
 }
