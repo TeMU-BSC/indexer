@@ -4,7 +4,7 @@ import { Observable } from 'rxjs'
 import { Papa } from 'ngx-papaparse'
 
 import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
-import { HOSTNAME, PORT } from './api'
+import { HOSTNAME, PORT, BASE_ENDPOINT } from './api'
 import { User, Doc, Descriptor, Assignment, BackendResponse } from '../app.model'
 
 
@@ -33,11 +33,11 @@ export class AppService {
   ) { }
 
   getDocs(user: User): Observable<Doc[]> {
-    return this.http.post<Doc[]>(`http://${HOSTNAME}:${PORT}/document/assigned`, user)
+    return this.http.post<Doc[]>(`http://${HOSTNAME}:${PORT}${BASE_ENDPOINT}/document/assigned`, user)
   }
 
   assignDocs(assignments: Assignment[]): Observable<any> {
-    return this.http.post<any>(`http://${HOSTNAME}:${PORT}/document/assign/many`, assignments)
+    return this.http.post<any>(`http://${HOSTNAME}:${PORT}${BASE_ENDPOINT}/document/assign/many`, assignments)
   }
 
   /**
@@ -80,14 +80,14 @@ export class AppService {
    * Add a new descriptor to database
    */
   addDescriptor(descriptor: Descriptor): Observable<BackendResponse> {
-    return this.http.post<BackendResponse>(`http://${HOSTNAME}:${PORT}/descriptor/add`, descriptor)
+    return this.http.post<BackendResponse>(`http://${HOSTNAME}:${PORT}${BASE_ENDPOINT}/descriptor/add`, descriptor)
   }
 
   /**
    * Remove an existing descriptor from database
    */
   removeDescriptor(descriptor: Descriptor): Observable<BackendResponse> {
-    return this.http.post<BackendResponse>(`http://${HOSTNAME}:${PORT}/descriptor/remove`, descriptor)
+    return this.http.post<BackendResponse>(`http://${HOSTNAME}:${PORT}${BASE_ENDPOINT}/descriptor/remove`, descriptor)
   }
 
   findDescriptorByDecsCode(decsCode: string): Descriptor {
@@ -112,14 +112,14 @@ export class AppService {
    * Mark an docId as completed by the current user in database
    */
   addCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`http://${HOSTNAME}:${PORT}/document/complete/add`, doc)
+    return this.http.post<Doc>(`http://${HOSTNAME}:${PORT}${BASE_ENDPOINT}/document/complete/add`, doc)
   }
 
   /**
    * Mark an docId as uncompleted by the current user in database
    */
   removeCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`http://${HOSTNAME}:${PORT}/document/complete/remove`, doc)
+    return this.http.post<Doc>(`http://${HOSTNAME}:${PORT}${BASE_ENDPOINT}/document/complete/remove`, doc)
   }
 
 }

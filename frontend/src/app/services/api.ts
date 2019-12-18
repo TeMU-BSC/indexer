@@ -4,4 +4,6 @@ export const HOSTNAME = 'localhost'
 
 // Production
 // export const HOSTNAME = 'bsccnio01.bsc.es'
-export const PORT = 8080
+export const PORT = 80
+
+export const BASE_ENDPOINT = '/api'

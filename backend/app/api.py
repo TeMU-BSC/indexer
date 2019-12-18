@@ -19,8 +19,8 @@ from app import app
 
 
 # app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'
-# app.config['MONGO_URI'] = 'mongodb://root:secret@127.0.0.1:27017/BvSalud?authSource=admin'
-app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@127.0.0.1:27017/BvSalud?authSource=BvSalud'
+app.config['MONGO_URI'] = 'mongodb://root:secret@mongo:27017/BvSalud?authSource=admin'
+# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@127.0.0.1:27017/BvSalud?authSource=BvSalud'
 app.config['JWT_SECRET_KEY'] = 'secret'
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
@@ -86,6 +86,12 @@ def register_many_users():
         error_message = error.details['writeErrors'][0]['errmsg']
         registered_users = 0
     return jsonify({'success': success, 'errorMessage': error_message, 'registeredUsers': registered_users})
+
+
+# @app.route('/user/login', methods=['POST'])
+# def loginn():
+#     return mongo.database_names()
+    
 
 
 @app.route('/user/login', methods=['POST'])

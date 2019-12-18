@@ -5,6 +5,7 @@ services:
   # https://medium.com/faun/managing-mongodb-on-docker-with-docker-compose-26bf8a0bbae3
   mongo:
     image: mongo
+    hostname: mongo
     container_name: mongo_prod
     environment:
       # - MONGO_INITDB_DATABASE=BvSalud
@@ -17,32 +18,37 @@ services:
       # - 27017-27019:27017-27019
       - 27017:27017
 
-  # flask:
-  #   build: ./backend
-  #   container_name: flask_prod
-  #   restart: always
-  #   # expose:
-  #   #   - 8080
-  #   # command: uwsgi app.ini
-  #   command: flask run --host 0.0.0.0
-  #   ports:
-  #     - 8080:5000
+  flask:
+    build: ./backend
+    hostname: flask
+    container_name: flask_prod
+    restart: always
+    # expose:
+    #   - 8080
+    command: uwsgi app.ini
+    # command: flask run --host 0.0.0.0
+    links:
+      - mongo
 
-  # # nginx:
-  # #   build: ./server
-  # #   container_name: nginx_prod
-  # #   restart: always
-  # #   ports:
-  # #     - 8080:80
+  nginx:
+    build: ./server
+    container_name: nginx_prod
+    restart: always
+    links:
+      - flask
+      - angular
+    ports:
+      - 80:80
 
-  # angular:
-  #   build: ./frontend
-  #   container_name: angular_prod
-  #   restart: always
-  #   ports:
-  #     - 80:4200
-  #   command: ng serve --host 0.0.0.0 --disableHostCheck
+  angular:
+    build: ./frontend
+    hostname: angular
+    container_name: angular_prod
+    restart: always
+    ports:
+      - 4200:4200
+    command: ng serve --host 0.0.0.0 --disableHostCheck
 
-  #   # expose:
-  #   #   - 80
-  #   # command: nginx -g daemon off;
+    # expose:
+    #   - 80
+    # command: nginx -g daemon off;

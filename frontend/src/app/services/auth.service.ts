@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators'
 import { Observable } from 'rxjs'
 
 import { User } from 'src/app/app.model'
-import { HOSTNAME, PORT } from './api'
+import { HOSTNAME, PORT, BASE_ENDPOINT } from './api'
 
 
 interface TokenResponse {
@@ -70,13 +70,13 @@ export class AuthenticationService {
 
   public registerMany(users: User[]): Observable<any> {
     // return this.http.post<any>(`/user/register/many`, users)
-    return this.http.post<any>(`http://${HOSTNAME}:${PORT}/user/register/many`, users)
+    return this.http.post<any>(`http://${HOSTNAME}:${PORT}${BASE_ENDPOINT}/user/register/many`, users)
   }
 
   public login(user: User): Observable<any> {
     // return this.http.post<User>(`http://${HOSTNAME}:${PORT}/user/login`, user)
 
-    const base = this.http.post(`http://${HOSTNAME}:${PORT}/user/login`, user)
+    const base = this.http.post(`http://${HOSTNAME}:${PORT}${BASE_ENDPOINT}/user/login`, user)
     const request = base.pipe(
       map((data: TokenResponse) => {
         if (data.token) {
