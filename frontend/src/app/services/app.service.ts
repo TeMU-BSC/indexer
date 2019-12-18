@@ -33,11 +33,11 @@ export class AppService {
   ) { }
 
   getDocs(user: User): Observable<Doc[]> {
-    return this.http.post<Doc[]>(`http://${HOSTNAME}:${PORT}/doc/assigned`, user)
+    return this.http.post<Doc[]>(`http://${HOSTNAME}:${PORT}/document/assigned`, user)
   }
 
   assignDocs(assignments: Assignment[]): Observable<any> {
-    return this.http.post<any>(`http://${HOSTNAME}:${PORT}/doc/assign/many`, assignments)
+    return this.http.post<any>(`http://${HOSTNAME}:${PORT}/document/assign/many`, assignments)
   }
 
   /**
@@ -112,14 +112,14 @@ export class AppService {
    * Mark an docId as completed by the current user in database
    */
   addCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`http://${HOSTNAME}:${PORT}/doc/complete/add`, doc)
+    return this.http.post<Doc>(`http://${HOSTNAME}:${PORT}/document/complete/add`, doc)
   }
 
   /**
    * Mark an docId as uncompleted by the current user in database
    */
   removeCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`http://${HOSTNAME}:${PORT}/doc/complete/remove`, doc)
+    return this.http.post<Doc>(`http://${HOSTNAME}:${PORT}/document/complete/remove`, doc)
   }
 
 }
