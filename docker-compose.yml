@@ -4,7 +4,7 @@ services:
 
   flask:
     build: ./backend
-    container_name: flask_dev
+    container_name: flask
     restart: always
     environment:
       - FLASK_ENV=development
@@ -16,7 +16,7 @@ services:
 
   angular:
     build: ./frontend
-    container_name: angular_dev
+    container_name: angular
     restart: always
     command: ng serve --host 0.0.0.0 --disableHostCheck
     ports:

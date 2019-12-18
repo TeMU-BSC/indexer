@@ -18,7 +18,7 @@ services:
 
   flask:
     build: ./backend
-    container_name: flask
+    container_name: flask_prod
     restart: always
     # expose:
     #   - 8080
@@ -29,14 +29,14 @@ services:
 
   nginx:
     build: ./server
-    container_name: nginx
+    container_name: nginx_prod
     restart: always
     ports:
       - 8080:80
 
   angular:
     build: ./frontend
-    container_name: angular
+    container_name: angular_prod
     restart: always
     ports:
       - 80:4200
