@@ -3,45 +3,46 @@ version: '3.7'
 services:
 
   # https://medium.com/faun/managing-mongodb-on-docker-with-docker-compose-26bf8a0bbae3
-  # mongo:
-  #   image: mongo
-  #   container_name: 'my_mongo_container'
-  #   environment: 
-  #     - MONGO_INITDB_DATABASE=BvSalud
-  #     - MONGO_INITDB_ROOT_USERNAME=root
-  #     - MONGO_INITDB_ROOT_PASSWORD=secret
-  #   volumes: 
-  #     - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-  #     - ./mongo-volume:/data/db
-  #   ports: 
-  #     - 27017:27017
-
-  flask:
-    build: ./backend
-    container_name: flask_prod
-    restart: always
-    # expose:
-    #   - 8080
-    command: uwsgi app.ini
-    # command: flask run --host 0.0.0.0
-    # ports:
-    #   - 8080:5000
-
-  nginx:
-    build: ./server
-    container_name: nginx_prod
-    restart: always
+  mongo:
+    image: mongo
+    container_name: mongo_prod
+    environment:
+      # - MONGO_INITDB_DATABASE=BvSalud
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    volumes:
+      # - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - /data/db:/data/db
     ports:
-      - 8080:80
+      # - 27017-27019:27017-27019
+      - 27017:27017
 
-  angular:
-    build: ./frontend
-    container_name: angular_prod
-    restart: always
-    ports:
-      - 80:4200
-    command: ng serve --host 0.0.0.0 --disableHostCheck
+  # flask:
+  #   build: ./backend
+  #   container_name: flask_prod
+  #   restart: always
+  #   # expose:
+  #   #   - 8080
+  #   # command: uwsgi app.ini
+  #   command: flask run --host 0.0.0.0
+  #   ports:
+  #     - 8080:5000
 
-    # expose:
-    #   - 80
-    # command: nginx -g daemon off;
+  # # nginx:
+  # #   build: ./server
+  # #   container_name: nginx_prod
+  # #   restart: always
+  # #   ports:
+  # #     - 8080:80
+
+  # angular:
+  #   build: ./frontend
+  #   container_name: angular_prod
+  #   restart: always
+  #   ports:
+  #     - 80:4200
+  #   command: ng serve --host 0.0.0.0 --disableHostCheck
+
+  #   # expose:
+  #   #   - 80
+  #   # command: nginx -g daemon off;
