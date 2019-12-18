@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators'
 import { Observable } from 'rxjs'
 
 import { User } from 'src/app/app.model'
-import { HOSTNAME, PORT, BASE_ENDPOINT } from './api'
+import { baseUrl } from './api'
 
 
 interface TokenResponse {
@@ -19,29 +19,29 @@ interface TokenResponse {
 })
 export class AuthenticationService {
 
-  // ip = 'localhost'
-  // ip = '84.88.53.221'
-  // ip = 'myapp.local'
-  // ip = 'temu.bsc.es'
-  // ip = 'bsccnio01.bsc.es'
-
-  // port = '5000'
-  // port = '8080'
-
   constructor(
     private http: HttpClient,
     private router: Router) { }
 
+  /**
+   * Save a new token in the browser
+   */
   setToken(token: string): void {
     localStorage.setItem('userToken', token)
     // sessionStorage.setItem('userToken', token)
   }
 
+  /**
+   * Get the current stored token in the browser
+   */
   getToken(): string {
     return localStorage.getItem('userToken')
     // return sessionStorage.getItem('userToken')
   }
 
+  /**
+   * Get the details of the current logged user
+   */
   public getUserDetails() {
     const token = this.getToken()
     let payload
@@ -54,6 +54,9 @@ export class AuthenticationService {
     }
   }
 
+  /**
+   * Check if a user is logged
+   */
   public isLoggedIn(): boolean {
     const user = this.getUserDetails()
     if (user) {
@@ -63,20 +66,25 @@ export class AuthenticationService {
     }
   }
 
+  /**
+   * Register one new user
+   */
   // public registerOne(user: User): Observable<any> {
-  //   return this.http.post<User>(`/user/register/one`, user)
-  //   return this.http.post<User>(`http://${HOSTNAME}:${PORT}/user/register/one`, user)
+  //   return this.http.post<User>(`${baseUrl}/user/register/one`, user)
   // }
 
+  /**
+   * Register many new users
+   */
   public registerMany(users: User[]): Observable<any> {
-    // return this.http.post<any>(`/user/register/many`, users)
-    return this.http.post<any>(`http://${HOSTNAME}:${PORT}${BASE_ENDPOINT}/user/register/many`, users)
+    return this.http.post<any>(`${baseUrl}/user/register/many`, users)
   }
 
+  /**
+   * Log in an existing user
+   */
   public login(user: User): Observable<any> {
-    // return this.http.post<User>(`http://${HOSTNAME}:${PORT}/user/login`, user)
-
-    const base = this.http.post(`http://${HOSTNAME}:${PORT}${BASE_ENDPOINT}/user/login`, user)
+    const base = this.http.post(`${baseUrl}/user/login`, user)
     const request = base.pipe(
       map((data: TokenResponse) => {
         if (data.token) {
@@ -86,7 +94,6 @@ export class AuthenticationService {
       })
     )
     return request
-
   }
 
   // profile(): Observable<any> {
@@ -96,6 +103,9 @@ export class AuthenticationService {
   //   return this.http.get('/users/profile', options)
   // }
 
+  /**
+   * Log out the current logged user
+   */
   public logout(): void {
     localStorage.removeItem('userToken')
     // sessionStorage.removeItem('userToken')

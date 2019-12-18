@@ -18,9 +18,12 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from app import app
 
 
+# System
 # app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'
+
+# Docker
 app.config['MONGO_URI'] = 'mongodb://root:secret@mongo:27017/BvSalud?authSource=admin'
-# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@127.0.0.1:27017/BvSalud?authSource=BvSalud'
+
 app.config['JWT_SECRET_KEY'] = 'secret'
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
@@ -30,7 +33,7 @@ CORS(app)
 
 @app.route('/hello')
 def test():
-    return "Hello from Flask. - Alejandro."
+    return "Hello from Flask by Alejandro."
 
 
 @app.route('/user/register/one', methods=['POST'])
@@ -86,12 +89,6 @@ def register_many_users():
         error_message = error.details['writeErrors'][0]['errmsg']
         registered_users = 0
     return jsonify({'success': success, 'errorMessage': error_message, 'registeredUsers': registered_users})
-
-
-# @app.route('/user/login', methods=['POST'])
-# def loginn():
-#     return mongo.database_names()
-    
 
 
 @app.route('/user/login', methods=['POST'])
@@ -157,22 +154,6 @@ def get_assigned_docs():
         result.append(doc_relevant_info)
 
     return jsonify(result)
-
-
-# @app.route('/docs/one', methods=['GET'])
-# def get_one_doc():
-#     '''Return the relevant data from the queried doc from the 'selected_importants' collection,
-#     as well as its descriptors from the 'descriptors' collection.'''
-#     doc = mongo.db.selected_importants.find_one({'_id': request.json['docId']})
-#     descriptors = mongo.db.descriptors.find(request.json, {'_id': 0, 'decsCode': 1})
-#     decsCodes = [descriptor['decsCode'] for descriptor in descriptors]
-#     result = {
-#         'id': doc['_id'],
-#         'title': doc['ti_es'],
-#         'abstract': doc['ab_es'],
-#         'decsCodes': decsCodes,
-#     }
-#     return jsonify(result)
 
 
 @app.route('/document/assign/many', methods=['POST'])

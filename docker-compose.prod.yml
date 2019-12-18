@@ -6,33 +6,32 @@ services:
   mongo:
     image: mongo
     hostname: mongo
-    container_name: mongo_prod
+    container_name: mongo
     environment:
-      # - MONGO_INITDB_DATABASE=BvSalud
+      - MONGO_INITDB_DATABASE=BvSalud
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=secret
     volumes:
-      # - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - /data/db:/data/db
     ports:
       # - 27017-27019:27017-27019
+      # - 27017:27017
       - 27017:27017
 
   flask:
     build: ./backend
     hostname: flask
-    container_name: flask_prod
+    container_name: flask
     restart: always
-    # expose:
-    #   - 8080
     command: uwsgi app.ini
-    # command: flask run --host 0.0.0.0
     links:
       - mongo
 
   nginx:
     build: ./server
-    container_name: nginx_prod
+    hostname: nginx
+    container_name: nginx
     restart: always
     links:
       - flask
@@ -43,12 +42,8 @@ services:
   angular:
     build: ./frontend
     hostname: angular
-    container_name: angular_prod
+    container_name: angular
     restart: always
     ports:
       - 4200:4200
     command: ng serve --host 0.0.0.0 --disableHostCheck
-
-    # expose:
-    #   - 80
-    # command: nginx -g daemon off;

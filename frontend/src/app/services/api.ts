@@ -1,9 +1,7 @@
-// Development
-export const HOSTNAME = 'localhost'
-// export const PORT = 5000
+const hostname = 'localhost'
+// const hostname = 'bsccnio01.bsc.es'
+// const port = 5000
+const port = 80
+const baseEndpoint = '/api'
 
-// Production
-// export const HOSTNAME = 'bsccnio01.bsc.es'
-export const PORT = 80
-
-export const BASE_ENDPOINT = '/api'
+export const baseUrl = `http://${hostname}:${port}${baseEndpoint}`
