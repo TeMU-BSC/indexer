@@ -12,6 +12,3 @@ WORKDIR /app
 ADD . /app
 RUN npm install
 RUN npm install -g @angular/cli
-
-# https://stackoverflow.com/a/50333128
-# RUN npm install --save-dev @angular-devkit/build-angular

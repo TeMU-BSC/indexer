@@ -135,7 +135,9 @@ def get_assigned_docs():
         decsCodes = [descriptor['decsCode'] for descriptor in descriptors]
 
         # Check if this doc has been 'marked as completed' by the current user
-        completed = doc['_id'] in completed_doc_ids
+        completed = False
+        if completed_doc_ids:
+            completed = doc['_id'] in completed_doc_ids
 
         # Prepare the relevant info to be returned
         doc_relevant_info = {
