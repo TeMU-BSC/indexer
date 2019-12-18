@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7'
 
 services:
 
@@ -18,7 +18,7 @@ services:
     build: ./frontend
     container_name: angular_dev
     restart: always
-    command: ng serve --host 0.0.0.0
+    command: ng serve --host 0.0.0.0 --disableHostCheck
     ports:
       - 80:4200
     volumes:

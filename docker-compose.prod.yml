@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 
 services:
 
@@ -22,17 +22,17 @@ services:
     restart: always
     # expose:
     #   - 8080
-    # command: uwsgi app.ini
-    command: flask run --host 0.0.0.0
-    ports:
-      - 8080:5000
+    command: uwsgi app.ini
+    # command: flask run --host 0.0.0.0
+    # ports:
+    #   - 8080:5000
 
-  # nginx:
-  #   build: ./server
-  #   container_name: nginx
-  #   restart: always
-  #   ports:
-  #     - 8080:80
+  nginx:
+    build: ./server
+    container_name: nginx
+    restart: always
+    ports:
+      - 8080:80
 
   angular:
     build: ./frontend
