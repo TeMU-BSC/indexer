@@ -74,18 +74,19 @@ export class AuthenticationService {
   }
 
   public login(user: User): Observable<any> {
-    // const base = this.http.post(`http://${HOSTNAME}:${PORT}/user/login`, user)
-    // const request = base.pipe(
-    //   map((data: TokenResponse) => {
-    //     if (data.token) {
-    //       this.setToken(data.token)
-    //     }
-    //     return data
-    //   })
-    // )
-    // return request
+    // return this.http.post<User>(`http://${HOSTNAME}:${PORT}/user/login`, user)
 
-    return this.http.post<User>(`http://${HOSTNAME}:${PORT}/user/login`, user)
+    const base = this.http.post(`http://${HOSTNAME}:${PORT}/user/login`, user)
+    const request = base.pipe(
+      map((data: TokenResponse) => {
+        if (data.token) {
+          this.setToken(data.token)
+        }
+        return data
+      })
+    )
+    return request
+
   }
 
   // profile(): Observable<any> {
