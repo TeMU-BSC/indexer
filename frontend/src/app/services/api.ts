@@ -1,5 +1,5 @@
-const hostname = 'localhost'
-// const hostname = 'bsccnio01.bsc.es'
+// const hostname = 'localhost'
+const hostname = 'bsccnio01.bsc.es'
 // const port = 5000
 const port = 80
 const baseEndpoint = '/api'
