@@ -18,8 +18,8 @@ services:
     build: ./frontend
     container_name: angular
     restart: always
-    command: ng serve --host 0.0.0.0 --disableHostCheck
+    command: ng serve --host 0.0.0.0
     ports:
-      - 80:4200
+      - 4200:4200
     volumes:
       - ./frontend:/app
