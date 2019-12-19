@@ -54,14 +54,14 @@ export class AppService {
   /**
    * Add a new descriptor to database
    */
-  addDescriptor(descriptor: Descriptor): Observable<BackendResponse> {
+  addDescriptor(descriptor: any): Observable<BackendResponse> {
     return this.http.post<BackendResponse>(`${baseUrl}/descriptor/add`, descriptor)
   }
 
   /**
    * Remove an existing descriptor from database
    */
-  removeDescriptor(descriptor: Descriptor): Observable<BackendResponse> {
+  removeDescriptor(descriptor: any): Observable<BackendResponse> {
     return this.http.post<BackendResponse>(`${baseUrl}/descriptor/remove`, descriptor)
   }
 

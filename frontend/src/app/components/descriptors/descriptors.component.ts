@@ -108,31 +108,30 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   }
 
   remove(descriptor: Descriptor): void {
-    // Remove chip from input field
-    const index = this.descriptors.indexOf(descriptor)
-    if (index >= 0) {
-      this.descriptors.splice(index, 1)
-    }
-
-    // Remove the clicked chip descriptor from database
-    const descriptorToRemove = {
-      decsCode: descriptor.decsCode,
-      userId: this.auth.getUserDetails().identity.id,
-      docId: this.doc.id
-    }
-
     if (confirm(`¿Quieres borrar el descriptor "${descriptor.termSpanish} (${descriptor.decsCode})"?`)) {
+      // Remove chip from input field
+      const index = this.descriptors.indexOf(descriptor)
+      if (index >= 0) {
+        this.descriptors.splice(index, 1)
+      }
+
+      // Remove the clicked chip descriptor from database
+      const descriptorToRemove = {
+        decsCode: descriptor.decsCode,
+        userId: this.auth.getUserDetails().identity.id,
+        docId: this.doc.id
+      }
       this.appService.removeDescriptor(descriptorToRemove).subscribe()
+
+      // Visual information to the user
+      const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'DESHACER')
+
+      // If the action button is clicked, re-add the recently removed descriptor
+      snackBarRef.onAction().subscribe(() => {
+        this.descriptors.push(descriptor)
+        this.appService.addDescriptor(descriptorToRemove).subscribe()
+      })
     }
-
-    // Visual information to the user
-    const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'DESHACER')
-
-    // If the action button is clicked, re-add the recently removed descriptor
-    snackBarRef.onAction().subscribe(() => {
-      this.descriptors.push(descriptor)
-      this.appService.addDescriptor(descriptorToRemove).subscribe()
-    })
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
