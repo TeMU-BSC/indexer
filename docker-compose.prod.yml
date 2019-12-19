@@ -25,8 +25,8 @@ services:
     container_name: flask
     restart: always
     command: uwsgi app.ini
-    links:
-      - mongo
+    # links:
+    #   - mongo
 
   nginx:
     build: ./server
