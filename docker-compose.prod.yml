@@ -7,10 +7,10 @@ services:
     image: mongo
     hostname: mongo
     container_name: mongo
-    environment:
-      - MONGO_INITDB_DATABASE=BvSalud
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=secret
+    # environment:
+    #   - MONGO_INITDB_DATABASE=BvSalud
+    #   - MONGO_INITDB_ROOT_USERNAME=root
+    #   - MONGO_INITDB_ROOT_PASSWORD=secret
     volumes:
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - /data/db:/data/db

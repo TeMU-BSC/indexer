@@ -22,7 +22,8 @@ from app import app
 # app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'
 
 # Docker
-app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@mongo:27017/BvSalud?authSource=admin'
+# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@mongo:27017/BvSalud?authSource=admin'
+app.config['MONGO_URI'] = 'mongodb://mongo:27017/BvSalud'
 
 app.config['JWT_SECRET_KEY'] = 'secret'
 mongo = PyMongo(app)
