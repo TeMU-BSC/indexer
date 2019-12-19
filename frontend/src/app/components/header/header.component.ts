@@ -19,7 +19,7 @@ export class HeaderComponent {
     private router: Router
   ) { }
 
-  openLoginDialog(): void {
+  public openLoginDialog(): void {
     const dialogRef = this.dialog.open(LoginDialogComponent, {
       width: '300px',
       data: { user: this.user }

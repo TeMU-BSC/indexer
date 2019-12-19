@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core'
 import { Doc, User } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
 import { AuthenticationService } from 'src/app/services/auth.service'
-import { TableColumn, Width, ButtonType } from 'simplemattable'
-import { SlideToggleComponent } from '../slide-toggle/slide-toggle.component'
-import { AbstractControl } from '@angular/forms'
+import { TableColumn, Width } from 'simplemattable'
+// import { SlideToggleComponent } from '../slide-toggle/slide-toggle.component'
+// import { AbstractControl } from '@angular/forms'
 
 @Component({
   selector: 'app-docs',
@@ -25,8 +25,6 @@ export class DocsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // this.getDocs()
-
     if (this.auth.isLoggedIn()) {
       this.getDocs()
     }
@@ -36,9 +34,9 @@ export class DocsComponent implements OnInit {
 
     this.columns = [
       new TableColumn<Doc, 'title'>('Título', 'title')
+        .isHiddenXs(true)
         .withWidth(Width.pct(70))
-        .withColFilter()
-        .isHiddenXs(true),
+        .withColFilter(),
       // .isTextHiddenXs(true),
       // .withTransform(title => title.length > 30 ? title.slice(0, 30) + '...' : title),
       new TableColumn<Doc, 'id'>('ID documento', 'id')
@@ -48,6 +46,7 @@ export class DocsComponent implements OnInit {
       // .withNgComponent(DocComponent)
       // .withNgComponentInput((component: DocComponent, data, dataParent) => component.doc = dataParent),
       new TableColumn<Doc, 'decsCodes'>('Núm. descriptores', 'decsCodes')
+        .isHiddenXs(true)
         .withWidth(Width.pct(10))
         .withColFilter()
         .withTransform(data => data.length.toString()),

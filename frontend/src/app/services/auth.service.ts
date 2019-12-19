@@ -1,10 +1,11 @@
 // https://github.com/ArjunAranetaCodes/MoreCodes-Youtube/tree/master/angular-flask-mongodb-login-reg
 
-import { Injectable } from '@angular/core'
+import { Injectable, Component, Inject } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
 import { map } from 'rxjs/operators'
 import { Observable } from 'rxjs'
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 
 import { User } from 'src/app/app.model'
 import { baseUrl } from './api'
@@ -19,9 +20,13 @@ interface TokenResponse {
 })
 export class AuthenticationService {
 
+  user: User
+
   constructor(
     private http: HttpClient,
-    private router: Router) { }
+    public dialog: MatDialog,
+    private router: Router
+  ) { }
 
   /**
    * Save a new token in the browser
@@ -112,4 +117,34 @@ export class AuthenticationService {
     this.router.navigateByUrl('/')
   }
 
+  // public openLoginDialog(): void {
+  //   const dialogRef = this.dialog.open(LoginDialogComponent, {
+  //     width: '300px',
+  //     data: { user: this.user }
+  //   })
+
+  //   dialogRef.afterClosed().subscribe(result => {
+  //     this.user = result
+  //     this.login(this.user).subscribe(() => this.router.navigateByUrl('/docs'))
+  //   })
+  // }
+
 }
+
+
+// @Component({
+//   selector: 'app-login-dialog',
+//   templateUrl: 'login-dialog.html',
+// })
+// export class LoginDialogComponent {
+
+//   constructor(
+//     public dialogRef: MatDialogRef<LoginDialogComponent>,
+//     @Inject(MAT_DIALOG_DATA) public user: User
+//   ) { }
+
+//   onNoClick(): void {
+//     this.dialogRef.close()
+//   }
+
+// }
