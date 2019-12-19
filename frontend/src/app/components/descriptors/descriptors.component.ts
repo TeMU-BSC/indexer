@@ -120,7 +120,10 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       userId: this.auth.getUserDetails().identity.id,
       docId: this.doc.id
     }
-    this.appService.removeDescriptor(descriptorToRemove).subscribe()
+
+    if (confirm(`¿Quieres borrar el descriptor "${descriptor.termSpanish} (${descriptor.decsCode})"?`)) {
+      this.appService.removeDescriptor(descriptorToRemove).subscribe()
+    }
 
     // Visual information to the user
     const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'DESHACER')

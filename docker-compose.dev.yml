@@ -2,24 +2,24 @@ version: '3.7'
 
 services:
 
-  flask:
-    build: ./backend
-    container_name: flask
-    restart: always
-    environment:
-      - FLASK_ENV=development
-    command: flask run --host 0.0.0.0
-    ports:
-      - 5000:5000
-    volumes:
-      - ./backend:/app
+  # flask:
+  #   build: ./backend
+  #   container_name: flask
+  #   restart: always
+  #   environment:
+  #     - FLASK_ENV=development
+  #   command: flask run --host 0.0.0.0
+  #   ports:
+  #     - 5000:5000
+  #   volumes:
+  #     - ./backend:/app
 
   angular:
     build: ./frontend
     container_name: angular
     restart: always
-    command: ng serve --host 0.0.0.0
     ports:
       - 4200:4200
+    command: ng serve --host 0.0.0.0
     volumes:
       - ./frontend:/app
