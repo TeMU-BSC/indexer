@@ -23,6 +23,7 @@ app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/Bv
 
 # Docker
 # app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@mongo:27017/BvSalud?authSource=admin'
+# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@mongo:27017/BvSalud'
 # app.config['MONGO_URI'] = 'mongodb://mongo:27017/BvSalud'
 
 app.config['JWT_SECRET_KEY'] = 'secret'
@@ -195,9 +196,13 @@ def mark_doc_as_uncompleted():
 
 @app.route('/descriptor/add', methods=['POST'])
 def add_descriptor():
-    '''Add a descriptor to the 'descriptors' collection.'''
+    '''Add a descriptor to the 'descriptors' collection.
+    Using the replace_one pymongo's function, avoids inserting the same
+    descriptor by the same user logged in two different browsers at the same
+    time.'''
     descriptor = request.json
-    result = mongo.db.descriptors.insert_one(descriptor)
+    # result = mongo.db.descriptors.insert_one(descriptor)
+    result = mongo.db.descriptors.replace_one(descriptor, descriptor, upsert=True)
     return jsonify({'success': result.acknowledged})
 
 

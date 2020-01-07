@@ -101,9 +101,9 @@ export class AdminComponent {
       error => console.error(error),
       () => {
         if (this.response.success) {
-          this.snackBar.open(`Usuarios registrados: ${this.response.registeredUsers}`, 'OK')
+          this.snackBar.open(`Documentos asignados a usuarios correctamente.`, 'OK')
         } else {
-          this.snackBar.open(`Error: ${this.response.errorMessage}`, 'REVISAR FICHERO')
+          this.snackBar.open(`Error al asignar documentos a usuarios.`, 'REVISAR FICHERO')
         }
       }
     )
