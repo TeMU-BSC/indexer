@@ -27,7 +27,7 @@ export class HeaderComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       this.user = result
-      this.auth.login(this.user).subscribe(() => this.router.navigateByUrl('/docs'))
+      this.auth.login(this.user)
     })
   }
 

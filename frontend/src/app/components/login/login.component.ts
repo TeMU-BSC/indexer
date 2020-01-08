@@ -1,5 +1,4 @@
 import { Component } from '@angular/core'
-import { Router } from '@angular/router'
 import { User } from 'src/app/app.model'
 import { AuthenticationService } from 'src/app/services/auth.service'
 
@@ -14,39 +13,10 @@ export class LoginComponent {
 
   constructor(
     public auth: AuthenticationService,
-    private router: Router
   ) { }
 
   login() {
-    this.auth.login(this.user).subscribe(
-      // response => {
-      //   if (response.token !== undefined) {
-      //     this.auth.setCurrentUser(response)
-      //   }
-      // },
-      // error => console.error(error),
-      // () => {
-      //   if (this.user.token !== undefined) {
-      //     console.log(this.user)
-      //     this.router.navigateByUrl('/')
-      //   }
-      // }
-
-      () => {
-        this.router.navigateByUrl('/docs')
-      }
-    )
+    this.auth.login(this.user)
   }
-
-  // login(): void {
-  //   // this.router.navigate(['home'])
-  //   const loggedIn = this.appService.login(this.annotator)
-  //   if (loggedIn) {
-  //     alert('Login')
-  //     console.log(loggedIn)
-  //   }
-  // }
-
-
 
 }

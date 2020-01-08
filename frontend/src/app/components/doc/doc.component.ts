@@ -29,7 +29,8 @@ export class DocComponent {
 
     // Make that change permanent into database
     const docToMark = {
-      userId: this.auth.getUserDetails().identity.id,
+      // userId: this.auth.user.id,
+      userId: this.auth.getCurrentUser().id,
       docId: this.doc.id
     }
     if (this.doc.completed) {

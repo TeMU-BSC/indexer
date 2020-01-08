@@ -26,13 +26,19 @@
     {
         "id": "T5",
         "fullname": "Marta Villegas",
-        "email": "antonio.miranda@bsc.es",
+        "email": "marta.villegas@bsc.es",
         "password": "testing"
     },
     {
         "id": "T6",
         "fullname": "Martin Krallinger",
         "email": "martin.krallinger@bsc.es",
+        "password": "testing"
+    },
+    {
+        "id": "T7",
+        "fullname": "Marvin Agüero",
+        "email": "marvin.aguero@bsc.es",
         "password": "testing"
     }
 ]

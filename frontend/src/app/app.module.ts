@@ -74,7 +74,10 @@ import { AdminComponent } from './components/admin/admin.component'
     SlideToggleComponent,
     LoginDialogComponent
   ],
-  providers: [AuthenticationService, AuthGuardService],
+  providers: [
+    AuthenticationService,
+    AuthGuardService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

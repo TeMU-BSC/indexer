@@ -68,7 +68,7 @@ export class DocsComponent implements OnInit {
 
   getDocs() {
     const userToSend: User = {
-      id: this.auth.getUserDetails().identity.id
+      id: this.auth.getCurrentUser().id
     }
     this.appService.getDocs(userToSend).subscribe(docs => {
       this.docs = docs

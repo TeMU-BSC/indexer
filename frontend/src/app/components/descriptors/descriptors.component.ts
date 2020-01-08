@@ -32,6 +32,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   filteredDescriptors: Observable<Descriptor[]>  // suggested options
   descriptors: Descriptor[] = []  // chips list
   allDescriptors: Descriptor[]  // all available descriptors to pick
+  SEARCH_MINIMUM_LENGTH = 4
 
   constructor(
     private appService: AppService,
@@ -45,7 +46,21 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // this.appService.getDescriptorsFromTSV()
 
     // Get all descriptors from local JSON file
-    this.appService.getDescriptors().subscribe(data => this.allDescriptors = data)
+    this.appService.getDescriptors().subscribe(data => this.allDescriptors = data
+      , err => console.log(err), () => {
+      // TESTING
+      // const lengths = []
+      // this.allDescriptors.forEach(descriptor => {
+      //   lengths.push(descriptor.termSpanish.length)
+      // })
+      // console.warn(Math.min(...lengths))
+      console.log(this.allDescriptors)
+    })
+
+
+
+
+
 
     // Filter descriptors on any typing change of input field
     this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
@@ -55,7 +70,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       // map((value: string | null) => value ? this._filter(value) : this.allDescriptors.slice()),
 
       // https://stackoverflow.com/questions/45229409/speeding-up-angular-material-autocomplete-or-alternatives#comment93317064_46289297
-      map((value: string | null) => value.length >= 3 ? this._filter(value) : [])
+      map((value: string | null) => value.length >= this.SEARCH_MINIMUM_LENGTH ? this._filter(value) : [])
     )
   }
 
@@ -118,7 +133,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       // Remove the clicked chip descriptor from database
       const descriptorToRemove = {
         decsCode: descriptor.decsCode,
-        userId: this.auth.getUserDetails().identity.id,
+        userId: this.auth.getCurrentUser().id,
         docId: this.doc.id
       }
       this.appService.removeDescriptor(descriptorToRemove).subscribe()
@@ -148,7 +163,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // Add the clicked chip descriptor to database
     const descriptorToAdd = {
       decsCode: selectedDescriptor.decsCode,
-      userId: this.auth.getUserDetails().identity.id,
+      userId: this.auth.getCurrentUser().id,
       docId: this.doc.id
     }
     this.appService.addDescriptor(descriptorToAdd).subscribe()

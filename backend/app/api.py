@@ -103,7 +103,7 @@ def login():
             #     'registered': found_user['_id'].generation_time.timestamp()
             # })
             access_token = create_access_token(identity=dict(found_user))
-            result = jsonify({'token': access_token})
+            result = jsonify({'user': found_user, 'token': access_token})
         else:
             result = jsonify({'error': 'Invalid email and password'})
     else:
@@ -150,6 +150,7 @@ def get_assigned_docs():
         result.append(doc_relevant_info)
 
     return jsonify(result)
+    # return jsonify({'docsCount': len(result), 'docs': result})
 
 
 @app.route('/document/assign/many', methods=['POST'])

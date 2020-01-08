@@ -7,10 +7,10 @@
     <!-- <button *ngIf="!auth.isLoggedIn()" mat-button routerLink="login">Iniciar sesión (component)</button> -->
     <button *ngIf="!auth.isLoggedIn()" mat-button (click)="openLoginDialog()">Iniciar sesión</button>
 
-    <!-- <small>{{ auth.getUserDetails()?.identity.name }} - Registered on: {{ auth.getUserDetails()?.identity.registered * 1000 | date:'full' }}</small> -->
+    <!-- <small>{{ user.name }} - Registered on: {{ user.registered * 1000 | date:'full' }}</small> -->
 
     <div *ngIf="auth.isLoggedIn()">
-      <small>Hola, {{ auth.getUserDetails()?.identity.fullname }}</small>
+      <small>Hola, {{ auth.getCurrentUser().fullname }}</small>
       <!-- <button mat-button color="warn" (click)="auth.logout()">Cerrar sesión</button> -->
       <button mat-icon-button color="warn" matTooltip="Cerrar sesión" aria-label="Logout icon" (click)="auth.logout()">
         <mat-icon>power_settings_new</mat-icon>

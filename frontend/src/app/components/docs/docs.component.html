@@ -38,8 +38,8 @@
 <!-- Option 4: Table with action button that shows the doc card on the side -->
 <div *ngIf="auth.isLoggedIn()" fxLayout="column" fxLayoutGap="1em" class="p-3">
   <smc-simplemattable [data]="docs" [columns]="columns" [filter]="false" [paginator]="true" [sorting]="true"
-    [paginatorPageSize]="5" [paginatorPageSizeOptions]="[5, 10, 25, 100]" [rowClickable]="true"
+    [paginatorPageSize]="5" [paginatorPageSizeOptions]="[5, 10, 20]" [rowClickable]="true"
     (rowClick)="selectDoc($event)">
   </smc-simplemattable>
-  <app-doc *ngIf="doc" [doc]="doc"></app-doc>
+  <app-doc *ngIf="doc && docs.length > 0" [doc]="doc"></app-doc>
 </div>
