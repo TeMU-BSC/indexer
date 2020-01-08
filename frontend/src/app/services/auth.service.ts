@@ -21,7 +21,7 @@ interface TokenResponse {
 })
 export class AuthenticationService {
 
-  SESSION_APPLICATION_KEY = 'userToken'
+  BROWSER_SESSION_KEY = 'userObject'
   public user: User
 
   constructor(
@@ -33,11 +33,11 @@ export class AuthenticationService {
    * Check if any user is logged
    */
   public isLoggedIn(): boolean {
-    return localStorage.getItem(this.SESSION_APPLICATION_KEY) !== null
+    return localStorage.getItem(this.BROWSER_SESSION_KEY) !== null
   }
 
   public getCurrentUser(): User {
-    return JSON.parse(localStorage.getItem(this.SESSION_APPLICATION_KEY))
+    return JSON.parse(localStorage.getItem(this.BROWSER_SESSION_KEY))
   }
 
   /**
@@ -62,7 +62,7 @@ export class AuthenticationService {
       (response: TokenResponse) => {
         if (response.token) {
           this.user = response.user
-          localStorage.setItem(this.SESSION_APPLICATION_KEY, JSON.stringify(this.user))
+          localStorage.setItem(this.BROWSER_SESSION_KEY, JSON.stringify(this.user))
         }
         if (response.error) {
           alert(response.error)
@@ -80,7 +80,7 @@ export class AuthenticationService {
    * Log out the current logged user
    */
   public logout(): void {
-    localStorage.removeItem(this.SESSION_APPLICATION_KEY)
+    localStorage.removeItem(this.BROWSER_SESSION_KEY)
     this.router.navigateByUrl('/')
   }
 
