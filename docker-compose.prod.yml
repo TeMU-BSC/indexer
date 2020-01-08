@@ -54,4 +54,4 @@ services:
       - REST_API_URL=http://bsccnio01.bsc.es/api
     ports:
       - 4200:4200
-    command: ng serve --host 0.0.0.0 --disableHostCheck --source-map=false --aot --prod --live-reload=false
+    command: ng serve --host 0.0.0.0 --disableHostCheck --liveReload=false --prod --aot --sourceMap=false 

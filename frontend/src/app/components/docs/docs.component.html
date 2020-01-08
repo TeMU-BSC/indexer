@@ -41,5 +41,5 @@
     [paginatorPageSize]="5" [paginatorPageSizeOptions]="[5, 10, 20]" [rowClickable]="true"
     (rowClick)="selectDoc($event)">
   </smc-simplemattable>
-  <app-doc *ngIf="doc && docs.length > 0" [doc]="doc"></app-doc>
+  <app-doc *ngIf="doc" [doc]="doc"></app-doc>
 </div>

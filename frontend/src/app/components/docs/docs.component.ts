@@ -37,14 +37,14 @@ export class DocsComponent implements OnInit {
         .isHiddenXs(true)
         .withWidth(Width.pct(70))
         .withColFilter(),
-      // .isTextHiddenXs(true),
-      // .withTransform(title => title.length > 30 ? title.slice(0, 30) + '...' : title),
+      // .isTextHiddenXs(true)
+      // .withTransform(title => title.length > 30 ? title.slice(0, 30) + '...' : title)
       new TableColumn<Doc, 'id'>('ID documento', 'id')
         .withWidth(Width.pct(10))
         .withColFilter(),
-      // .withNgStyle((id, doc) => ({ color: doc.decsCodes.length ? '#669966' : '' })),
+      // .withNgStyle((id, doc) => ({ color: doc.decsCodes.length ? '#669966' : '' }))
       // .withNgComponent(DocComponent)
-      // .withNgComponentInput((component: DocComponent, data, dataParent) => component.doc = dataParent),
+      // .withNgComponentInput((component: DocComponent, data, dataParent) => component.doc = dataParent)
       new TableColumn<Doc, 'decsCodes'>('Núm. descriptores', 'decsCodes')
         .isHiddenXs(true)
         .withWidth(Width.pct(10))
@@ -53,7 +53,7 @@ export class DocsComponent implements OnInit {
       // new TableColumn<Doc, 'completed'>('Completado', 'completed')
       //   .withColFilter()
       //   .withNgComponent(SlideToggleComponent)
-      //   .withNgComponentInput((component: SlideToggleComponent, data, dataParent) => component.checked = dataParent.completed),
+      //   .withNgComponentInput((component: SlideToggleComponent, data, dataParent) => component.checked = dataParent.completed)
       // completedCol
       //   .withWidth(Width.pct(10))
       //   .isDirectEdit(true)
@@ -72,7 +72,7 @@ export class DocsComponent implements OnInit {
     }
     this.appService.getDocs(userToSend).subscribe(docs => {
       this.docs = docs
-      this.currentDocs = this.docs.slice(0, 10)
+      // this.currentDocs = this.docs.slice(0, 10)
     })
   }
 
