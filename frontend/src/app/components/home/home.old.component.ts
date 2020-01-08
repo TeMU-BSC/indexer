@@ -14,7 +14,7 @@ import { AppService } from 'src/app/services/app.service'
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeOldComponent implements OnInit {
 
   constructor(public auth: AuthenticationService) { }
 

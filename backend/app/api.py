@@ -4,8 +4,9 @@ Backend REST API to handle connections to MongoDB for the MESINESP task.
 Author: alejandro.asensio@bsc.es
 '''
 
-from datetime import datetime
 from bson.objectid import ObjectId
+from datetime import datetime
+from os import environ
 
 from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
@@ -18,15 +19,8 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from app import app
 
 
-# System
-app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud'
-
-# Docker
-# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@mongo:27017/BvSalud?authSource=admin'
-# app.config['MONGO_URI'] = 'mongodb://mesinesp:mesinesp@mongo:27017/BvSalud'
-# app.config['MONGO_URI'] = 'mongodb://mongo:27017/BvSalud'
-
-app.config['JWT_SECRET_KEY'] = 'secret'
+app.config['MONGO_URI'] = environ.get('MONGO_URI')
+app.config['JWT_SECRET_KEY'] = environ.get('JWT_SECRET_KEY')
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
@@ -49,7 +43,7 @@ def register_one_user():
 
     # Option 1: Try to insert a new user, except DuplicateKeyError occurs.
     try:
-        result = mongo.db.users.insert_one(user)
+        result = mongo.db.users.replace_one(user, user, upsert=True)
         success = result.acknowledged
         error_message = None
         registered_user = mongo.db.users.find_one(
@@ -161,13 +155,6 @@ def get_assigned_docs():
 @app.route('/document/assign/many', methods=['POST'])
 def assign_docs_to_users():
     '''Add some documents IDs to the userId key in the 'assigned_documents' collection.'''
-    # userIds = [assignment['userId'] for assignment in request.json]
-    # result = mongo.db.assigned_documents.insert_many(
-    #     {'userId': {'$in': userIds}},
-    #    # {'userId': request.json['userId'], 'docIds': request.json['docIds']},
-    #     {'$set': {'x': 3}},
-    #     upsert=True
-    # )
     result = mongo.db.assigned_documents.insert_many(request.json)
     return jsonify({'success': result.acknowledged})
 
@@ -196,12 +183,10 @@ def mark_doc_as_uncompleted():
 
 @app.route('/descriptor/add', methods=['POST'])
 def add_descriptor():
-    '''Add a descriptor to the 'descriptors' collection.
-    Using the replace_one pymongo's function, avoids inserting the same
-    descriptor by the same user logged in two different browsers at the same
-    time.'''
+    '''Add a descriptor to the 'descriptors' collection.'''
     descriptor = request.json
-    # result = mongo.db.descriptors.insert_one(descriptor)
+    # Use 'replace_one' instead of 'insert_one' to avoid repeated descriptors
+    # by the same user logged at the same time in different browsers.
     result = mongo.db.descriptors.replace_one(descriptor, descriptor, upsert=True)
     return jsonify({'success': result.acknowledged})
 

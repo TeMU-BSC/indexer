@@ -29,6 +29,7 @@ import { LoginComponent } from './components/login/login.component'
 import { DocComponent } from './components/doc/doc.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
 import { HomeComponent } from './components/home/home.component'
+import { HomeOldComponent } from './components/home/home.old.component'
 import { HighlightPipe } from './pipes/highlight.pipe'
 import { ProfileComponent } from './components/profile/profile.component'
 import { AuthenticationService } from './services/auth.service'
@@ -47,6 +48,7 @@ import { AdminComponent } from './components/admin/admin.component'
     DocComponent,
     DescriptorsComponent,
     HomeComponent,
+    HomeOldComponent,
     HighlightPipe,
     ProfileComponent,
     RegisterComponent,

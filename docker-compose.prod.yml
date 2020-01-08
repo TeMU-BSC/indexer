@@ -24,6 +24,12 @@ services:
     hostname: flask
     container_name: flask
     restart: always
+    environment:
+      - MONGO_URI=mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud
+      # - MONGO_URI=mongodb://mesinesp:mesinesp@mongo:27017/BvSalud?authSource=admin
+      # - MONGO_URI=mongodb://mesinesp:mesinesp@mongo:27017/BvSalud
+      # - MONGO_URI=mongodb://mongo:27017/BvSalud
+      - JWT_SECRET_KEY=secret
     command: uwsgi app.ini
     # links:
     #   - mongo
@@ -44,6 +50,8 @@ services:
     hostname: angular
     container_name: angular
     restart: always
+    environment:
+      - REST_API_URL=http://bsccnio01.bsc.es/api
     ports:
       - 4200:4200
-    command: ng serve --host 0.0.0.0 --disableHostCheck
+    command: ng serve --host 0.0.0.0 --disableHostCheck --prod

@@ -7,6 +7,8 @@ services:
     container_name: flask
     restart: always
     environment:
+      - MONGO_URI=mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud
+      - JWT_SECRET_KEY=secret
       - FLASK_ENV=development
     command: flask run --host 0.0.0.0
     ports:
@@ -18,8 +20,10 @@ services:
     build: ./frontend
     container_name: angular
     restart: always
+    environment:
+      - REST_API_URL=http://localhost:5000
+    command: ng serve --host 0.0.0.0
     ports:
       - 4200:4200
-    command: ng serve --host 0.0.0.0
     volumes:
       - ./frontend:/app
