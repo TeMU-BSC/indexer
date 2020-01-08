@@ -40,8 +40,11 @@ export class Assignment {
 
 export interface ApiResponse {
   success?: boolean
-  loggedUser?: User
   registeredUsers?: number
   errorMessage?: string
   deletedCount?: number
+  // token?: string
+  user?: User
+  error?: string
+  result?: string
 }

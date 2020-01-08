@@ -5,16 +5,9 @@ import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
 import { Observable } from 'rxjs'
 
-import { User } from 'src/app/app.model'
+import { User, ApiResponse } from 'src/app/app.model'
 import { baseUrl } from './api'
 
-
-interface TokenResponse {
-  user: User
-  token?: string
-  error?: string
-  result?: string
-}
 
 @Injectable({
   providedIn: 'root'
@@ -59,8 +52,8 @@ export class AuthenticationService {
    */
   public login(user: User): void {
     this.http.post(`${baseUrl}/user/login`, user).subscribe(
-      (response: TokenResponse) => {
-        if (response.token) {
+      (response: ApiResponse) => {
+        if (response.user) {
           this.user = response.user
           localStorage.setItem(this.BROWSER_SESSION_KEY, JSON.stringify(this.user))
         }
