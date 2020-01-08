@@ -4,7 +4,7 @@ import { Observable } from 'rxjs'
 // import { Papa } from 'ngx-papaparse'
 
 import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
-import { User, Doc, Descriptor, Assignment, BackendResponse } from '../app.model'
+import { User, Doc, Descriptor, Assignment, ApiResponse } from '../app.model'
 import { baseUrl } from './api'
 
 
@@ -54,15 +54,15 @@ export class AppService {
   /**
    * Add a new descriptor to database
    */
-  addDescriptor(descriptor: any): Observable<BackendResponse> {
-    return this.http.post<BackendResponse>(`${baseUrl}/descriptor/add`, descriptor)
+  addDescriptor(descriptor: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${baseUrl}/descriptor/add`, descriptor)
   }
 
   /**
    * Remove an existing descriptor from database
    */
-  removeDescriptor(descriptor: any): Observable<BackendResponse> {
-    return this.http.post<BackendResponse>(`${baseUrl}/descriptor/remove`, descriptor)
+  removeDescriptor(descriptor: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${baseUrl}/descriptor/remove`, descriptor)
   }
 
   findDescriptorByDecsCode(decsCode: string): Descriptor {

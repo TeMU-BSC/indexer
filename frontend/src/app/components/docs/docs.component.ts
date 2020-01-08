@@ -49,7 +49,8 @@ export class DocsComponent implements OnInit {
         .isHiddenXs(true)
         .withWidth(Width.pct(10))
         .withColFilter()
-        .withTransform(data => data.length.toString()),
+        .withTransform(data => data.length.toString())
+        .withSortTransform(data => Number(data.length.toString())),
       // new TableColumn<Doc, 'completed'>('Completado', 'completed')
       //   .withColFilter()
       //   .withNgComponent(SlideToggleComponent)

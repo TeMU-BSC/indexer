@@ -11,8 +11,8 @@ from os import environ
 from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager
-from flask_jwt_extended import (create_access_token)
+# from flask_jwt_extended import JWTManager
+# from flask_jwt_extended import (create_access_token)
 from flask_pymongo import PyMongo
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
@@ -20,10 +20,11 @@ from app import app
 
 
 app.config['MONGO_URI'] = environ.get('MONGO_URI')
-app.config['JWT_SECRET_KEY'] = environ.get('JWT_SECRET_KEY')
-mongo = PyMongo(app)
+# app.config['JWT_SECRET_KEY'] = environ.get('JWT_SECRET_KEY')
+
 bcrypt = Bcrypt(app)
-jwt = JWTManager(app)
+mongo = PyMongo(app)
+# jwt = JWTManager(app)
 CORS(app)
 
 
@@ -102,8 +103,9 @@ def login():
             #     'email': found_user['email'],
             #     'registered': found_user['_id'].generation_time.timestamp()
             # })
-            access_token = create_access_token(identity=dict(found_user))
-            result = jsonify({'user': found_user, 'token': access_token})
+            # access_token = create_access_token(identity=dict(found_user))
+            # result = jsonify({'token': access_token})
+            result = jsonify({'user': found_user})
         else:
             result = jsonify({'error': 'Invalid email and password'})
     else:

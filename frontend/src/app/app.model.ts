@@ -38,9 +38,10 @@ export class Assignment {
   docIds: Doc['id'][]
 }
 
-export interface BackendResponse {
+export interface ApiResponse {
   success?: boolean
   loggedUser?: User
   registeredUsers?: number
   errorMessage?: string
+  deletedCount?: number
 }

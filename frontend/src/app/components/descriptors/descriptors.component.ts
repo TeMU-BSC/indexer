@@ -33,6 +33,8 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   descriptors: Descriptor[] = []  // chips list
   allDescriptors: Descriptor[]  // all available descriptors to pick
   SEARCH_MINIMUM_LENGTH = 4
+  shortDescriptors: Descriptor[] = []  // descriptors with its termSpanish length less than SEARCH_MINIMUM_LENGTH
+  inactiveServiceMessage = 'El servicio está temporalmente inactivo. Por favor, contacta por email con el administrador de esta aplicación web: alejandro.asensio@bsc.es'
 
   constructor(
     private appService: AppService,
@@ -46,32 +48,42 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // this.appService.getDescriptorsFromTSV()
 
     // Get all descriptors from local JSON file
-    this.appService.getDescriptors().subscribe(data => this.allDescriptors = data
-      , err => console.log(err), () => {
-      // TESTING
-      // const lengths = []
-      // this.allDescriptors.forEach(descriptor => {
-      //   lengths.push(descriptor.termSpanish.length)
-      // })
-      // console.warn(Math.min(...lengths))
-      console.log(this.allDescriptors)
-    })
+    this.appService.getDescriptors().subscribe(
+      data => this.allDescriptors = data,
+      error => console.error(error),
+      () => {
+        // Find the short termSpanish descriptors
+        this.allDescriptors.forEach(descriptor => {
+          if (descriptor.termSpanish.length < this.SEARCH_MINIMUM_LENGTH) {
+            this.shortDescriptors.push(descriptor)
+          }
+        })
 
+        // Filter descriptors on any typing change of input field
+        this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
+          debounceTime(100),
+          startWith(''),
 
+          // https://material.angular.io/components/autocomplete
+          map((value: string | null) => value ? this._filter(value) : this.allDescriptors.slice(0, 10)),
 
-
-
-
-    // Filter descriptors on any typing change of input field
-    this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
-      debounceTime(100),
-      startWith(''),
-      // https://material.angular.io/components/autocomplete
-      // map((value: string | null) => value ? this._filter(value) : this.allDescriptors.slice()),
-
-      // https://stackoverflow.com/questions/45229409/speeding-up-angular-material-autocomplete-or-alternatives#comment93317064_46289297
-      map((value: string | null) => value.length >= this.SEARCH_MINIMUM_LENGTH ? this._filter(value) : [])
+          // https://stackoverflow.com/questions/45229409/speeding-up-angular-material-autocomplete-or-alternatives#comment93317064_46289297
+          // map((value: string | null) => value.length >= this.SEARCH_MINIMUM_LENGTH ? this._filter(value) : [])
+          // map(
+          //   (value: string | null) => {
+          //     if (value.length === 0) {
+          //       return []
+          //     } else if (value.length < this.SEARCH_MINIMUM_LENGTH) {
+          //       return this.shortDescriptors
+          //     } else {
+          //       return this._filter(value)
+          //     }
+          //   }
+          // )
+        )
+      }
     )
+
   }
 
   /**
@@ -96,21 +108,32 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   private _filter(value: string | Descriptor): Descriptor[] {
     // Prepare the value to filter
     const stringifiedValue = typeof value === 'object' ? JSON.stringify(value) : value
+    const normalizedValue = this._normalize(stringifiedValue.toLowerCase().trim())
 
-    // const normalizedValue = this._normalize(stringifiedValue.toLowerCase().trim())
-    const normalizedValue = this._normalize(stringifiedValue.toLowerCase())
-
-    // Not showing the already added decsCodes to the current doc and keep filtering by some specific fields
-    return this.allDescriptors.filter(descriptor =>
-      !this.descriptors.some(d => d.decsCode.toLowerCase() === descriptor.decsCode) && (
-        this._normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
-        this._normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
-        this._normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
-        this._normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
-        this._normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)  // ||
-        // this._normalize(descriptor.definitionSpanish.toLowerCase()).includes(normalizedValue)
+    // Optimize the autocomplete performance by distinguishing a SEARCH_MINIMUM_LENGTH.
+    if (normalizedValue.length < this.SEARCH_MINIMUM_LENGTH) {
+      return this.shortDescriptors.filter(descriptor =>
+        // Prevent listing the already added decsCodes to the current doc.
+        !this.descriptors.some(d => d.decsCode.toLowerCase() === descriptor.decsCode) && (
+          // Filter by some specific fields.
+          this._normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
+        )
       )
-    )
+    } else {
+      return this.allDescriptors.filter(descriptor =>
+        !this.descriptors.some(d => d.decsCode.toLowerCase() === descriptor.decsCode) && (
+          this._normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
+          this._normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
+        )
+      )
+    }
   }
 
   /**
@@ -136,7 +159,13 @@ export class DescriptorsComponent implements OnInit, OnChanges {
         userId: this.auth.getCurrentUser().id,
         docId: this.doc.id
       }
-      this.appService.removeDescriptor(descriptorToRemove).subscribe()
+      this.appService.removeDescriptor(descriptorToRemove).subscribe(
+        response => {
+          if (response.deletedCount !== 1) {
+            alert(this.inactiveServiceMessage)
+          }
+        }
+      )
 
       // Visual information to the user
       const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'DESHACER')
@@ -166,14 +195,14 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       userId: this.auth.getCurrentUser().id,
       docId: this.doc.id
     }
-    this.appService.addDescriptor(descriptorToAdd).subscribe()
-    // this.appService.addDescriptor(descriptorToAdd).subscribe(
-    //   response => {
-    //     if (!response.success) {
-    //       alert('El servicio está temporalmente inactivo. Por favor, contacta con el administrador: alejandro.asensio@bsc.es')
-    //     }
-    //   }
-    // )
+    // this.appService.addDescriptor(descriptorToAdd).subscribe()
+    this.appService.addDescriptor(descriptorToAdd).subscribe(
+      response => {
+        if (!response.success) {
+          alert(this.inactiveServiceMessage)
+        }
+      }
+    )
   }
 
 }

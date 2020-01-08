@@ -8,7 +8,7 @@ services:
     restart: always
     environment:
       - MONGO_URI=mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud
-      - JWT_SECRET_KEY=secret
+      # - JWT_SECRET_KEY=secret
       - FLASK_ENV=development
     command: flask run --host 0.0.0.0
     ports:

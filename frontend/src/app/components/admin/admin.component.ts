@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { BackendResponse } from 'src/app/app.model'
+import { ApiResponse } from 'src/app/app.model'
 import { AuthenticationService } from 'src/app/services/auth.service'
 import { MatSnackBar } from '@angular/material'
 import { AppService } from 'src/app/services/app.service'
@@ -16,7 +16,7 @@ export class AdminComponent {
 
   dataFromFile: any[]
   selectedFile: File
-  response: BackendResponse
+  response: ApiResponse
   panels = [
     {
       title: 'Registrar usuarios',
@@ -71,13 +71,13 @@ export class AdminComponent {
         this.assignDocsToUsers()
         break
       case 'Cargar DeCS indizados':
-        console.log('panel 3')
+        // console.log('panel 3')
         break
       case 'Cargar sugerencias DeCS':
-        console.log('panel 4')
+        // console.log('panel 4')
         break
       default:
-        console.log('Unexpected panel')
+        // console.log('Unexpected panel')
     }
   }
 

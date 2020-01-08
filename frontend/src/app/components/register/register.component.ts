@@ -1,6 +1,6 @@
 import { Component } from '@angular/core'
 import { AuthenticationService } from 'src/app/services/auth.service'
-import { User, BackendResponse } from 'src/app/app.model'
+import { User, ApiResponse } from 'src/app/app.model'
 import { MatSnackBar } from '@angular/material'
 import { AppService } from 'src/app/services/app.service'
 import * as EXAMPLE_USER from 'src/assets/examples/user.json'
@@ -16,7 +16,7 @@ export class RegisterComponent {
   users: User[]
   exampleUser: User = (EXAMPLE_USER as any).default
   selectedFile: File
-  response: BackendResponse
+  response: ApiResponse
 
   constructor(
     public auth: AuthenticationService,

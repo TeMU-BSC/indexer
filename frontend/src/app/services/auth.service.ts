@@ -71,7 +71,7 @@ export class AuthenticationService {
           alert(response.result)
         }
       },
-      error => console.log(error),
+      error => console.error(error),
       () => this.router.navigateByUrl('/docs')
     )
   }
