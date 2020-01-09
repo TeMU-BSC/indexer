@@ -6,7 +6,7 @@
       {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
-    <input placeholder="Término o Número de Registro..." #descriptorInput [formControl]="descriptorCtrl"
+    <input placeholder="Descriptor..." #descriptorInput [formControl]="descriptorCtrl"
       [matAutocomplete]="auto" matAutocompletePosition="auto" [matChipInputFor]="chipList"
       [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur">
   </mat-chip-list>
@@ -17,26 +17,18 @@
       - <span [innerHTML]="descriptor.definitionSpanish | highlight: descriptorCtrl.value" class="text-muted"></span>
     </mat-option>
   </mat-autocomplete>
-  <!-- <mat-hint>
-    <a href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
-      Buscador DeCS
-    </a>
-  </mat-hint> -->
+  <mat-hint>
+    Se puede buscar un descriptor por:
+    <ul>
+      <li>término en español</li>
+      <li>término en inglés</li>
+      <li>sinónimos aceptados</li>
+      <li>código DeCS (número de registro)</li>
+      <li>código MeSH análogo</li>
+    </ul>
+    <!-- término en español, término en inglés, sinónimos aceptados, código DeCS (número de registro) o código MeSH análogo. -->
+  </mat-hint>
 </mat-form-field>
 
 <!-- <pre>Current descriptors: {{ descriptors | json }}</pre> -->
 <!-- <pre>Current date and time: {{ now | date:'fullDate' }}</pre> -->
-
-<!-- <mat-form-field appearance="fill" class="w-100 mt-3">
-  <mat-label>Sugerencias</mat-label>
-  <mat-chip-list #chipList aria-label="Lista de DeCS sugeridos">
-    <mat-chip *ngFor="let descriptor of suggestions"
-      [removable]="removable" (removed)="remove(descriptor)" [selectable]="selectable">
-      {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
-      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-    </mat-chip>
-    <input readonly placeholder="Término o Número de Registro..." #descriptorInput [formControl]="descriptorCtrl"
-      [matAutocomplete]="auto" matAutocompletePosition="auto" [matChipInputFor]="chipList"
-      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur">
-  </mat-chip-list>
-</mat-form-field> -->

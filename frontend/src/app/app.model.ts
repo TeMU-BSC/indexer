@@ -5,9 +5,7 @@
  * its plural should be 'descriptors'.
  */
 export class Descriptor {
-  decsCode?: string
-
-  // Attributes for filtering
+  decsCode: string
   termSpanish?: string
   termEnglish?: string
   meshCode?: string
@@ -18,7 +16,7 @@ export class Descriptor {
 }
 
 export class Doc {
-  id?: string
+  id: string
   title?: string
   abstract?: string
   decsCodes?: Descriptor['decsCode'][]
@@ -26,7 +24,7 @@ export class Doc {
 }
 
 export class User {
-  id?: string
+  id: string
   fullname?: string
   email?: string
   password?: string

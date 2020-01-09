@@ -3,19 +3,20 @@ import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
 // import { Papa } from 'ngx-papaparse'
 
-import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
-import { User, Doc, Descriptor, Assignment, ApiResponse } from '../app.model'
-import { apiUrl } from 'src/app/services/api'
 import { environment } from 'src/environments/environment'
+import { User, Doc, Descriptor, Assignment, ApiResponse } from 'src/app/app.model'
+import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
+import * as PRECODED_DECS_CODES from 'src/assets/precoded_decs_codes.json'
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppService {
 
-  headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' })
-  options = { headers: this.headers }
-  allDescriptors: Descriptor[] = (ALL_DESCRIPTORS as any).default
+  options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
+  public allDescriptors: Descriptor[] = (ALL_DESCRIPTORS as any).default
+  public precodedDecsCodes: string[] = (PRECODED_DECS_CODES as any).default
 
   constructor(
     private http: HttpClient,
@@ -23,7 +24,7 @@ export class AppService {
   ) { }
 
   /**
-   * Parse TSV file with papaparse
+   * Get all the descriptor objects parsing a TSV file.
    */
   // getDescriptorsFromTSV() {
   //   this.papa.parse('assets/DeCS.2019.both.v5.tsv', {
@@ -37,14 +38,10 @@ export class AppService {
   // }
 
   /**
-   * From JSON file
+   * Get the assigned docs to the current user.
    */
-  getDescriptors(): Observable<Descriptor[]> {
-    return this.http.get<Descriptor[]>('assets/DeCS.2019.both.v5.json')
-  }
-
   getDocs(user: User): Observable<Doc[]> {
-    return this.http.post<Doc[]>(`${environment.apiUrl}/document/assigned`, user)
+    return this.http.post<Doc[]>(`${environment.apiUrl}/document/assigned`, user, this.options)
   }
 
   assignDocs(assignments: Assignment[]): Observable<any> {
@@ -52,35 +49,55 @@ export class AppService {
   }
 
   /**
-   * Add a new descriptor to database
+   * Send a new descriptor to add to the backend.
    */
   addDescriptor(descriptor: any): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${environment.apiUrl}/descriptor/add`, descriptor)
   }
 
   /**
-   * Remove an existing descriptor from database
+   * Send an existing descriptor to remove to the backend.
    */
   removeDescriptor(descriptor: any): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${environment.apiUrl}/descriptor/remove`, descriptor)
   }
 
-  findDescriptorByDecsCode(decsCode: string): Descriptor {
-    return this.allDescriptors.find(descriptor => descriptor.decsCode === decsCode)
-  }
-
   /**
-   * Mark an docId as completed by the current user in database
+   * Mark an docId as completed by the current user in database.
    */
   addCompletedDoc(doc): Observable<Doc> {
     return this.http.post<Doc>(`${environment.apiUrl}/document/complete/add`, doc)
   }
 
   /**
-   * Mark an docId as uncompleted by the current user in database
+   * Mark an docId as uncompleted by the current user in database.
    */
   removeCompletedDoc(doc): Observable<Doc> {
     return this.http.post<Doc>(`${environment.apiUrl}/document/complete/remove`, doc)
+  }
+
+
+  /**
+   * Find an specific descriptor object by its decsCode.
+   */
+  findDescriptorByDecsCode(decsCode: string): Descriptor {
+    return this.allDescriptors.find(descriptor => descriptor.decsCode === decsCode)
+  }
+
+  /**
+   * Find the most frequently used descriptors in document indexing.
+   */
+  getPrecodedDescriptors(): Descriptor[] {
+    const precodedDescriptors = this.allDescriptors.filter(descriptor => this.precodedDecsCodes.includes(descriptor.decsCode))
+    return this.mapOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
+  }
+
+  /**
+   * Order an array of objects based on another array order, by one of its existing keys.
+   * Based on the code snippet: https://gist.github.com/ecarter/1423674#gistcomment-3065491
+   */
+  mapOrder = (array: any[], order: any[], key: string) => {
+    return array.sort((a, b) => order.indexOf(a[key]) > order.indexOf(b[key]) ? 1 : -1)
   }
 
 }
