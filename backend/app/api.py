@@ -21,6 +21,7 @@ from app import app
 
 app.config['MONGO_URI'] = environ.get('MONGO_URI')
 # app.config['JWT_SECRET_KEY'] = environ.get('JWT_SECRET_KEY')
+# app.config.from_envvar('FLASK_ENV')
 
 bcrypt = Bcrypt(app)
 mongo = PyMongo(app)
@@ -29,8 +30,8 @@ CORS(app)
 
 
 @app.route('/hello')
-def test():
-    return "Hello from Flask by Alejandro."
+def hello():
+    return f'Hello from Flask by Alejandro. ENV={environ.get("ENV")} FLASK_ENV={environ.get("FLASK_ENV")}'
 
 
 @app.route('/user/register/one', methods=['POST'])
