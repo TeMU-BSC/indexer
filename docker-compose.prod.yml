@@ -32,5 +32,6 @@ services:
       - BROWSER_SESSION_KEY=userObject
     ports:
       - 4200:4200
-    # command: ng serve --host 0.0.0.0 --disableHostCheck --liveReload=false --prod --aot --sourceMap=false 
-    command: ng serve --host bsccnio01.bsc.es --disableHostCheck --liveReload=false --prod --aot --sourceMap=false 
+    command: ng serve --host 0.0.0.0 --disableHostCheck --liveReload=false --prod --aot --sourceMap=false
+    # command: ng serve --host bsccnio01.bsc.es --disableHostCheck --liveReload=false --prod --aot --sourceMap=false
+    # command: ng build --prod
