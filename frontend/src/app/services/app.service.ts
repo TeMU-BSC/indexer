@@ -5,8 +5,8 @@ import { Observable } from 'rxjs'
 
 import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
 import { User, Doc, Descriptor, Assignment, ApiResponse } from '../app.model'
-import { baseUrl } from './api'
-
+import { apiUrl } from 'src/app/services/api'
+import { environment } from 'src/environments/environment'
 
 @Injectable({
   providedIn: 'root'
@@ -44,25 +44,25 @@ export class AppService {
   }
 
   getDocs(user: User): Observable<Doc[]> {
-    return this.http.post<Doc[]>(`${baseUrl}/document/assigned`, user)
+    return this.http.post<Doc[]>(`${environment.apiUrl}/document/assigned`, user)
   }
 
   assignDocs(assignments: Assignment[]): Observable<any> {
-    return this.http.post<any>(`${baseUrl}/document/assign/many`, assignments)
+    return this.http.post<any>(`${environment.apiUrl}/document/assign/many`, assignments)
   }
 
   /**
    * Add a new descriptor to database
    */
   addDescriptor(descriptor: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${baseUrl}/descriptor/add`, descriptor)
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/descriptor/add`, descriptor)
   }
 
   /**
    * Remove an existing descriptor from database
    */
   removeDescriptor(descriptor: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${baseUrl}/descriptor/remove`, descriptor)
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/descriptor/remove`, descriptor)
   }
 
   findDescriptorByDecsCode(decsCode: string): Descriptor {
@@ -73,14 +73,14 @@ export class AppService {
    * Mark an docId as completed by the current user in database
    */
   addCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`${baseUrl}/document/complete/add`, doc)
+    return this.http.post<Doc>(`${environment.apiUrl}/document/complete/add`, doc)
   }
 
   /**
    * Mark an docId as uncompleted by the current user in database
    */
   removeCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`${baseUrl}/document/complete/remove`, doc)
+    return this.http.post<Doc>(`${environment.apiUrl}/document/complete/remove`, doc)
   }
 
 }

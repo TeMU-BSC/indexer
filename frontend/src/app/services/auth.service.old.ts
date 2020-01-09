@@ -8,7 +8,7 @@ import { Observable } from 'rxjs'
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 
 import { User } from 'src/app/app.model'
-import { baseUrl } from './api'
+import { environment } from 'src/environments/environment'
 
 
 interface TokenResponse {
@@ -75,21 +75,21 @@ export class AuthenticationService {
    * Register one new user
    */
   // public registerOne(user: User): Observable<any> {
-  //   return this.http.post<User>(`${baseUrl}/user/register/one`, user)
+  //   return this.http.post<User>(`${environment.apiUrl}/user/register/one`, user)
   // }
 
   /**
    * Register many new users
    */
   public registerMany(users: User[]): Observable<any> {
-    return this.http.post<any>(`${baseUrl}/user/register/many`, users)
+    return this.http.post<any>(`${environment.apiUrl}/user/register/many`, users)
   }
 
   /**
    * Log in an existing user
    */
   public login(user: User): Observable<any> {
-    const base = this.http.post(`${baseUrl}/user/login`, user)
+    const base = this.http.post(`${environment.apiUrl}/user/login`, user)
     const request = base.pipe(
       map((data: TokenResponse) => {
         if (data.token) {

@@ -6,7 +6,7 @@ import { Router } from '@angular/router'
 import { Observable } from 'rxjs'
 
 import { User, ApiResponse } from 'src/app/app.model'
-import { baseUrl } from './api'
+import { environment } from 'src/environments/environment'
 
 
 @Injectable({
@@ -37,21 +37,21 @@ export class AuthenticationService {
    * Register one new user
    */
   // public registerOne(user: User): Observable<any> {
-  //   return this.http.post<User>(`${baseUrl}/user/register/one`, user)
+  //   return this.http.post<User>(`${environment.apiUrl}/user/register/one`, user)
   // }
 
   /**
    * Register many new users
    */
   public registerMany(users: User[]): Observable<any> {
-    return this.http.post<any>(`${baseUrl}/user/register/many`, users)
+    return this.http.post<any>(`${environment.apiUrl}/user/register/many`, users)
   }
 
   /**
    * Log in an existing user
    */
   public login(user: User): void {
-    this.http.post(`${baseUrl}/user/login`, user).subscribe(
+    this.http.post(`${environment.apiUrl}/user/login`, user).subscribe(
       (response: ApiResponse) => {
         if (response.user) {
           this.user = response.user
