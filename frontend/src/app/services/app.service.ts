@@ -5,6 +5,7 @@ import { Papa } from 'ngx-papaparse'
 
 import { environment } from 'src/environments/environment'
 import { User, Doc, Descriptor, Assignment, ApiResponse } from 'src/app/app.model'
+import { mapOrder } from 'src/app/utilities/functions'
 import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
 
 
@@ -13,7 +14,6 @@ import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.
 })
 export class AppService {
 
-  // options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
   public allDescriptors: Descriptor[]
   public precodedDecsCodes: string[] = (PRECODED_DECS_CODES as any).default
 
@@ -36,7 +36,6 @@ export class AppService {
    * Get the assigned docs to the current user.
    */
   getAssignedDocs(user: User): Observable<Doc[]> {
-    // console.log('from app.service: ', this.allDescriptors)
     return this.http.post<Doc[]>(`${environment.apiUrl}/document/assigned`, user)
   }
 
@@ -81,19 +80,11 @@ export class AppService {
   }
 
   /**
-   * Find the most frequently used descriptors in document indexing.
+   * Find the most frequently used descriptors in document indexing, descendingly ordered by frequent use.
    */
   getPrecodedDescriptors(): Descriptor[] {
     const precodedDescriptors = this.allDescriptors.filter(descriptor => this.precodedDecsCodes.includes(descriptor.decsCode))
-    return this.mapOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
-  }
-
-  /**
-   * Order an array of objects based on another array order, by one of its existing keys.
-   * Based on the code snippet: https://gist.github.com/ecarter/1423674#gistcomment-3065491
-   */
-  mapOrder = (array: any[], order: any[], key: string) => {
-    return array.sort((a, b) => order.indexOf(a[key]) > order.indexOf(b[key]) ? 1 : -1)
+    return mapOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
   }
 
 }

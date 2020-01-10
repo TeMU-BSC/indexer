@@ -73,7 +73,6 @@ export class HomeOldComponent implements OnInit {
 
   // saveChanges() {
   //   this.decsForm.controls.id.setValue(this.doc.id)
-  //   console.log(this.decsForm.value)
 
   //   // Send request to backend
   //   // this.appService.updateDoc(this.doc).subscribe(bu => console.trace(bu))

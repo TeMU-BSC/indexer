@@ -8,6 +8,7 @@ import { map, startWith, debounceTime } from 'rxjs/operators'
 import { Doc, Descriptor } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
 import { AuthenticationService } from 'src/app/services/auth.service'
+import { normalize, orderByKey, orderByStart } from 'src/app/utilities/functions'
 
 
 @Component({
@@ -33,6 +34,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   allDescriptors: Descriptor[]  // all available descriptors to pick
   filteredDescriptors: Observable<Descriptor[]>  // suggested options in autocomplete
   descriptors: Descriptor[] = []  // visual chips list
+  orderingKey = 'termSpanish'
 
   // Optimize the autocomplete performance
   SHORT_LENGTH = 3
@@ -51,9 +53,6 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
-    // TEST format dates
-    // console.log(formatDate(Date.now(), 'yyyy-MM-ddTHH:mm:ss.SSS', 'en-US'))
-
     // Get all descriptor objects
     this.allDescriptors = this.appService.allDescriptors
 
@@ -67,12 +66,12 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       } else if (descriptor.termSpanish.length > this.SHORT_LENGTH
         && descriptor.termSpanish.length <= this.MEDIUM_LENGTH) {
         this.mediumDescriptors.push(descriptor)
-        // this.longDescriptors.push(descriptor)
       } else {
         this.longDescriptors.push(descriptor)
       }
     })
 
+    // Check the length of the groups
     // console.log('short', this.shortDescriptors)
     // console.log('medium', this.mediumDescriptors)
     // console.log('long', this.longDescriptors)
@@ -82,13 +81,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
       debounceTime(100),
       startWith(''),
-      // map((value: string | null) => this._filter(value)),
-
-      // https://material.angular.io/components/autocomplete
-      map((value: string | null) => value ? this._filter(value) : this.precodedDescriptors),
-
-      // https://stackoverflow.com/questions/45229409/speeding-up-angular-material-autocomplete-or-alternatives#comment93317064_46289297
-      // map((value: string | null) => value.length >= this.SHORT_LENGTH ? this._filter(value) : [])
+      map((value: string | null) => value ? this._filter(value) : this.precodedDescriptors)
     )
   }
 
@@ -114,7 +107,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   private _filter(value: string | Descriptor): Descriptor[] {
     // Prepare the value to filter
     const stringifiedValue = typeof value === 'object' ? JSON.stringify(value) : value
-    const normalizedValue = this.normalize(stringifiedValue.toLowerCase().trim())
+    const normalizedValue = normalize(stringifiedValue.toLowerCase().trim())
 
     // Prioritize number inputs (decsCodes)
     const isNumeric = testingString => !isNaN(Number(testingString))
@@ -124,50 +117,30 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
     // Optimize autocomplete performance by filtering different arrays depending on the current searching string length
     if (normalizedValue.length <= this.SHORT_LENGTH) {
-      return this.putObjectItemFirst(this.filterBySomeProperties(this.shortDescriptors, normalizedValue), 'decsCode', normalizedValue)
-      // return this.filterBySomeProperties(this.shortDescriptors, normalizedValue)
+      return orderByKey(this.filterBySomeProperties(this.shortDescriptors, normalizedValue), this.orderingKey)
+      // return this.putObjectItemFirst(this.filterBySomeProperties(this.shortDescriptors, normalizedValue), 'termSpanish', normalizedValue)
     } else if (normalizedValue.length > this.SHORT_LENGTH
       && normalizedValue.length <= this.MEDIUM_LENGTH) {
-      return this.filterBySomeProperties(this.mediumDescriptors, normalizedValue)
+      return orderByKey(this.filterBySomeProperties(this.mediumDescriptors, normalizedValue), this.orderingKey)
     } else {
-      return this.filterBySomeProperties(this.longDescriptors, normalizedValue)
+      return orderByKey(this.filterBySomeProperties(this.longDescriptors, normalizedValue), this.orderingKey)
     }
   }
 
   /**
    * Custom filter to prevent showing in autocomplete the decsCodes that are already added, filtering by hardcoded properties.
    */
-  filterBySomeProperties(array: any[], normalizedValue: string): any[] {
+  filterBySomeProperties(array: any[], normalizedValue?: string): any[] {
     return array.filter(descriptor =>
       // Very long multiline condition
       !this.descriptors.some(d => d.decsCode.toLowerCase() === descriptor.decsCode) && (
-        // this.normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
-        this.normalize(descriptor.decsCode.toLowerCase()) === normalizedValue ||
-        this.normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
-        this.normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
-        this.normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
-        this.normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
+        normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
+        normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
+        normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
+        normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
+        normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
       )
     )
-  }
-
-  /**
-   * Put the exact matching objectItem the first in the given array.
-   * https://stackoverflow.com/a/45516114
-   */
-  putObjectItemFirst(array: any[], key: string, criteria: string): any[] {
-    const filteredArray = array.filter(item => item[key] !== criteria)
-    filteredArray.unshift(array.find(item => item[key] === criteria))
-    return array
-  }
-
-  /**
-   * Remove typographic accents or tildes in the given string.
-   * https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript
-   * @param text string that may contain accents/tildes
-   */
-  normalize(text: string): string {
-    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   }
 
   /**
@@ -212,9 +185,13 @@ export class DescriptorsComponent implements OnInit, OnChanges {
    * add a descriptor to the visual list of chips and make a request through the app service to send it to backend.
    */
   selected(event: MatAutocompleteSelectedEvent): void {
-    console.log(this.allDescriptors)
     // Get the selected descriptor from the event
     const selectedDescriptor: Descriptor = event.option.value
+
+    if (this.descriptors.includes(selectedDescriptor)) {
+      this.snackBar.open(`Atención: El descriptor precodificado ${selectedDescriptor.termSpanish} (${selectedDescriptor.decsCode}) ya está añadido.`, 'ENTENDIDO')
+      return
+    }
 
     // Add the descriptor to the chips list
     this.descriptors.push(selectedDescriptor)

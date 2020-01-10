@@ -73,13 +73,11 @@ export class AdminComponent {
         this.assignDocsToUsers()
         break
       case 'Cargar DeCS indizados':
-        // console.log('panel 3')
+
         break
       case 'Cargar sugerencias DeCS':
-        // console.log('panel 4')
+
         break
-      default:
-      // console.log('Unexpected panel')
     }
   }
 
