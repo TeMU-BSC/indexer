@@ -26,7 +26,7 @@ export class DocsComponent implements OnInit {
 
   ngOnInit() {
     if (this.auth.isLoggedIn()) {
-      this.getDocs()
+      this.getAssignedDocs()
     }
 
     // const completedCol = new TableColumn<Doc, 'completed'>('Completado', 'completed')
@@ -63,15 +63,15 @@ export class DocsComponent implements OnInit {
         .withWidth(Width.pct(10))
         .withColFilter()
         .withTransform(data => data ? 'Completado' : 'Pendiente')
-        .withNgStyle(data => ({color: data ? 'green' : 'red'}))
+        .withNgStyle(data => ({ color: data ? 'green' : 'red' }))
     ]
   }
 
-  getDocs() {
+  getAssignedDocs() {
     const userToSend: User = {
       id: this.auth.getCurrentUser().id
     }
-    this.appService.getDocs(userToSend).subscribe(docs => {
+    this.appService.getAssignedDocs(userToSend).subscribe(docs => {
       this.docs = docs
       // this.currentDocs = this.docs.slice(0, 10)
     })

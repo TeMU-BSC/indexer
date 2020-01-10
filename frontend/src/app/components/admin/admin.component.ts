@@ -2,10 +2,12 @@ import { Component } from '@angular/core'
 import { ApiResponse } from 'src/app/app.model'
 import { AuthenticationService } from 'src/app/services/auth.service'
 import { MatSnackBar } from '@angular/material'
+
 import { AppService } from 'src/app/services/app.service'
 import * as EXAMPLE_USER from 'src/assets/examples/user.json'
 import * as EXAMPLE_DOCUMENT from 'src/assets/examples/document.json'
 import * as EXAMPLE_DESCRIPTOR from 'src/assets/examples/descriptor.json'
+
 
 @Component({
   selector: 'app-admin',
@@ -31,16 +33,16 @@ export class AdminComponent {
       action: 'assignDocsToUsers()'
     },
     {
-      title: 'Cargar DeCS indizados',
+      title: 'Cargar DeCS indizados [#to_do]',
       keywords: 'DeCS indizados',
       exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
-      action: 'registerManyUsers()'
+      action: 'functionToBeImplemented()'
     },
     {
-      title: 'Cargar sugerencias DeCS',
+      title: 'Cargar sugerencias DeCS [#to_do]',
       keywords: 'DeCS sugeridos',
       exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
-      action: 'registerManyUsers()'
+      action: 'functionToBeImplemented()'
     }
   ]
 
@@ -77,7 +79,7 @@ export class AdminComponent {
         // console.log('panel 4')
         break
       default:
-        // console.log('Unexpected panel')
+      // console.log('Unexpected panel')
     }
   }
 

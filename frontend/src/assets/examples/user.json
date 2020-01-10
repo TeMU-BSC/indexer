@@ -1,6 +1,6 @@
 {
-  "id": "usuario-1",
+  "id": "usuario1",
   "fullname": "Nombre Apellido",
   "email": "nombre.apellido@ejemplo.com",
-  "password": "contraseña-de-ejemplo"
+  "password": "contraseña-del-usuario1"
 }

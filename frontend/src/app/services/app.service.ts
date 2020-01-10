@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
-// import { Papa } from 'ngx-papaparse'
+import { Papa } from 'ngx-papaparse'
 
 import { environment } from 'src/environments/environment'
 import { User, Doc, Descriptor, Assignment, ApiResponse } from 'src/app/app.model'
-import * as ALL_DESCRIPTORS from 'src/assets/DeCS.2019.both.v5.json'
-import * as PRECODED_DECS_CODES from 'src/assets/precoded_decs_codes.json'
+import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
 
 
 @Injectable({
@@ -14,34 +13,31 @@ import * as PRECODED_DECS_CODES from 'src/assets/precoded_decs_codes.json'
 })
 export class AppService {
 
-  options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
-  public allDescriptors: Descriptor[] = (ALL_DESCRIPTORS as any).default
+  // options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
+  public allDescriptors: Descriptor[]
   public precodedDecsCodes: string[] = (PRECODED_DECS_CODES as any).default
 
   constructor(
     private http: HttpClient,
-    // private papa: Papa
-  ) { }
-
-  /**
-   * Get all the descriptor objects parsing a TSV file.
-   */
-  // getDescriptorsFromTSV() {
-  //   this.papa.parse('assets/DeCS.2019.both.v5.tsv', {
-  //     download: true,
-  //     header: true,
-  //     delimiter: '\t',
-  //     skipEmptyLines: true,
-  //     quoteChar: '',
-  //     complete: results => console.log(results)
-  //   })
-  // }
+    private papa: Papa
+  ) {
+    // Get all the descriptor objects parsing a TSV file
+    this.papa.parse('assets/sourcedata/DeCS.2019.both.v5.tsv', {
+      download: true,
+      header: true,
+      delimiter: '\t',
+      skipEmptyLines: true,
+      quoteChar: '',
+      complete: results => this.allDescriptors = results.data
+    })
+  }
 
   /**
    * Get the assigned docs to the current user.
    */
-  getDocs(user: User): Observable<Doc[]> {
-    return this.http.post<Doc[]>(`${environment.apiUrl}/document/assigned`, user, this.options)
+  getAssignedDocs(user: User): Observable<Doc[]> {
+    // console.log('from app.service: ', this.allDescriptors)
+    return this.http.post<Doc[]>(`${environment.apiUrl}/document/assigned`, user)
   }
 
   assignDocs(assignments: Assignment[]): Observable<any> {

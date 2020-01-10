@@ -1,44 +1,50 @@
 [
-    {
-        "id": "T1",
-        "fullname": "Usuario Tutorial",
-        "email": "tutorial@mesinesp.es",
-        "password": "tutorial"
-    },
-    {
-        "id": "T2",
-        "fullname": "Alejandro Asensio",
-        "email": "alejandro.asensio@bsc.es",
-        "password": "testing"
-    },
-    {
-        "id": "T3",
-        "fullname": "Aitor González",
-        "email": "aitor.gonzalez@bsc.es",
-        "password": "testing"
-    },
-    {
-        "id": "T4",
-        "fullname": "Antonio Miranda",
-        "email": "antonio.miranda@bsc.es",
-        "password": "testing"
-    },
-    {
-        "id": "T5",
-        "fullname": "Marta Villegas",
-        "email": "marta.villegas@bsc.es",
-        "password": "testing"
-    },
-    {
-        "id": "T6",
-        "fullname": "Martin Krallinger",
-        "email": "martin.krallinger@bsc.es",
-        "password": "testing"
-    },
-    {
-        "id": "T7",
-        "fullname": "Marvin Agüero",
-        "email": "marvin.aguero@bsc.es",
-        "password": "testing"
-    }
+  {
+    "id": "T1",
+    "fullname": "Usuario Tutorial",
+    "email": "tutorial@mesinesp.es",
+    "password": "tutorial"
+  },
+  {
+    "id": "T2",
+    "fullname": "Alejandro Asensio",
+    "email": "alejandro.asensio@bsc.es",
+    "password": "testing"
+  },
+  {
+    "id": "T3",
+    "fullname": "Aitor González",
+    "email": "aitor.gonzalez@bsc.es",
+    "password": "testing"
+  },
+  {
+    "id": "T4",
+    "fullname": "Antonio Miranda",
+    "email": "antonio.miranda@bsc.es",
+    "password": "testing"
+  },
+  {
+    "id": "T5",
+    "fullname": "Marta Villegas",
+    "email": "marta.villegas@bsc.es",
+    "password": "testing"
+  },
+  {
+    "id": "T6",
+    "fullname": "Martin Krallinger",
+    "email": "martin.krallinger@bsc.es",
+    "password": "testing"
+  },
+  {
+    "id": "T7",
+    "fullname": "Marvin Agüero",
+    "email": "marvin.aguero@bsc.es",
+    "password": "testing"
+  },
+  {
+    "id": "T8",
+    "fullname": "Jordi Armengol",
+    "email": "jordi.armengol@bsc.es",
+    "password": "testing"
+  }
 ]
