@@ -123,9 +123,9 @@ def login():
 def get_assigned_docs():
     '''Find the assigned docs IDs to the current user, and then retrieving
     the doc data from the 'selected_importants' collection.'''
-    assigned_doc_ids = mongo.db.assigned_documents.find_one(
+    assigned_doc_ids = mongo.db.assignments.find_one(
         {'userId': request.json['id']}).get('docIds')
-    completed_doc_ids = mongo.db.assigned_documents.find_one(
+    completed_doc_ids = mongo.db.assignments.find_one(
         {'userId': request.json['id']}).get('completedDocIds')
     docs = mongo.db.selected_importants.find(
         {'_id': {'$in': assigned_doc_ids}})
@@ -159,7 +159,7 @@ def get_assigned_docs():
 @app.route('/document/assign/many', methods=['POST'])
 def assign_docs_to_users():
     '''Add some documents IDs to the userId key in the 'assigned_documents' collection.'''
-    result = mongo.db.assigned_documents.insert_many(request.json)
+    result = mongo.db.assignments.insert_many(request.json)
     return jsonify({'success': result.acknowledged})
 
 
@@ -167,7 +167,7 @@ def assign_docs_to_users():
 def mark_doc_as_completed():
     '''Add a new docId to the 'completedDocIds' array of the current user in
     the 'assigned_documents' collection.'''
-    result = mongo.db.assigned_documents.update_one(
+    result = mongo.db.assignments.update_one(
         {'userId': request.json['userId']},
         {'$push': {'completedDocIds': request.json['docId']}}
     )
@@ -178,7 +178,7 @@ def mark_doc_as_completed():
 def mark_doc_as_uncompleted():
     '''Remove an existing docId from the 'completedDocIds' array of the current
     user in the 'assigned_documents' collection.'''
-    result = mongo.db.assigned_documents.update_one(
+    result = mongo.db.assignments.update_one(
         {'userId': request.json['userId']},
         {'$pull': {'completedDocIds': request.json['docId']}}
     )
