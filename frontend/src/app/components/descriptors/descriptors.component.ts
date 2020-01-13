@@ -10,15 +10,15 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { Doc, Descriptor } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
-import { AuthenticationService } from 'src/app/services/auth.service'
+import { AuthService } from 'src/app/services/auth.service'
 import { normalize, orderByKey, orderByStart } from 'src/app/utilities/functions'
-import { ConfirmComponent } from 'src/app/components/confirm/confirm.component'
+import { DialogComponent } from 'src/app/components/dialog/dialog.component'
 
 
 @Component({
   selector: 'app-descriptors',
   templateUrl: './descriptors.component.html',
-  styleUrls: ['./descriptors.component.css']
+  styleUrls: ['./descriptors.component.scss']
 })
 export class DescriptorsComponent implements OnInit, OnChanges {
 
@@ -53,7 +53,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
   constructor(
     private appService: AppService,
-    private auth: AuthenticationService,
+    private auth: AuthService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar
   ) { }
@@ -77,7 +77,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       }
     })
 
-    // Check the length of the groups
+    // Check the length of the segmented groups
     // console.log('short', this.shortDescriptors)
     // console.log('medium', this.mediumDescriptors)
     // console.log('long', this.longDescriptors)
@@ -213,7 +213,9 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     )
 
     // Visual information to the user
-    const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'DESHACER')
+    const snackBarRef = this.snackBar.open(`DeCS borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'DESHACER',
+      { panelClass: 'success-dialog' }
+    )
 
     // If the action button is clicked, re-add the recently removed descriptor
     snackBarRef.onAction().subscribe(() => {
@@ -223,13 +225,13 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   }
 
   openConfirmDialog(descriptor: Descriptor): void {
-    const dialogRef = this.dialog.open(ConfirmComponent, {
+    const dialogRef = this.dialog.open(DialogComponent, {
       width: '350px',
       data: {
         title: '¿Quieres borrar este descriptor?',
         content: `${descriptor.termSpanish} (${descriptor.decsCode})`,
-        no: 'No',
-        yes: 'Sí'
+        no: 'Cancelar',
+        yes: 'Borrar'
       }
     })
     dialogRef.afterClosed().subscribe(result => result ? this.remove(descriptor) : null)

@@ -18,7 +18,7 @@ interface TokenResponse {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthenticationService {
+export class AuthService {
 
   user: User
 

@@ -3,7 +3,7 @@ import { MatSlideToggleChange } from '@angular/material'
 
 import { Doc } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
-import { AuthenticationService } from 'src/app/services/auth.service'
+import { AuthService } from 'src/app/services/auth.service'
 
 
 @Component({
@@ -17,7 +17,7 @@ export class DocComponent {
 
   constructor(
     private appService: AppService,
-    private auth: AuthenticationService
+    private auth: AuthService
   ) { }
 
   /**

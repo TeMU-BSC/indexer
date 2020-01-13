@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { Doc, User } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
-import { AuthenticationService } from 'src/app/services/auth.service'
+import { AuthService } from 'src/app/services/auth.service'
 import { TableColumn, Width } from 'simplemattable'
 // import { SlideToggleComponent } from '../slide-toggle/slide-toggle.component'
 // import { AbstractControl } from '@angular/forms'
@@ -21,7 +21,7 @@ export class DocsComponent implements OnInit {
 
   constructor(
     private appService: AppService,
-    public auth: AuthenticationService
+    public auth: AuthService
   ) { }
 
   ngOnInit() {

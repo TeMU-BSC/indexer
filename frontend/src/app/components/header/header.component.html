@@ -4,14 +4,9 @@
       <button mat-button fxHide.gt-sm>Indizador DeCS</button>
       <button mat-button fxHide fxShow.gt-sm>Indizador de Descriptores de Ciencias de la Salud</button>
     </h1>
-    <!-- <button *ngIf="!auth.isLoggedIn()" mat-button routerLink="login">Iniciar sesión (component)</button> -->
-    <button *ngIf="!auth.isLoggedIn()" mat-button (click)="openLoginDialog()">Iniciar sesión</button>
-
-    <!-- <small>{{ user.name }} - Registered on: {{ user.registered * 1000 | date:'full' }}</small> -->
-
+    <button *ngIf="!auth.isLoggedIn()" mat-button (click)="auth.openLoginDialog()">Iniciar sesión</button>
     <div *ngIf="auth.isLoggedIn()">
       <small>Hola, {{ auth.getCurrentUser().fullname }}</small>
-      <!-- <button mat-button color="warn" (click)="auth.logout()">Cerrar sesión</button> -->
       <button mat-icon-button color="warn" matTooltip="Cerrar sesión" aria-label="Logout icon" (click)="auth.logout()">
         <mat-icon>power_settings_new</mat-icon>
       </button>
@@ -20,6 +15,5 @@
         Buscador DeCS <mat-icon>open_in_new</mat-icon>
       </a> -->
     </div>
-
   </mat-toolbar-row>
 </mat-toolbar>

@@ -1,9 +1,13 @@
-<form fxLayout="column" fxLayoutAlign="space-around" class="p-3 p-sm-5">
-  <mat-form-field>
-    <input matInput placeholder="Email" [(ngModel)]="user.email" name="email" required>
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput placeholder="Contraseña" [(ngModel)]="user.password" type="password" name="password" required>
-  </mat-form-field>
-  <button type="submit" mat-raised-button color="primary" (click)="login()">Iniciar sesión</button>
-</form>
+<h1 mat-dialog-title class="text-center">Inicio de sesión</h1>
+<div mat-dialog-content>
+  <form fxLayout="column" fxLayoutAlign="space-around" class="p-3">
+    <mat-form-field>
+      <input matInput placeholder="Email" [(ngModel)]="data.user.email" name="email" required>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="password" placeholder="Contraseña" [(ngModel)]="data.user.password" name="password" required>
+    </mat-form-field>
+    <button type="submit" mat-raised-button color="primary" class="w-100" [mat-dialog-close]="data"
+      cdkFocusInitial>Iniciar sesión</button>
+  </form>
+</div>

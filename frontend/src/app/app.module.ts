@@ -24,7 +24,7 @@ import { FlexLayoutModule } from '@angular/flex-layout'
 import { SimplemattableModule } from 'simplemattable'
 
 // Own App Components
-import { HeaderComponent, LoginDialog } from './components/header/header.component'
+import { HeaderComponent } from './components/header/header.component'
 import { LoginComponent } from './components/login/login.component'
 import { DocComponent } from './components/doc/doc.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
@@ -32,14 +32,14 @@ import { HomeComponent } from './components/home/home.component'
 import { HomeOldComponent } from './components/home/home.old.component'
 import { HighlightPipe } from './pipes/highlight.pipe'
 import { ProfileComponent } from './components/profile/profile.component'
-import { AuthenticationService } from './services/auth.service'
+import { AuthService } from './services/auth.service'
 import { AuthGuardService } from './services/auth-guard.service'
 import { RegisterComponent } from './components/register/register.component'
 import { DocsComponent } from './components/docs/docs.component'
 import { SlideToggleComponent } from './components/slide-toggle/slide-toggle.component'
 import { FooterComponent } from './components/footer/footer.component'
 import { AdminComponent } from './components/admin/admin.component'
-import { ConfirmComponent } from './components/confirm/confirm.component'
+import { DialogComponent } from './components/dialog/dialog.component'
 
 @NgModule({
   declarations: [
@@ -57,8 +57,7 @@ import { ConfirmComponent } from './components/confirm/confirm.component'
     SlideToggleComponent,
     FooterComponent,
     AdminComponent,
-    LoginDialog,
-    ConfirmComponent
+    DialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -74,11 +73,11 @@ import { ConfirmComponent } from './components/confirm/confirm.component'
   entryComponents: [
     DocComponent,
     SlideToggleComponent,
-    LoginDialog,
-    ConfirmComponent,
+    LoginComponent,
+    DialogComponent,
   ],
   providers: [
-    AuthenticationService,
+    AuthService,
     AuthGuardService
   ],
   bootstrap: [AppComponent]

@@ -3,23 +3,26 @@
 import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
+import { MatDialog } from '@angular/material/dialog'
 import { Observable } from 'rxjs'
 
 import { User, ApiResponse } from 'src/app/app.model'
 import { environment } from 'src/environments/environment'
+import { LoginComponent } from '../components/login/login.component'
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthenticationService {
+export class AuthService {
 
   BROWSER_SESSION_KEY = 'loggedUser'
-  public user: User
+  user: User
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    public dialog: MatDialog,
   ) { }
 
   /**
@@ -68,6 +71,17 @@ export class AuthenticationService {
    */
   public getCurrentUser(): User {
     return JSON.parse(localStorage.getItem(this.BROWSER_SESSION_KEY))
+  }
+
+  /**
+   * Open a material dialog to enter the email and password.
+   */
+  public openLoginDialog(): void {
+    const dialogRef = this.dialog.open(LoginComponent, {
+      width: '300px',
+      data: { user: new User() }
+    })
+    dialogRef.afterClosed().subscribe(data => this.login(data.user))
   }
 
 }

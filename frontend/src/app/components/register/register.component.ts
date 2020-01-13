@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { AuthenticationService } from 'src/app/services/auth.service'
+import { AuthService } from 'src/app/services/auth.service'
 import { User, ApiResponse } from 'src/app/app.model'
 import { MatSnackBar } from '@angular/material'
 import { AppService } from 'src/app/services/app.service'
@@ -19,7 +19,7 @@ export class RegisterComponent {
   response: ApiResponse
 
   constructor(
-    public auth: AuthenticationService,
+    public auth: AuthService,
     private snackBar: MatSnackBar,
     public appService: AppService
   ) { }

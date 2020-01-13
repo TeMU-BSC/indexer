@@ -4,5 +4,5 @@
 </div>
 <div mat-dialog-actions fxLayout="row" fxLayoutAlign="end">
   <button *ngIf="data.no" mat-button (click)="onNoClick()">{{ data.no }}</button>
-  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>{{ data.yes }}</button>
+  <button mat-raised-button color="warn" [mat-dialog-close]="data" cdkFocusInitial>{{ data.yes }}</button>
 </div>

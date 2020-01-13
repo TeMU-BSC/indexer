@@ -9,7 +9,7 @@
   <button *ngIf="auth.isLoggedIn()" mat-raised-button color="primary" routerLink="/docs">
     Ver mis documentos asignados
   </button>
-  <button *ngIf="!auth.isLoggedIn()" mat-raised-button color="accent" routerLink="login">
+  <button *ngIf="!auth.isLoggedIn()" mat-raised-button color="accent" (click)=auth.openLoginDialog()>
     Iniciar sesión
   </button>
 </div>

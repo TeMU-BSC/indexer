@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { AuthenticationService } from 'src/app/services/auth.service'
+import { AuthService } from 'src/app/services/auth.service'
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatAutocompleteSelectedEvent, MatSnackBar } from '@angular/material'
 import { Observable } from 'rxjs'
@@ -16,7 +16,7 @@ import { AppService } from 'src/app/services/app.service'
 })
 export class HomeOldComponent implements OnInit {
 
-  constructor(public auth: AuthenticationService) { }
+  constructor(public auth: AuthService) { }
 
   ngOnInit() {
   }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core'
 import { ApiResponse } from 'src/app/app.model'
-import { AuthenticationService } from 'src/app/services/auth.service'
+import { AuthService } from 'src/app/services/auth.service'
 import { MatSnackBar } from '@angular/material'
 
 import { AppService } from 'src/app/services/app.service'
@@ -47,7 +47,7 @@ export class AdminComponent {
   ]
 
   constructor(
-    public auth: AuthenticationService,
+    public auth: AuthService,
     private snackBar: MatSnackBar,
     public appService: AppService
   ) { }

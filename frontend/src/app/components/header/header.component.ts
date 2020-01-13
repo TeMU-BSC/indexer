@@ -1,8 +1,6 @@
-import { Component, Inject } from '@angular/core'
-import { AuthenticationService } from 'src/app/services/auth.service'
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
-import { User } from 'src/app/app.model'
-import { Router } from '@angular/router'
+import { Component } from '@angular/core'
+import { AuthService } from 'src/app/services/auth.service'
+
 
 @Component({
   selector: 'app-header',
@@ -11,42 +9,6 @@ import { Router } from '@angular/router'
 })
 export class HeaderComponent {
 
-  user: User
-
-  constructor(
-    public auth: AuthenticationService,
-    public dialog: MatDialog,
-    private router: Router
-  ) { }
-
-  public openLoginDialog(): void {
-    const dialogRef = this.dialog.open(LoginDialog, {
-      width: '300px',
-      data: { user: this.user }
-    })
-
-    dialogRef.afterClosed().subscribe(result => {
-      this.user = result
-      this.auth.login(this.user)
-    })
-  }
-
-}
-
-@Component({
-  selector: 'app-login-dialog',
-  templateUrl: 'login-dialog.html',
-})
-// tslint:disable-next-line: component-class-suffix
-export class LoginDialog {
-
-  constructor(
-    public dialogRef: MatDialogRef<LoginDialog>,
-    @Inject(MAT_DIALOG_DATA) public user: User
-  ) { }
-
-  onNoClick(): void {
-    this.dialogRef.close()
-  }
+  constructor(public auth: AuthService) { }
 
 }
