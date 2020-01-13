@@ -5,7 +5,7 @@ import { Papa } from 'ngx-papaparse'
 
 import { environment } from 'src/environments/environment'
 import { User, Doc, Descriptor, Assignment, ApiResponse } from 'src/app/app.model'
-import { mapOrder } from 'src/app/utilities/functions'
+import { _mapOrder } from 'src/app/utilities/functions'
 import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
 
 
@@ -84,7 +84,7 @@ export class AppService {
    */
   getPrecodedDescriptors(): Descriptor[] {
     const precodedDescriptors = this.allDescriptors.filter(descriptor => this.precodedDecsCodes.includes(descriptor.decsCode))
-    return mapOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
+    return _mapOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
   }
 
 }

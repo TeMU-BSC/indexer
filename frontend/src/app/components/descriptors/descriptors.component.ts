@@ -11,7 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Doc, Descriptor } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { normalize, orderByKey, orderByStart } from 'src/app/utilities/functions'
+import { _normalize, _sortItems } from 'src/app/utilities/functions'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
 
 
@@ -38,7 +38,6 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   allDescriptors: Descriptor[]  // all available descriptors to pick
   filteredDescriptors: Observable<Descriptor[]>  // suggested options in autocomplete
   descriptors: Descriptor[] = []  // visual chips list
-  orderingKey = 'termSpanish'
 
   // Optimize the autocomplete performance
   SHORT_LENGTH = 3
@@ -77,17 +76,11 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       }
     })
 
-    // Check the length of the segmented groups
-    // console.log('short', this.shortDescriptors)
-    // console.log('medium', this.mediumDescriptors)
-    // console.log('long', this.longDescriptors)
-    // console.log('all', this.allDescriptors)
-
     // Filter descriptors as the user types in the input field
     this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
       debounceTime(100),
       startWith(''),
-      map((value: string | null) => value ? this._filter(value) : this.precodedDescriptors)
+      map((value: string | null) => value ? this._filter(value, 'termSpanish') : this.precodedDescriptors)
     )
   }
 
@@ -107,49 +100,40 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Custom filter that matches any attribute of a descriptor in a case-insensitive way and ignoring tildes or typographic accents.
-   * @param value Manually typed text (string) or entire object (Descriptor) when selected from autocomplete list.
+   * Custom filter for the descriptors.
    */
-  private _filter(value: string | Descriptor): Descriptor[] {
-    // Prepare the value to filter
-    const stringifiedValue = typeof value === 'object' ? JSON.stringify(value) : value
-    const normalizedValue = normalize(stringifiedValue.toLowerCase().trim())
+  _filter(input: string, sortingKey: string) {
+    // Ignore the starting and ending whitespaces
+    input = input.trim()
 
-    // Prioritize number inputs (decsCodes)
-    const isNumeric = testingString => !isNaN(Number(testingString))
-    if (isNumeric(normalizedValue)) {
-      return this.allDescriptors.filter(descriptor => descriptor.decsCode === normalizedValue)
+    // If numeric, find the exact decsCode match
+    if (!isNaN(Number(input))) {
+      return this.allDescriptors.filter(descriptor => descriptor.decsCode === input)
     }
 
-    // Optimize autocomplete performance by filtering different arrays depending on the current searching string length
-    if (normalizedValue.length <= this.SHORT_LENGTH) {
-      return orderByKey(this.filterBySomeProperties(this.shortDescriptors, normalizedValue), this.orderingKey)
-      // return this.putObjectItemFirst(this.filterBySomeProperties(this.shortDescriptors, normalizedValue), 'termSpanish', normalizedValue)
-    } else if (normalizedValue.length > this.SHORT_LENGTH
-      && normalizedValue.length <= this.MEDIUM_LENGTH) {
-      return orderByKey(this.filterBySomeProperties(this.mediumDescriptors, normalizedValue), this.orderingKey)
-    } else {
-      return orderByKey(this.filterBySomeProperties(this.longDescriptors, normalizedValue), this.orderingKey)
-    }
-  }
+    // Normalize the lower-cased input
+    input = _normalize(input.toLowerCase())
 
-  /**
-   * Custom filter to prevent showing in autocomplete the decsCodes that are already added, filtering by hardcoded properties.
-   */
-  filterBySomeProperties(array: any[], normalizedValue?: string): any[] {
-    return array.filter(descriptor =>
-      // Very long multiline condition
-      !this.descriptors.some(d => d.decsCode.toLowerCase() === descriptor.decsCode) && (
-        normalize(descriptor.decsCode.toLowerCase()).includes(normalizedValue) ||
-        normalize(descriptor.termSpanish.toLowerCase()).includes(normalizedValue) ||
-        normalize(descriptor.termEnglish.toLowerCase()).includes(normalizedValue) ||
-        normalize(descriptor.meshCode.toLowerCase()).includes(normalizedValue) ||
-        normalize(descriptor.synonyms.toLowerCase()).includes(normalizedValue)
-      )
+    // Choose the according subset of descriptors
+    let subsetToFilter: Descriptor[]
+    // tslint:disable-next-line: max-line-length
+    if (input.length <= this.SHORT_LENGTH) { subsetToFilter = this.shortDescriptors } else if (input.length > this.SHORT_LENGTH && input.length <= this.MEDIUM_LENGTH) { subsetToFilter = this.mediumDescriptors } else { subsetToFilter = this.longDescriptors }
+
+    // Avoid showing the descriptors that are already added to doc
+    subsetToFilter = subsetToFilter.filter(descriptor => !this.descriptors.some(d => d.decsCode === descriptor.decsCode))
+
+    // Filter the descriptors by some properties
+    const filtered = subsetToFilter.filter(descriptor =>
+      // TODO REFACTOR: Hardcoded properties and very long multiline condition
+      _normalize(descriptor.termSpanish.toLowerCase()).includes(input) ||
+      _normalize(descriptor.termEnglish.toLowerCase()).includes(input) ||
+      _normalize(descriptor.meshCode.toLowerCase()).includes(input) ||
+      _normalize(descriptor.synonyms.toLowerCase()).includes(input)
     )
+
+    // Return the sorted results by matching importance
+    return _sortItems(filtered, input, sortingKey)
   }
-
-
 
   /**
    * When selecting a descriptor from the autocomplete displayed options (by clicking over it or pressing ENTER when it's highligthed),
@@ -224,6 +208,9 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     })
   }
 
+  /**
+   * Open a confirmation dialog to confirm the removal of a descriptor from a document.
+   */
   openConfirmDialog(descriptor: Descriptor): void {
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '350px',
