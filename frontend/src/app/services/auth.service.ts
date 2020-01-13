@@ -14,7 +14,7 @@ import { environment } from 'src/environments/environment'
 })
 export class AuthenticationService {
 
-  BROWSER_SESSION_KEY = 'userObject'
+  BROWSER_SESSION_KEY = 'loggedUser'
   public user: User
 
   constructor(
@@ -23,32 +23,14 @@ export class AuthenticationService {
   ) { }
 
   /**
-   * Check if any user is logged
-   */
-  public isLoggedIn(): boolean {
-    return localStorage.getItem(this.BROWSER_SESSION_KEY) !== null
-  }
-
-  public getCurrentUser(): User {
-    return JSON.parse(localStorage.getItem(this.BROWSER_SESSION_KEY))
-  }
-
-  /**
-   * Register one new user
-   */
-  // public registerOne(user: User): Observable<any> {
-  //   return this.http.post<User>(`${environment.apiUrl}/user/register/one`, user)
-  // }
-
-  /**
-   * Register many new users
+   * Register many new users.
    */
   public registerMany(users: User[]): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/user/register/many`, users)
   }
 
   /**
-   * Log in an existing user
+   * Log in an existing user.
    */
   public login(user: User): void {
     this.http.post(`${environment.apiUrl}/user/login`, user).subscribe(
@@ -57,11 +39,8 @@ export class AuthenticationService {
           this.user = response.user
           localStorage.setItem(this.BROWSER_SESSION_KEY, JSON.stringify(this.user))
         }
-        if (response.error) {
-          alert(response.error)
-        }
-        if (response.result) {
-          alert(response.result)
+        if (response.invalidCredentials) {
+          alert(response.invalidCredentials)
         }
       },
       error => console.error(error),
@@ -75,6 +54,20 @@ export class AuthenticationService {
   public logout(): void {
     localStorage.removeItem(this.BROWSER_SESSION_KEY)
     this.router.navigateByUrl('/')
+  }
+
+  /**
+   * Check if any user is logged.
+   */
+  public isLoggedIn(): boolean {
+    return localStorage.getItem(this.BROWSER_SESSION_KEY) !== null
+  }
+
+  /**
+   * Get the data from the current logged user.
+   */
+  public getCurrentUser(): User {
+    return JSON.parse(localStorage.getItem(this.BROWSER_SESSION_KEY))
   }
 
 }

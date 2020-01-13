@@ -20,7 +20,7 @@ export class HeaderComponent {
   ) { }
 
   public openLoginDialog(): void {
-    const dialogRef = this.dialog.open(LoginDialogComponent, {
+    const dialogRef = this.dialog.open(LoginDialog, {
       width: '300px',
       data: { user: this.user }
     })
@@ -37,10 +37,11 @@ export class HeaderComponent {
   selector: 'app-login-dialog',
   templateUrl: 'login-dialog.html',
 })
-export class LoginDialogComponent {
+// tslint:disable-next-line: component-class-suffix
+export class LoginDialog {
 
   constructor(
-    public dialogRef: MatDialogRef<LoginDialogComponent>,
+    public dialogRef: MatDialogRef<LoginDialog>,
     @Inject(MAT_DIALOG_DATA) public user: User
   ) { }
 

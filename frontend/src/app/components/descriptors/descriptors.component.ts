@@ -1,14 +1,18 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes'
 import { Component, ElementRef, ViewChild, Input, OnInit, OnChanges } from '@angular/core'
 import { FormControl } from '@angular/forms'
-import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete'
-import { MatSnackBar } from '@angular/material'
 import { Observable } from 'rxjs'
 import { map, startWith, debounceTime } from 'rxjs/operators'
+
+import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete'
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { Doc, Descriptor } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
 import { AuthenticationService } from 'src/app/services/auth.service'
 import { normalize, orderByKey, orderByStart } from 'src/app/utilities/functions'
+import { ConfirmComponent } from 'src/app/components/confirm/confirm.component'
 
 
 @Component({
@@ -43,12 +47,14 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   mediumDescriptors: Descriptor[] = []  // searchable string length greater than SHORT_LENGTH and less or equal than MEDIUM_LENGTH
   longDescriptors: Descriptor[] = []  // searchable string length greater than MEDIUM_LENGTH
 
-  // Feedback to user
+  // User usability
   inactiveServiceMessage = 'El servicio está temporalmente inactivo. Por favor, contacta por email con el administrador de esta aplicación web: alejandro.asensio@bsc.es'
+  userConfirm: boolean
 
   constructor(
     private appService: AppService,
     private auth: AuthenticationService,
+    public dialog: MatDialog,
     private snackBar: MatSnackBar
   ) { }
 
@@ -143,42 +149,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     )
   }
 
-  /**
-   * When clicking over the cross ('x') icon inside a descriptor chip or pressing delete key when chip is selected,
-   * remove the chip from the visual list and make a request through the app service to send it to backend.
-   */
-  remove(descriptor: Descriptor): void {
-    if (confirm(`¿Quieres borrar el descriptor "${descriptor.termSpanish} (${descriptor.decsCode})"?`)) {
-      // Remove chip from input field
-      const index = this.descriptors.indexOf(descriptor)
-      if (index >= 0) {
-        this.descriptors.splice(index, 1)
-      }
 
-      // Remove the clicked chip descriptor from database
-      const descriptorToRemove = {
-        decsCode: descriptor.decsCode,
-        userId: this.auth.getCurrentUser().id,
-        docId: this.doc.id
-      }
-      this.appService.removeDescriptor(descriptorToRemove).subscribe(
-        response => {
-          if (response.deletedCount !== 1) {
-            alert(this.inactiveServiceMessage)
-          }
-        }
-      )
-
-      // Visual information to the user
-      const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'DESHACER')
-
-      // If the action button is clicked, re-add the recently removed descriptor
-      snackBarRef.onAction().subscribe(() => {
-        this.descriptors.push(descriptor)
-        this.appService.addDescriptor(descriptorToRemove).subscribe()
-      })
-    }
-  }
 
   /**
    * When selecting a descriptor from the autocomplete displayed options (by clicking over it or pressing ENTER when it's highligthed),
@@ -214,6 +185,54 @@ export class DescriptorsComponent implements OnInit, OnChanges {
         }
       }
     )
+  }
+
+  /**
+   * When clicking over the cross ('x') icon inside a descriptor chip or pressing delete key when chip is selected,
+   * remove the chip from the visual list and make a request through the app service to send it to backend.
+   */
+  remove(descriptor: Descriptor): void {
+    // Remove chip from input field
+    const index = this.descriptors.indexOf(descriptor)
+    if (index >= 0) {
+      this.descriptors.splice(index, 1)
+    }
+
+    // Remove the clicked chip descriptor from database
+    const descriptorToRemove = {
+      decsCode: descriptor.decsCode,
+      userId: this.auth.getCurrentUser().id,
+      docId: this.doc.id
+    }
+    this.appService.removeDescriptor(descriptorToRemove).subscribe(
+      response => {
+        if (response.deletedCount !== 1) {
+          alert(this.inactiveServiceMessage)
+        }
+      }
+    )
+
+    // Visual information to the user
+    const snackBarRef = this.snackBar.open(`Borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'DESHACER')
+
+    // If the action button is clicked, re-add the recently removed descriptor
+    snackBarRef.onAction().subscribe(() => {
+      this.descriptors.push(descriptor)
+      this.appService.addDescriptor(descriptorToRemove).subscribe()
+    })
+  }
+
+  openConfirmDialog(descriptor: Descriptor): void {
+    const dialogRef = this.dialog.open(ConfirmComponent, {
+      width: '350px',
+      data: {
+        title: '¿Quieres borrar este descriptor?',
+        content: `${descriptor.termSpanish} (${descriptor.decsCode})`,
+        no: 'No',
+        yes: 'Sí'
+      }
+    })
+    dialogRef.afterClosed().subscribe(result => result ? this.remove(descriptor) : null)
   }
 
 }

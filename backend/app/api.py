@@ -95,7 +95,6 @@ def login():
     user = request.json
     found_user = mongo.db.users.find_one({'email': user['email']}, {'_id': 0})
 
-    # Option 1
     if found_user:
         if bcrypt.check_password_hash(found_user['password'], user['password']):
             # access_token = create_access_token(identity={
@@ -106,17 +105,12 @@ def login():
             # })
             # access_token = create_access_token(identity=dict(found_user))
             # result = jsonify({'token': access_token})
-            result = jsonify({'user': found_user})
+            result = {'user': found_user}
         else:
-            result = jsonify({'error': 'Invalid email and password'})
+            result = {'invalidCredentials': 'Invalid password'}
     else:
-        result = jsonify({'result': 'No user found'})
-    return result
-
-    # Option 2
-    # if found_user and bcrypt.check_password_hash(found_user['password'], user['password']):
-    #     found_user['token'] = create_access_token(found_user)
-    # return jsonify(found_user)
+        result = {'invalidCredentials': 'No user found'}
+    return jsonify(result)
 
 
 @app.route('/document/assigned', methods=['POST'])

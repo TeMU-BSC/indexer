@@ -29,7 +29,7 @@ services:
     restart: always
     environment:
       - REST_API_URL=http://bsccnio01.bsc.es/api
-      - BROWSER_SESSION_KEY=userObject
+      - BROWSER_SESSION_KEY=loggedUser
     ports:
       - 4200:4200
     command: ng serve --host 0.0.0.0 --disableHostCheck --liveReload=false --prod --aot --sourceMap=false

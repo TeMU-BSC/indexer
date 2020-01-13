@@ -2,7 +2,7 @@
   <mat-label>Descriptores de Ciencias de la Salud (DeCS)</mat-label>
   <mat-chip-list #chipList aria-label="Lista de descriptores">
     <mat-chip *ngFor="let descriptor of descriptors" (click)="chip.select()" #chip="matChip" [removable]="removable"
-      (removed)="remove(descriptor)" [selectable]="selectable">
+      (removed)="openConfirmDialog(descriptor)" [selectable]="selectable">
       {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
