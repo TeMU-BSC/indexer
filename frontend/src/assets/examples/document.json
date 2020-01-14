@@ -1,6 +1,6 @@
 {
-  "userId": "usuario1",
-  "docIds": [
+  "user": "usuario1",
+  "docs": [
     "documento1",
     "documento2",
     "documento3"

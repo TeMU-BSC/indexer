@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { Doc, User } from 'src/app/app.model'
+import { Doc } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { TableColumn, Width } from 'simplemattable'
@@ -26,7 +26,12 @@ export class DocsComponent implements OnInit {
 
   ngOnInit() {
     if (this.auth.isLoggedIn()) {
-      this.getAssignedDocs()
+      this.appService.getAssignedDocs(
+        {
+          userId: this.auth.getCurrentUser().id,
+          mode: this.appService.revisionMode ? 'revision' : 'assignment'
+        }
+      ).subscribe(docs => this.docs = docs)
     }
 
     // const completedCol = new TableColumn<Doc, 'completed'>('Completado', 'completed')
@@ -65,16 +70,6 @@ export class DocsComponent implements OnInit {
         .withTransform(data => data ? 'Completado' : 'Pendiente')
         .withNgStyle(data => ({ color: data ? 'green' : 'red' }))
     ]
-  }
-
-  getAssignedDocs() {
-    const userToSend: User = {
-      id: this.auth.getCurrentUser().id
-    }
-    this.appService.getAssignedDocs(userToSend).subscribe(docs => {
-      this.docs = docs
-      // this.currentDocs = this.docs.slice(0, 10)
-    })
   }
 
   selectDoc(doc: Doc) {

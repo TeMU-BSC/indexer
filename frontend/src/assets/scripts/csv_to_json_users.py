@@ -13,7 +13,15 @@ with open(csvFilePath) as csvFile:
     for user in users:
         # Make a unique hash taking the user email string
         hash_object = hashlib.md5(user.get('email').encode())
-        user['password'] = hash_object.hexdigest()
+
+        if user.get('id').startswith('G'):
+            password = 'guest'
+        elif user.get('id').startswith('T'):
+            password = 'tester'
+        else:
+            password = hash_object.hexdigest()
+
+        user['password'] = password
 
 # Write data to a JSON file
 with open(jsonFilePath, 'w') as jsonFile:

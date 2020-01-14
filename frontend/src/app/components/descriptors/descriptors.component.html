@@ -1,10 +1,10 @@
 <mat-form-field appearance="outline" class="w-100">
   <mat-label>Descriptores de Ciencias de la Salud (DeCS)</mat-label>
-  <mat-chip-list #chipList aria-label="Lista de descriptores">
-    <mat-chip *ngFor="let descriptor of descriptors" (click)="chip.select()" #chip="matChip" [removable]="removable"
-      (removed)="openConfirmDialog(descriptor)" [selectable]="selectable">
+  <mat-chip-list #chipList multiple="true" aria-label="Lista de descriptores">
+    <mat-chip *ngFor="let descriptor of descriptors" #chip="matChip" [color]="false ? 'accent' : 'primary'"
+      selectable="true" removable="true" (removed)="openConfirmDialog(descriptor)" (click)="chip.toggleSelected()">
       {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
-      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
     <input placeholder="Descriptor..." #descriptorInput [formControl]="descriptorCtrl" [matAutocomplete]="auto"
       matAutocompletePosition="below" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
@@ -14,7 +14,7 @@
     <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
       <span [innerHTML]="descriptor.termSpanish | highlight: descriptorCtrl.value"></span>
       (<span [innerHTML]="descriptor.decsCode | highlight: descriptorCtrl.value"></span>)
-      - <span [innerHTML]="descriptor.definitionSpanish" class="text-muted"></span>
+      <span [innerHTML]="descriptor.definitionSpanish" class="text-muted"></span>
     </mat-option>
   </mat-autocomplete>
   <mat-hint>

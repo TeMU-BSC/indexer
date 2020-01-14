@@ -1,4 +1,4 @@
-<mat-toolbar color="primary">
+<mat-toolbar [color]="app.revisionMode ? 'warn' : 'primary'">
   <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="1em">
     <h1 routerLink="/">
       <button mat-button fxHide.gt-sm>Indizador DeCS</button>
@@ -7,9 +7,28 @@
     <button *ngIf="!auth.isLoggedIn()" mat-button (click)="auth.openLoginDialog()">Iniciar sesión</button>
     <div *ngIf="auth.isLoggedIn()">
       <small>Hola, {{ auth.getCurrentUser().fullname }}</small>
-      <button mat-icon-button color="warn" matTooltip="Cerrar sesión" aria-label="Logout icon" (click)="auth.logout()">
-        <mat-icon>power_settings_new</mat-icon>
+      
+      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+        <mat-icon>more_vert</mat-icon>
       </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="app.toggleMode()">
+          <mat-icon>invert_colors</mat-icon>
+          <span>Modo revisión</span>
+        </button>
+        <!-- <button mat-menu-item disabled>
+          <mat-icon>voicemail</mat-icon>
+          <span>Check voice mail</span>
+        </button> -->
+        <button mat-menu-item (click)="auth.logout()">
+          <mat-icon color="warn">power_settings_new</mat-icon>
+          <span>Cerrar sesión</span>
+        </button>
+      </mat-menu>
+
+      <!-- <button mat-icon-button color="warn" matTooltip="Cerrar sesión" aria-label="Logout icon" (click)="auth.logout()">
+        <mat-icon>power_settings_new</mat-icon>
+      </button> -->
       <!-- <a mat-flat-button style="color: #669966"
         href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
         Buscador DeCS <mat-icon>open_in_new</mat-icon>

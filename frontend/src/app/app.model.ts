@@ -31,11 +31,6 @@ export class User {
   passwordConfirm?: string
 }
 
-export class Assignment {
-  userId: User['id']
-  docIds: Doc['id'][]
-}
-
 export interface ApiResponse {
   success?: boolean
   registeredUsers?: number

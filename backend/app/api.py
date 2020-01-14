@@ -118,9 +118,9 @@ def get_assigned_docs():
     '''Find the assigned docs IDs to the current user, and then retrieving
     the doc data from the 'selected_importants' collection.'''
     assigned_doc_ids = mongo.db.assignments.find_one(
-        {'userId': request.json['id']}).get('docIds')
-    completed_doc_ids = mongo.db.assignments.find_one(
-        {'userId': request.json['id']}).get('completedDocIds')
+        {'user': request.json['userId']}).get('docs')
+    completed_doc_ids = mongo.db.completions.find_one(
+        {'user': request.json['userId']}).get(request.json['mode'])
     docs = mongo.db.selected_importants.find(
         {'_id': {'$in': assigned_doc_ids}})
 
@@ -128,7 +128,7 @@ def get_assigned_docs():
     for doc in docs:
         # Find the decsCodes added by the current user
         descriptors = mongo.db.descriptors.find(
-            {'docId': doc['_id'], 'userId': request.json['id']}, {'_id': 0, 'decsCode': 1})
+            {'doc': doc['_id'], 'user': request.json['userId']}, {'_id': 0, 'decsCode': 1})
         decsCodes = [descriptor['decsCode'] for descriptor in descriptors]
 
         # Check if this doc has been 'marked as completed' by the current user
@@ -152,29 +152,29 @@ def get_assigned_docs():
 
 @app.route('/document/assign/many', methods=['POST'])
 def assign_docs_to_users():
-    '''Add some documents IDs to the userId key in the 'assigned_documents' collection.'''
+    '''Add some documents IDs to the user key in the 'assigned_documents' collection.'''
     result = mongo.db.assignments.insert_many(request.json)
     return jsonify({'success': result.acknowledged})
 
 
-@app.route('/document/complete/add', methods=['POST'])
+@app.route('/document/completed', methods=['POST'])
 def mark_doc_as_completed():
-    '''Add a new docId to the 'completedDocIds' array of the current user in
-    the 'assigned_documents' collection.'''
-    result = mongo.db.assignments.update_one(
-        {'userId': request.json['userId']},
-        {'$push': {'completedDocIds': request.json['docId']}}
+    '''Add a new doc into the 'assigned' or 'revised' key in the 'completions' collection.'''
+    result = mongo.db.completions.update_one(
+        {'user': request.json['user']},
+        {'$push': {request.json['mode']: request.json['doc']}},
+        upsert=True
     )
     return jsonify({'success': result.acknowledged})
 
 
-@app.route('/document/complete/remove', methods=['POST'])
-def mark_doc_as_uncompleted():
-    '''Remove an existing docId from the 'completedDocIds' array of the current
+@app.route('/document/pending', methods=['POST'])
+def mark_doc_as_pending():
+    '''Remove an existing doc from the 'completedDocs' array of the current
     user in the 'assigned_documents' collection.'''
-    result = mongo.db.assignments.update_one(
-        {'userId': request.json['userId']},
-        {'$pull': {'completedDocIds': request.json['docId']}}
+    result = mongo.db.completions.update_one(
+        {'user': request.json['user']},
+        {'$pull': {request.json['mode']: request.json['doc']}}
     )
     return jsonify({'success': result.acknowledged})
 

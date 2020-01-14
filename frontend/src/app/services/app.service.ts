@@ -4,8 +4,8 @@ import { Observable } from 'rxjs'
 import { Papa } from 'ngx-papaparse'
 
 import { environment } from 'src/environments/environment'
-import { User, Doc, Descriptor, Assignment, ApiResponse } from 'src/app/app.model'
-import { _sortByArray } from 'src/app/utilities/functions'
+import { Doc, Descriptor, ApiResponse } from 'src/app/app.model'
+import { _sortByOrder } from 'src/app/utilities/functions'
 import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
 
 
@@ -17,6 +17,7 @@ export class AppService {
   public allDescriptors: Descriptor[]
   public precodedDescriptors: Descriptor[]
   precodedDecsCodes: string[] = (PRECODED_DECS_CODES as any).default
+  public revisionMode = false
 
   constructor(
     private http: HttpClient,
@@ -37,17 +38,17 @@ export class AppService {
    */
   getPrecodedDescriptors(): Descriptor[] {
     const precodedDescriptors = this.allDescriptors.filter(descriptor => this.precodedDecsCodes.includes(descriptor.decsCode))
-    return _sortByArray(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
+    return _sortByOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
   }
 
   /**
    * Get the assigned docs to the current user.
    */
-  getAssignedDocs(user: User): Observable<Doc[]> {
-    return this.http.post<Doc[]>(`${environment.apiUrl}/document/assigned`, user)
+  getAssignedDocs(assignment: any): Observable<Doc[]> {
+    return this.http.post<Doc[]>(`${environment.apiUrl}/document/assigned`, assignment)
   }
 
-  assignDocsToUsers(assignments: Assignment[]): Observable<any> {
+  assignDocsToUsers(assignments: any[]): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/document/assign/many`, assignments)
   }
 
@@ -66,17 +67,23 @@ export class AppService {
   }
 
   /**
-   * Mark an docId as completed by the current user in database.
+   * Mark an doc as completed by the current user in database.
    */
   addCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/document/complete/add`, doc)
+    return this.http.post<Doc>(`${environment.apiUrl}/document/completed`, doc)
   }
 
   /**
-   * Mark an docId as uncompleted by the current user in database.
+   * Mark an doc as uncompleted by the current user in database.
    */
   removeCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/document/complete/remove`, doc)
+    return this.http.post<Doc>(`${environment.apiUrl}/document/pending`, doc)
+  }
+
+  toggleMode() {
+    this.revisionMode = !this.revisionMode
+    console.log(this.revisionMode)
+
   }
 
 }

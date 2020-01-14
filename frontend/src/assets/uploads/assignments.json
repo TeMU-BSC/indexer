@@ -1,7 +1,7 @@
 [
   {
-    "userId": "A1",
-    "docIds": [
+    "user": "A1",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -505,8 +505,8 @@
     ]
   },
   {
-    "userId": "A2",
-    "docIds": [
+    "user": "A2",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -1010,8 +1010,8 @@
     ]
   },
   {
-    "userId": "A3",
-    "docIds": [
+    "user": "A3",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -1515,8 +1515,8 @@
     ]
   },
   {
-    "userId": "A4",
-    "docIds": [
+    "user": "A4",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -2020,8 +2020,8 @@
     ]
   },
   {
-    "userId": "A6",
-    "docIds": [
+    "user": "A6",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -2525,8 +2525,8 @@
     ]
   },
   {
-    "userId": "A7",
-    "docIds": [
+    "user": "A7",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -3030,8 +3030,8 @@
     ]
   },
   {
-    "userId": "A9",
-    "docIds": [
+    "user": "A9",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -3535,8 +3535,8 @@
     ]
   },
   {
-    "userId": "A12",
-    "docIds": [
+    "user": "A12",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -4040,8 +4040,8 @@
     ]
   },
   {
-    "userId": "A15",
-    "docIds": [
+    "user": "A15",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -4545,8 +4545,8 @@
     ]
   },
   {
-    "userId": "C2",
-    "docIds": [
+    "user": "C2",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -5050,8 +5050,8 @@
     ]
   },
   {
-    "userId": "C3",
-    "docIds": [
+    "user": "C3",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -5555,8 +5555,8 @@
     ]
   },
   {
-    "userId": "C4",
-    "docIds": [
+    "user": "C4",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -6060,8 +6060,8 @@
     ]
   },
   {
-    "userId": "C5",
-    "docIds": [
+    "user": "C5",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -6565,8 +6565,8 @@
     ]
   },
   {
-    "userId": "C7",
-    "docIds": [
+    "user": "C7",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -7070,8 +7070,8 @@
     ]
   },
   {
-    "userId": "C9",
-    "docIds": [
+    "user": "C9",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -7575,8 +7575,8 @@
     ]
   },
   {
-    "userId": "C10",
-    "docIds": [
+    "user": "C10",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -8080,8 +8080,8 @@
     ]
   },
   {
-    "userId": "C11",
-    "docIds": [
+    "user": "C11",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -8585,8 +8585,8 @@
     ]
   },
   {
-    "userId": "C12",
-    "docIds": [
+    "user": "C12",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -9090,8 +9090,8 @@
     ]
   },
   {
-    "userId": "C13",
-    "docIds": [
+    "user": "C13",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -9595,8 +9595,8 @@
     ]
   },
   {
-    "userId": "C14",
-    "docIds": [
+    "user": "C14",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -10100,8 +10100,8 @@
     ]
   },
   {
-    "userId": "C15",
-    "docIds": [
+    "user": "C15",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -10605,8 +10605,8 @@
     ]
   },
   {
-    "userId": "C17",
-    "docIds": [
+    "user": "C17",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -11110,8 +11110,8 @@
     ]
   },
   {
-    "userId": "C18",
-    "docIds": [
+    "user": "C18",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -11615,8 +11615,8 @@
     ]
   },
   {
-    "userId": "C20",
-    "docIds": [
+    "user": "C20",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -12120,8 +12120,8 @@
     ]
   },
   {
-    "userId": "C24",
-    "docIds": [
+    "user": "C24",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",
@@ -12625,8 +12625,8 @@
     ]
   },
   {
-    "userId": "C25",
-    "docIds": [
+    "user": "C25",
+    "docs": [
       "biblio-1013492",
       "biblio-985408",
       "biblio-985406",

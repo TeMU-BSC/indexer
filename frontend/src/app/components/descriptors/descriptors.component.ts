@@ -13,6 +13,7 @@ import { AppService } from 'src/app/services/app.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { _normalize, _sort } from 'src/app/utilities/functions'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
+import { MatChipList } from '@angular/material'
 
 
 @Component({
@@ -27,9 +28,6 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete
 
   // Visual chips list
-  selectable = true
-  removable = true
-  addOnBlur = true
   separatorKeysCodes: number[] = [ENTER, COMMA]
 
   // Input field control
@@ -56,17 +54,11 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
-    // Separate the short, medium and long descriptors, accumulation the previous ones to the next
-    this.appService.allDescriptors.forEach(descriptor => {
-      if (descriptor.termSpanish.length <= this.SHORT_LENGTH) {
-        this.shortDescriptors.push(descriptor)
-      } else if (descriptor.termSpanish.length > this.SHORT_LENGTH
-        && descriptor.termSpanish.length <= this.MEDIUM_LENGTH) {
-        this.mediumDescriptors.push(descriptor)
-      } else {
-        this.longDescriptors.push(descriptor)
-      }
-    })
+    // Separate the short, medium and long descriptors
+    this.shortDescriptors = this.appService.allDescriptors.filter(descriptor => descriptor.termSpanish.length <= this.SHORT_LENGTH)
+    // tslint:disable-next-line: max-line-length
+    this.mediumDescriptors = this.appService.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.SHORT_LENGTH && descriptor.termSpanish.length <= this.MEDIUM_LENGTH)
+    this.longDescriptors = this.appService.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.MEDIUM_LENGTH)
 
     // Filter descriptors as the user types in the input field
     this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
@@ -143,8 +135,8 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // Add the clicked chip descriptor to database
     const descriptorToAdd = {
       decsCode: selectedDescriptor.decsCode,
-      userId: this.auth.getCurrentUser().id,
-      docId: this.doc.id
+      user: this.auth.getCurrentUser().id,
+      doc: this.doc.id
     }
     // this.appService.addDescriptor(descriptorToAdd).subscribe()
     this.appService.addDescriptor(descriptorToAdd).subscribe(
@@ -170,8 +162,8 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // Remove the clicked chip descriptor from database
     const descriptorToRemove = {
       decsCode: descriptor.decsCode,
-      userId: this.auth.getCurrentUser().id,
-      docId: this.doc.id
+      user: this.auth.getCurrentUser().id,
+      doc: this.doc.id
     }
     this.appService.removeDescriptor(descriptorToRemove).subscribe(
       response => {

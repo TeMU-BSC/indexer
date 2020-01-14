@@ -1,5 +1,5 @@
 {
   "decsCode": "00000",
-  "userId": "usuario1",
-  "docId": "documento1"
+  "user": "usuario1",
+  "doc": "documento1"
 }

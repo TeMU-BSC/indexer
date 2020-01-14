@@ -11,7 +11,7 @@ export function _normalize(text: string): string {
  * Order some items based on an order array (of strings), regarding a key of each item.
  * https://gist.github.com/ecarter/1423674#gistcomment-3065491
  */
-export function _sortByArray(items: any[], order: string[], key: string): any[] {
+export function _sortByOrder(items: any[], order: string[], key: string): any[] {
   return items.sort((a, b) => order.indexOf(a[key]) < order.indexOf(b[key]) ? -1 : 1)
 }
 

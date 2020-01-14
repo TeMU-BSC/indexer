@@ -29,9 +29,9 @@ export class DocComponent {
 
     // Make that change permanent into database
     const docToMark = {
-      // userId: this.auth.user.id,
-      userId: this.auth.getCurrentUser().id,
-      docId: this.doc.id
+      user: this.auth.getCurrentUser().id,
+      doc: this.doc.id,
+      mode: this.appService.revisionMode ? 'revision' : 'assignment'
     }
     if (this.doc.completed) {
       this.appService.addCompletedDoc(docToMark).subscribe()

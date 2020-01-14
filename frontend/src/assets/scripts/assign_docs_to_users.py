@@ -14,5 +14,5 @@ sample = random.sample(selected_importants_ids, 100)
 with open(users_path) as f:
     users = json.load(f)
 
-assignments = [{'userId': user['id'], 'docIds': sample} for user in users]
+assignments = [{'user': user['id'], 'docs': sample} for user in users]
 print(json.dumps(assignments))
