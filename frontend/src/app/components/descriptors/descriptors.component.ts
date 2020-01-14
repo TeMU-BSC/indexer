@@ -11,7 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Doc, Descriptor } from 'src/app/app.model'
 import { AppService } from 'src/app/services/app.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { _normalize, _sortItems } from 'src/app/utilities/functions'
+import { _normalize, _sort } from 'src/app/utilities/functions'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
 
 
@@ -34,8 +34,6 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
   // Input field control
   descriptorCtrl = new FormControl()  // text input form field to search among descriptors
-  precodedDescriptors: Descriptor[]  // frequently used
-  allDescriptors: Descriptor[]  // all available descriptors to pick
   filteredDescriptors: Observable<Descriptor[]>  // suggested options in autocomplete
   descriptors: Descriptor[] = []  // visual chips list
 
@@ -58,14 +56,8 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
-    // Get all descriptor objects
-    this.allDescriptors = this.appService.allDescriptors
-
-    // Get the precoded descriptors
-    this.precodedDescriptors = this.appService.getPrecodedDescriptors()
-
     // Separate the short, medium and long descriptors, accumulation the previous ones to the next
-    this.allDescriptors.forEach(descriptor => {
+    this.appService.allDescriptors.forEach(descriptor => {
       if (descriptor.termSpanish.length <= this.SHORT_LENGTH) {
         this.shortDescriptors.push(descriptor)
       } else if (descriptor.termSpanish.length > this.SHORT_LENGTH
@@ -80,23 +72,16 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
       debounceTime(100),
       startWith(''),
-      map((value: string | null) => value ? this._filter(value, 'termSpanish') : this.precodedDescriptors)
+      map((value: string | null) => value ? this._filter(value, 'termSpanish') : this.appService.getPrecodedDescriptors())
     )
   }
 
   /**
-   * This 'descriptors' component implements OnChanges method so it can react to parent changes on 'doc' attribute.
+   * This 'descriptors' component implements OnChanges method so it can react to parent changes on its @Input() 'doc' property.
    */
   ngOnChanges() {
-    // Reset the chips list
-    this.descriptors = []
-
-    // Initialize the input field with the current descriptors list of the selected doc
-    if (this.doc.decsCodes) {
-      this.doc.decsCodes.forEach(decsCode => {
-        this.descriptors.push(this.appService.findDescriptorByDecsCode(decsCode))
-      })
-    }
+    // Update the chips list each time a different doc is selected
+    this.descriptors = this.appService.allDescriptors.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
   }
 
   /**
@@ -108,7 +93,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
     // If numeric, find the exact decsCode match
     if (!isNaN(Number(input))) {
-      return this.allDescriptors.filter(descriptor => descriptor.decsCode === input)
+      return this.appService.allDescriptors.filter(descriptor => descriptor.decsCode === input)
     }
 
     // Normalize the lower-cased input
@@ -132,7 +117,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     )
 
     // Return the sorted results by matching importance
-    return _sortItems(filtered, input, sortingKey)
+    return _sort(filtered, input, sortingKey)
   }
 
   /**

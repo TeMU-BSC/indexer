@@ -96,7 +96,7 @@ export class AdminComponent {
   }
 
   assignDocsToUsers() {
-    this.appService.assignDocs(this.dataFromFile).subscribe(
+    this.appService.assignDocsToUsers(this.dataFromFile).subscribe(
       response => this.response = response,
       error => console.error(error),
       () => {
