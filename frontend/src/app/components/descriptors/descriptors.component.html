@@ -6,7 +6,7 @@
       {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
       <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
-    <input placeholder="Descriptor..." #descriptorInput [formControl]="descriptorCtrl" [matAutocomplete]="auto"
+    <input placeholder="Escribe el término o el código..." #descriptorInput [formControl]="descriptorCtrl" [matAutocomplete]="auto"
       matAutocompletePosition="below" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
       [matChipInputAddOnBlur]="addOnBlur">
   </mat-chip-list>

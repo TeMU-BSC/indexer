@@ -35,7 +35,7 @@ export class AdminComponent {
     {
       title: 'Cargar DeCS indizados [#to_do]',
       keywords: 'DeCS indizados',
-      exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
+      // exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
       action: 'functionToBeImplemented()'
     },
     {

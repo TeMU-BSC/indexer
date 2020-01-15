@@ -93,8 +93,13 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
     // Choose the according subset of descriptors
     let subsetToFilter: Descriptor[]
-    // tslint:disable-next-line: max-line-length
-    if (input.length <= this.SHORT_LENGTH) { subsetToFilter = this.shortDescriptors } else if (input.length > this.SHORT_LENGTH && input.length <= this.MEDIUM_LENGTH) { subsetToFilter = this.mediumDescriptors } else { subsetToFilter = this.longDescriptors }
+    if (input.length <= this.SHORT_LENGTH) {
+      subsetToFilter = this.shortDescriptors
+    } else if (input.length > this.SHORT_LENGTH && input.length <= this.MEDIUM_LENGTH) {
+      subsetToFilter = this.mediumDescriptors
+    } else {
+      subsetToFilter = this.longDescriptors
+    }
 
     // Avoid showing the descriptors that are already added to doc
     subsetToFilter = subsetToFilter.filter(descriptor => !this.descriptors.some(d => d.decsCode === descriptor.decsCode))
@@ -146,6 +151,8 @@ export class DescriptorsComponent implements OnInit, OnChanges {
         }
       }
     )
+
+    // Clear the input value
   }
 
   /**

@@ -1,5 +1,5 @@
 {
-  "name": "decs",
+  "name": "decs-indexer",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",

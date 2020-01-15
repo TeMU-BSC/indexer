@@ -40,11 +40,12 @@ services:
     build: ./frontend
     container_name: angular
     restart: always
+    # https://codinglatte.com/posts/angular/using-os-environment-variables-in-angular-with-docker/
     environment:
       - REST_API_URL=http://localhost:5000
       - BROWSER_SESSION_KEY=loggedUser
     command: ng serve --host 0.0.0.0
-    # command: ng serve --host 0.0.0.0 --disableHostCheck --prod
+    # command: ng serve --host 0.0.0.0 --disableHostCheck --prod  # Use when out of BSC office.
     ports:
       - 4200:4200
     volumes:

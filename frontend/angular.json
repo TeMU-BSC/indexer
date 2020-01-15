@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "decs": {
+    "decs-indexer": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/decs",
+            "outputPath": "dist/decs-indexer",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -66,18 +66,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "decs:build"
+            "browserTarget": "decs-indexer:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "decs:build:production"
+              "browserTarget": "decs-indexer:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "decs:build"
+            "browserTarget": "decs-indexer:build"
           }
         },
         "test": {
@@ -115,16 +115,16 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "decs:serve"
+            "devServerTarget": "decs-indexer:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "decs:serve:production"
+              "devServerTarget": "decs-indexer:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "decs"
+  "defaultProject": "decs-indexer"
 }
