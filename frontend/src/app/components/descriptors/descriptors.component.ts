@@ -28,6 +28,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
   // Visual chips list
   separatorKeysCodes: number[] = [ENTER, COMMA]
+  addOnBlur = true
 
   // Input field control
   descriptorCtrl = new FormControl()  // text input form field to search among descriptors
