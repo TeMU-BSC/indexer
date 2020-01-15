@@ -113,28 +113,41 @@ def login():
     return jsonify(result)
 
 
+@app.route('/document/assign/many', methods=['POST'])
+def assign_docs_to_users():
+    '''Add some documents IDs to the user key in the 'assigned_documents' collection.'''
+    result = mongo.db.assignments.insert_many(request.json)
+    return jsonify({'success': result.acknowledged})
+
+    # users = [assignment.get('user') for assignment in request.json]
+    # docs = [assignment.get('docs') for assignment in request.json]
+    # result = mongo.db.assignments.update_many(
+    #     {'user': {'$in': users}},
+    #     {'docs': ...},
+    #     upsert=True
+    # )
+    # return jsonify({'success': result.acknowledged, 'modifiedCount': result.modifiedCount})
+
+
 @app.route('/document/assigned', methods=['POST'])
 def get_assigned_docs():
     '''Find the assigned docs IDs to the current user, and then retrieving
     the doc data from the 'selected_importants' collection.'''
-    assigned_doc_ids = mongo.db.assignments.find_one(
-        {'user': request.json['userId']}).get('docs')
-    completed_doc_ids = mongo.db.completions.find_one(
-        {'user': request.json['userId']}).get(request.json['mode'])
-    docs = mongo.db.selected_importants.find(
-        {'_id': {'$in': assigned_doc_ids}})
+    assigned_doc_ids = mongo.db.assignments.find_one({'user': request.json['user']}).get('docs')
+    docs = mongo.db.selected_importants.find({'_id': {'$in': assigned_doc_ids}})
 
     result = []
     for doc in docs:
         # Find the decsCodes added by the current user
         descriptors = mongo.db.descriptors.find(
-            {'doc': doc['_id'], 'user': request.json['userId']}, {'_id': 0, 'decsCode': 1})
+            {'doc': doc['_id'], 'user': request.json['user']}, {'_id': 0, 'decsCode': 1})
         decsCodes = [descriptor['decsCode'] for descriptor in descriptors]
 
-        # Check if this doc has been 'marked as completed' by the current user
+        # Check if this doc has been marked as completed (indexed/revised) by the current user
         completed = False
-        if completed_doc_ids:
-            completed = doc['_id'] in completed_doc_ids
+        user_completions = mongo.db.completions.find_one({'user': request.json['user']})
+        if user_completions:
+            completed = doc['_id'] in user_completions.get('docs')
 
         # Prepare the relevant info to be returned
         doc_relevant_info = {
@@ -150,19 +163,12 @@ def get_assigned_docs():
     # return jsonify({'docsCount': len(result), 'docs': result})
 
 
-@app.route('/document/assign/many', methods=['POST'])
-def assign_docs_to_users():
-    '''Add some documents IDs to the user key in the 'assigned_documents' collection.'''
-    result = mongo.db.assignments.insert_many(request.json)
-    return jsonify({'success': result.acknowledged})
-
-
 @app.route('/document/completed', methods=['POST'])
 def mark_doc_as_completed():
     '''Add a new doc into the 'assigned' or 'revised' key in the 'completions' collection.'''
     result = mongo.db.completions.update_one(
         {'user': request.json['user']},
-        {'$push': {request.json['mode']: request.json['doc']}},
+        {'$push': {'docs': request.json['doc']}},
         upsert=True
     )
     return jsonify({'success': result.acknowledged})
@@ -174,7 +180,7 @@ def mark_doc_as_pending():
     user in the 'assigned_documents' collection.'''
     result = mongo.db.completions.update_one(
         {'user': request.json['user']},
-        {'$pull': {request.json['mode']: request.json['doc']}}
+        {'$pull': {'docs': request.json['doc']}}
     )
     return jsonify({'success': result.acknowledged})
 

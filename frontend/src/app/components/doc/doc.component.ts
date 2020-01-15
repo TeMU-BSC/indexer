@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core'
 import { MatSlideToggleChange } from '@angular/material'
 
 import { Doc } from 'src/app/app.model'
-import { AppService } from 'src/app/services/app.service'
+import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 
 
@@ -16,12 +16,12 @@ export class DocComponent {
   @Input() doc: Doc
 
   constructor(
-    private appService: AppService,
+    public api: ApiService,
     private auth: AuthService
   ) { }
 
   /**
-   * Toggle completed status of a doc (completed/uncompleted).
+   * Toggle completed status of a doc (completed/pending).
    */
   onChange(event: MatSlideToggleChange): void {
     // Visualy toggle the completed property (boolean)
@@ -31,13 +31,9 @@ export class DocComponent {
     const docToMark = {
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id,
-      mode: this.appService.revisionMode ? 'revision' : 'assignment'
+      mode: this.api.revisionMode ? 'revision' : 'assignment'
     }
-    if (this.doc.completed) {
-      this.appService.addCompletedDoc(docToMark).subscribe()
-    } else {
-      this.appService.removeCompletedDoc(docToMark).subscribe()
-    }
+    this.doc.completed ? this.api.addCompletedDoc(docToMark).subscribe() : this.api.removeCompletedDoc(docToMark).subscribe()
   }
 
 }

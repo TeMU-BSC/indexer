@@ -12,7 +12,7 @@ import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.
 @Injectable({
   providedIn: 'root'
 })
-export class AppService {
+export class ApiService {
 
   public allDescriptors: Descriptor[]
   public precodedDescriptors: Descriptor[]

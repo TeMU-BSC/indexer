@@ -14,9 +14,10 @@ import { DocsComponent } from './components/docs/docs.component'
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'docs', component: DocsComponent },
-  { path: 'login', component: LoginComponent },
   { path: 'admin', component: AdminComponent },
+  { path: 'login', component: LoginComponent },
+  // { path: 'docs', component: DocsComponent },
+  { path: 'docs', component: DocsComponent, canActivate: [AuthGuardService] }
   // { path: 'profile', component: ProfileComponent, canActivate: [AuthGuardService] }
 ]
 

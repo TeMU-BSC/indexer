@@ -1,4 +1,4 @@
-<mat-toolbar [color]="app.revisionMode ? 'warn' : 'primary'">
+<mat-toolbar [color]="api.revisionMode ? 'warn' : 'primary'">
   <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="1em">
     <h1 routerLink="/">
       <button mat-button fxHide.gt-sm>Indizador DeCS</button>
@@ -12,7 +12,7 @@
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="app.toggleMode()">
+        <button mat-menu-item (click)="api.toggleMode()">
           <mat-icon>invert_colors</mat-icon>
           <span>Modo revisión</span>
         </button>

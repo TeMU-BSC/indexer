@@ -5,7 +5,7 @@ import { MatAutocompleteSelectedEvent, MatSnackBar } from '@angular/material'
 import { Observable } from 'rxjs'
 import { map, startWith } from 'rxjs/operators'
 import { User, Doc, Descriptor } from 'src/app/app.model'
-import { AppService } from 'src/app/services/app.service'
+import { ApiService } from 'src/app/services/api.service'
 
 // TODO implementar login contra bbdd
 // TODO enviar al backend un descriptor cada vez que el anotador seleccione uno del autocompletar
@@ -75,7 +75,7 @@ export class HomeOldComponent implements OnInit {
   //   this.decsForm.controls.id.setValue(this.doc.id)
 
   //   // Send request to backend
-  //   // this.appService.updateDoc(this.doc).subscribe(bu => console.trace(bu))
+  //   // this.api.updateDoc(this.doc).subscribe(bu => console.trace(bu))
 
   //   this.snackBar.open('DeCS saved successfully.', 'OK')
 

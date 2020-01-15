@@ -3,7 +3,7 @@ import { ApiResponse } from 'src/app/app.model'
 import { AuthService } from 'src/app/services/auth.service'
 import { MatSnackBar } from '@angular/material'
 
-import { AppService } from 'src/app/services/app.service'
+import { ApiService } from 'src/app/services/api.service'
 import * as EXAMPLE_USER from 'src/assets/examples/user.json'
 import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'
 import * as EXAMPLE_DESCRIPTOR from 'src/assets/examples/descriptor.json'
@@ -49,7 +49,7 @@ export class AdminComponent {
   constructor(
     public auth: AuthService,
     private snackBar: MatSnackBar,
-    public appService: AppService
+    public api: ApiService
   ) { }
 
   /**
@@ -96,7 +96,7 @@ export class AdminComponent {
   }
 
   assignDocsToUsers() {
-    this.appService.assignDocsToUsers(this.dataFromFile).subscribe(
+    this.api.assignDocsToUsers(this.dataFromFile).subscribe(
       response => this.response = response,
       error => console.error(error),
       () => {

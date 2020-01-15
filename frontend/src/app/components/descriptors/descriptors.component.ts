@@ -9,11 +9,10 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { Doc, Descriptor } from 'src/app/app.model'
-import { AppService } from 'src/app/services/app.service'
+import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { _normalize, _sort } from 'src/app/utilities/functions'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
-import { MatChipList } from '@angular/material'
 
 
 @Component({
@@ -47,7 +46,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   userConfirm: boolean
 
   constructor(
-    private appService: AppService,
+    private api: ApiService,
     private auth: AuthService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar
@@ -55,16 +54,16 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     // Separate the short, medium and long descriptors
-    this.shortDescriptors = this.appService.allDescriptors.filter(descriptor => descriptor.termSpanish.length <= this.SHORT_LENGTH)
+    this.shortDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length <= this.SHORT_LENGTH)
     // tslint:disable-next-line: max-line-length
-    this.mediumDescriptors = this.appService.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.SHORT_LENGTH && descriptor.termSpanish.length <= this.MEDIUM_LENGTH)
-    this.longDescriptors = this.appService.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.MEDIUM_LENGTH)
+    this.mediumDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.SHORT_LENGTH && descriptor.termSpanish.length <= this.MEDIUM_LENGTH)
+    this.longDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.MEDIUM_LENGTH)
 
     // Filter descriptors as the user types in the input field
     this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
       debounceTime(100),
       startWith(''),
-      map((value: string | null) => value ? this._filter(value, 'termSpanish') : this.appService.getPrecodedDescriptors())
+      map((value: string | null) => value ? this._filter(value, 'termSpanish') : this.api.getPrecodedDescriptors())
     )
   }
 
@@ -73,7 +72,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
    */
   ngOnChanges() {
     // Update the chips list each time a different doc is selected
-    this.descriptors = this.appService.allDescriptors.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
+    this.descriptors = this.api.allDescriptors.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
   }
 
   /**
@@ -85,7 +84,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
     // If numeric, find the exact decsCode match
     if (!isNaN(Number(input))) {
-      return this.appService.allDescriptors.filter(descriptor => descriptor.decsCode === input)
+      return this.api.allDescriptors.filter(descriptor => descriptor.decsCode === input)
     }
 
     // Normalize the lower-cased input
@@ -143,8 +142,8 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id
     }
-    // this.appService.addDescriptor(descriptorToAdd).subscribe()
-    this.appService.addDescriptor(descriptorToAdd).subscribe(
+    // this.api.addDescriptor(descriptorToAdd).subscribe()
+    this.api.addDescriptor(descriptorToAdd).subscribe(
       response => {
         if (!response.success) {
           alert(this.inactiveServiceMessage)
@@ -172,7 +171,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id
     }
-    this.appService.removeDescriptor(descriptorToRemove).subscribe(
+    this.api.removeDescriptor(descriptorToRemove).subscribe(
       response => {
         if (response.deletedCount !== 1) {
           alert(this.inactiveServiceMessage)
@@ -188,7 +187,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // If the action button is clicked, re-add the recently removed descriptor
     snackBarRef.onAction().subscribe(() => {
       this.descriptors.push(descriptor)
-      this.appService.addDescriptor(descriptorToRemove).subscribe()
+      this.api.addDescriptor(descriptorToRemove).subscribe()
     })
   }
 

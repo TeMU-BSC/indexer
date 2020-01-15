@@ -1,7 +1,6 @@
 import { Component } from '@angular/core'
 import { AuthService } from 'src/app/services/auth.service'
-import { DocsComponent } from '../docs/docs.component'
-import { AppService } from 'src/app/services/app.service'
+import { ApiService } from 'src/app/services/api.service'
 
 
 @Component({
@@ -13,7 +12,7 @@ export class HeaderComponent {
 
   constructor(
     public auth: AuthService,
-    public app: AppService
+    public api: ApiService
   ) { }
 
 }

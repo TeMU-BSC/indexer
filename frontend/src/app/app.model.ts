@@ -36,9 +36,6 @@ export interface ApiResponse {
   registeredUsers?: number
   errorMessage?: string
   deletedCount?: number
-  // token?: string
   user?: User
-  // error?: string
-  // result?: string
   invalidCredentials?: string
 }
