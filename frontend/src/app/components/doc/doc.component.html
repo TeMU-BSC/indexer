@@ -8,11 +8,7 @@
     <p [innerHTML]="doc.abstract"></p>
     <app-descriptors [doc]="doc"></app-descriptors>
   </mat-card-content>
-  <mat-card-actions fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="space-between" class="p-4">
-    <a mat-button style="color: #669966; text-decoration: none;"
-      href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
-      Abrir el buscador DeCS <mat-icon class="h4">open_in_new</mat-icon>
-    </a>
+  <mat-card-actions fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="end" class="p-4">
     <mat-slide-toggle color="primary" [checked]="doc.completed" (change)="onChange($event)">
       Marcar como indizado
       <!-- Marcar como revisado -->
