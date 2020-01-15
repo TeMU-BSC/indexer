@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material'
 
 import { AppService } from 'src/app/services/app.service'
 import * as EXAMPLE_USER from 'src/assets/examples/user.json'
-import * as EXAMPLE_DOCUMENT from 'src/assets/examples/document.json'
+import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'
 import * as EXAMPLE_DESCRIPTOR from 'src/assets/examples/descriptor.json'
 
 
@@ -29,7 +29,7 @@ export class AdminComponent {
     {
       title: 'Asignar documentos a usuarios',
       keywords: 'asignaciones de documentos',
-      exampleJson: (EXAMPLE_DOCUMENT as any).default,
+      exampleJson: (EXAMPLE_ASSIGNMENT as any).default,
       action: 'assignDocsToUsers()'
     },
     {
@@ -41,7 +41,7 @@ export class AdminComponent {
     {
       title: 'Cargar sugerencias DeCS [#to_do]',
       keywords: 'DeCS sugeridos',
-      exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
+      // exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
       action: 'functionToBeImplemented()'
     }
   ]
