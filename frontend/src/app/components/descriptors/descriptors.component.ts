@@ -23,26 +23,29 @@ import { DialogComponent } from 'src/app/components/dialog/dialog.component'
 export class DescriptorsComponent implements OnInit, OnChanges {
 
   @Input() doc: Doc
-  @ViewChild('descriptorInput', { static: false }) descriptorInput: ElementRef<HTMLInputElement>
+  @ViewChild('chipInput', { static: false }) chipInput: ElementRef<HTMLInputElement>
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete
 
-  // Visual chips list
-  separatorKeysCodes: number[] = [ENTER, COMMA]
+  // Set up reactive formControl
+  autocompleteChipList = new FormControl()
+  // Set up values to use with chips
   addOnBlur = true
-
-  // Input field control
-  descriptorCtrl = new FormControl()  // text input form field to search among descriptors
-  filteredDescriptors: Observable<Descriptor[]>  // suggested options in autocomplete
-  descriptors: Descriptor[] = []  // visual chips list
-
+  color = 'primary'
+  removable = true
+  selectable = true
+  separatorKeysCodes: number[] = [ENTER, COMMA]
+  // Set up options array
+  options: Descriptor[]
+  // Define filteredOptins Array and Chips Array
+  filteredOptions: Observable<Descriptor[]>
+  chips = []
   // Optimize the autocomplete performance
   SHORT_LENGTH = 3
   MEDIUM_LENGTH = 15
   shortDescriptors: Descriptor[] = []  // searchable string length less or equal than SHORT_LENGTH
   mediumDescriptors: Descriptor[] = []  // searchable string length greater than SHORT_LENGTH and less or equal than MEDIUM_LENGTH
   longDescriptors: Descriptor[] = []  // searchable string length greater than MEDIUM_LENGTH
-
-  // User usability
+  // Improve user usability
   inactiveServiceMessage = 'El servicio está temporalmente inactivo. Por favor, contacta por email con el administrador de esta aplicación web: alejandro.asensio@bsc.es'
   userConfirm: boolean
 
@@ -54,14 +57,14 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
+    this.options = this.api.allDescriptors
     // Separate the short, medium and long descriptors
     this.shortDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length <= this.SHORT_LENGTH)
     // tslint:disable-next-line: max-line-length
     this.mediumDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.SHORT_LENGTH && descriptor.termSpanish.length <= this.MEDIUM_LENGTH)
     this.longDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.MEDIUM_LENGTH)
-
     // Filter descriptors as the user types in the input field
-    this.filteredDescriptors = this.descriptorCtrl.valueChanges.pipe(
+    this.filteredOptions = this.autocompleteChipList.valueChanges.pipe(
       debounceTime(100),
       startWith(''),
       map((value: string | null) => value ? this._filter(value, 'termSpanish') : this.api.getPrecodedDescriptors())
@@ -73,7 +76,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
    */
   ngOnChanges() {
     // Update the chips list each time a different doc is selected
-    this.descriptors = this.api.allDescriptors.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
+    this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.termSpanish))
   }
 
   /**
@@ -85,7 +88,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
     // If numeric, find the exact decsCode match
     if (!isNaN(Number(input))) {
-      return this.api.allDescriptors.filter(descriptor => descriptor.decsCode === input)
+      return this.api.allDescriptors.filter(descriptor => descriptor.decsCode === input && !this.chips.includes(descriptor))
     }
 
     // Normalize the lower-cased input
@@ -102,15 +105,16 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     }
 
     // Avoid showing the descriptors that are already added to doc
-    subsetToFilter = subsetToFilter.filter(descriptor => !this.descriptors.some(d => d.decsCode === descriptor.decsCode))
+    subsetToFilter = subsetToFilter.filter(descriptor => !this.chips.some(chip => chip.decsCode === descriptor.decsCode))
 
     // Filter the descriptors by some properties
     const filtered = subsetToFilter.filter(descriptor =>
       // TODO REFACTOR: Hardcoded properties and very long multiline condition
-      _normalize(descriptor.termSpanish.toLowerCase()).includes(input) ||
-      _normalize(descriptor.termEnglish.toLowerCase()).includes(input) ||
-      _normalize(descriptor.meshCode.toLowerCase()).includes(input) ||
-      _normalize(descriptor.synonyms.toLowerCase()).includes(input)
+      _normalize(descriptor.termSpanish.toLowerCase()).includes(input)
+      || _normalize(descriptor.termEnglish.toLowerCase()).includes(input)
+      || _normalize(descriptor.meshCode.toLowerCase()).includes(input)
+      || _normalize(descriptor.synonyms.toLowerCase()).includes(input)
+      // || _normalize(descriptor.definitionSpanish.toLowerCase()).includes(input)
     )
 
     // Return the sorted results by matching importance
@@ -121,22 +125,14 @@ export class DescriptorsComponent implements OnInit, OnChanges {
    * When selecting a descriptor from the autocomplete displayed options (by clicking over it or pressing ENTER when it's highligthed),
    * add a descriptor to the visual list of chips and make a request through the app service to send it to backend.
    */
-  selected(event: MatAutocompleteSelectedEvent): void {
+  addChip(event: MatAutocompleteSelectedEvent): void {
     // Get the selected descriptor from the event
     const selectedDescriptor: Descriptor = event.option.value
-
-    if (this.descriptors.includes(selectedDescriptor)) {
-      this.snackBar.open(`Atención: El descriptor precodificado ${selectedDescriptor.termSpanish} (${selectedDescriptor.decsCode}) ya está añadido.`, 'ENTENDIDO')
-      return
-    }
-
     // Add the descriptor to the chips list
-    this.descriptors.push(selectedDescriptor)
-
+    this.chips.push(selectedDescriptor)
     // Clear the typed text from the input field
-    this.descriptorInput.nativeElement.value = ''
-    this.descriptorCtrl.setValue('')
-
+    this.chipInput.nativeElement.value = ''
+    this.autocompleteChipList.setValue('')
     // Add the clicked chip descriptor to database
     const descriptorToAdd = {
       decsCode: selectedDescriptor.decsCode,
@@ -151,24 +147,21 @@ export class DescriptorsComponent implements OnInit, OnChanges {
         }
       }
     )
-
-    // Clear the input value
   }
 
   /**
    * When clicking over the cross ('x') icon inside a descriptor chip or pressing delete key when chip is selected,
    * remove the chip from the visual list and make a request through the app service to send it to backend.
    */
-  remove(descriptor: Descriptor): void {
+  removeChip(chip: Descriptor): void {
     // Remove chip from input field
-    const index = this.descriptors.indexOf(descriptor)
+    const index = this.chips.indexOf(chip)
     if (index >= 0) {
-      this.descriptors.splice(index, 1)
+      this.chips.splice(index, 1)
     }
-
     // Remove the clicked chip descriptor from database
     const descriptorToRemove = {
-      decsCode: descriptor.decsCode,
+      decsCode: chip.decsCode,
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id
     }
@@ -179,15 +172,13 @@ export class DescriptorsComponent implements OnInit, OnChanges {
         }
       }
     )
-
     // Visual information to the user
-    const snackBarRef = this.snackBar.open(`DeCS borrado: ${descriptor.termSpanish} (${descriptor.decsCode})`, 'DESHACER',
+    const snackBarRef = this.snackBar.open(`DeCS borrado: ${chip.termSpanish} (${chip.decsCode})`, 'DESHACER',
       { panelClass: 'success-dialog' }
     )
-
     // If the action button is clicked, re-add the recently removed descriptor
     snackBarRef.onAction().subscribe(() => {
-      this.descriptors.push(descriptor)
+      this.chips.push(chip)
       this.api.addDescriptor(descriptorToRemove).subscribe()
     })
   }
@@ -195,17 +186,99 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   /**
    * Open a confirmation dialog to confirm the removal of a descriptor from a document.
    */
-  openConfirmDialog(descriptor: Descriptor): void {
+  openConfirmDialog(chip: Descriptor): void {
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '350px',
       data: {
         title: '¿Quieres borrar este descriptor?',
-        content: `${descriptor.termSpanish} (${descriptor.decsCode})`,
+        content: `${chip.termSpanish} (${chip.decsCode})`,
         no: 'Cancelar',
         yes: 'Borrar'
       }
     })
-    dialogRef.afterClosed().subscribe(result => result ? this.remove(descriptor) : null)
+    dialogRef.afterClosed().subscribe(result => result ? this.removeChip(chip) : null)
   }
+
+
+
+
+
+
+  // =========================================================================================
+  // @Input() doc: Doc
+
+  // // Set up reactive formcontrol
+  // autocompleteChipList: FormControl = new FormControl()
+  // // Set up values to use with Chips
+  // visible = true
+  // selectable = true
+  // removable = true
+  // addOnBlur = true
+  // // Set up Options Array
+  // // options = [
+  // //   { name: 'Lemon' },
+  // //   { name: 'Lime' },
+  // //   { name: 'Apple' },
+  // // ]
+  // options: Descriptor[]
+  // // Define filteredOptins Array and Chips Array
+  // filteredOptions = []
+  // // filteredOptions: Observable<Descriptor[]>
+  // chips = []
+
+  // constructor(
+  //   private api: ApiService,
+  //   private auth: AuthService,
+  //   public dialog: MatDialog,
+  //   private snackBar: MatSnackBar
+  // ) { }
+
+  // ngOnInit() {
+  //   // Set initial value of filteredOptions to all Options
+  //   this.options = this.api.allDescriptors
+  //   // this.filteredOptions = this.options
+  //   // Subscribe to listen for changes to AutoComplete input and run filter
+  //   this.autocompleteChipList.valueChanges.subscribe(val => {
+  //     this.filterOptions(val)
+  //   })
+  //   // this.filteredOptions = this.autocompleteChipList.valueChanges.pipe(
+  //   //   debounceTime(100),
+  //   //   startWith(''),
+  //   //   // map((value: string | null) => value ? this._filter(value, 'termSpanish') : this.api.getPrecodedDescriptors())
+  //   //   map((value: string | null) => value ? this.filterOptions(value) : this.api.getPrecodedDescriptors())
+  //   // )
+  // }
+
+  // filterOptions(text: string) {
+  //   // Set filteredOptions array to filtered options
+  //   this.filteredOptions = this.options
+  //     .filter(obj => obj.termSpanish.toLowerCase().indexOf(text.toString().toLowerCase()) === 0)
+  // }
+
+  // addChip(event: MatAutocompleteSelectedEvent, input: any): void {
+  //   // Define selection constant
+  //   const selection = event.option.value
+  //   // Add chip for selected option
+  //   this.chips.push(selection)
+  //   // Remove selected option from available options and set filteredOptions
+  //   this.options = this.options.filter(obj => obj.termSpanish !== selection.termSpanish)
+  //   this.filteredOptions = this.options
+  //   // Reset the autocomplete input text value
+  //   if (input) {
+  //     input.value = ''
+  //   }
+  // }
+
+  // removeChip(chip: any): void {
+  //   // Find key of object in array
+  //   const index = this.chips.indexOf(chip)
+  //   // If key exists
+  //   if (index >= 0) {
+  //     // Remove key from chips array
+  //     this.chips.splice(index, 1)
+  //     // Add key to options array
+  //     this.options.push(chip)
+  //   }
+  // }
 
 }

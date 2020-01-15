@@ -1,20 +1,20 @@
 <mat-form-field appearance="outline" class="w-100">
   <mat-label>Descriptores de Ciencias de la Salud (DeCS)</mat-label>
-  <mat-chip-list #chipList multiple="true" aria-label="Lista de descriptores">
-    <mat-chip *ngFor="let descriptor of descriptors" #chip="matChip" [color]="false ? 'accent' : 'primary'"
-      selectable="true" removable="true" (removed)="openConfirmDialog(descriptor)" (click)="chip.toggleSelected()">
-      {{ descriptor?.termSpanish }} ({{ descriptor?.decsCode }})
+  <mat-chip-list #chipList multiple="true" [selectable]="selectable" autofilled>
+    <mat-chip *ngFor="let chip of chips" #matChip="matChip" [color]="color" selected [removable]="removable"
+      (removed)="openConfirmDialog(chip)" (click)="matChip.toggleSelected()">
+      {{ chip.termSpanish }} ({{ chip.decsCode }})
       <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
-    <input placeholder="Escribe el término o el código..." #descriptorInput [formControl]="descriptorCtrl" [matAutocomplete]="auto"
-      matAutocompletePosition="below" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-      [matChipInputAddOnBlur]="addOnBlur">
+    <input matInput placeholder="Escribe el término o el código..." #chipInput [formControl]="autocompleteChipList"
+      [matAutocomplete]="auto" matAutocompletePosition="below" [matChipInputFor]="chipList"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur">
   </mat-chip-list>
-  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="selected($event)">
-    <mat-option *ngFor="let descriptor of filteredDescriptors | async" [value]="descriptor">
-      <span [innerHTML]="descriptor.termSpanish | highlight: descriptorCtrl.value"></span>
-      (<span [innerHTML]="descriptor.decsCode | highlight: descriptorCtrl.value"></span>)
-      <span [innerHTML]="descriptor.definitionSpanish" class="text-muted"></span>
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addChip($event, chipInput)" autoActiveFirstOption>
+    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+      <span [innerHTML]="option.termSpanish | highlight: autocompleteChipList.value"></span>
+      (<span [innerHTML]="option.decsCode | highlight: autocompleteChipList.value"></span>)
+      <span [innerHTML]="option.definitionSpanish" class="text-muted"></span>
     </mat-option>
   </mat-autocomplete>
   <mat-hint>
@@ -28,3 +28,21 @@
     </ul>
   </mat-hint>
 </mat-form-field>
+
+<!-- <form class="example-form">
+	<mat-form-field class="w-100">
+		<mat-chip-list #chipList>
+			<mat-chip *ngFor="let chip of chips" [selectable]="selectable" [removable]="removable" (remove)="removeChip(chip)">
+				{{chip.termSpanish}}
+				<mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+			</mat-chip>
+			<input placeholder="Select option..." [matChipInputFor]="chipList" [matAutocomplete]="auto" [matChipInputAddOnBlur]="addOnBlur"
+			 matInput [formControl]="autocompleteChipList" #chipInput/>
+		</mat-chip-list>
+		<mat-autocomplete #auto="matAutocomplete" (optionSelected)="addChip($event, chipInput)" autoActiveFirstOption>
+			<mat-option *ngFor="let option of filteredOptions" [value]="option">
+				{{ option.termSpanish }}
+			</mat-option>
+		</mat-autocomplete>
+	</mat-form-field>
+</form> -->
