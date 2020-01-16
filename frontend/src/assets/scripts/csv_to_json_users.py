@@ -10,18 +10,13 @@ jsonFilePath = '../uploads/users.json'
 with open(csvFilePath) as csvFile:
     csvReader = csv.DictReader(csvFile)
     users = [csvRow for csvRow in csvReader]
+    # Build a unique hash for the password
     for user in users:
-        # Make a unique hash taking the user email string
-        hash_object = hashlib.md5(user.get('email').encode())
-
-        if user.get('id').startswith('G'):
-            password = 'guest'
-        elif user.get('id').startswith('T'):
-            password = 'tester'
+        if user['role'] == 'superannotator':
+            base = user['fullname']
         else:
-            password = hash_object.hexdigest()
-
-        user['password'] = password
+            base = user['email']
+        user['password'] = hashlib.md5(base.encode()).hexdigest()
 
 # Write data to a JSON file
 with open(jsonFilePath, 'w') as jsonFile:

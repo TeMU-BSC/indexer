@@ -1,19 +1,19 @@
-id,fullname,email
-A1,Angélica Novillo,anovillo74@gmail.com
-A2,Francisca Valero,franciscavalero@hotmail.com
-A3,Mónica Aldea,monicaldea@hotmail.com
-A4,Fabiola Triviño Güiza,f.guiza@ntgs.es
-A6,Carlos Hortal Muñoz,carloshm1980@gmail.com
-A7,Luis Quevedo,luisquevedo@educatiosalud.com
-A12,Carolina Suárez Medina,caritosuarezm@gmail.com
-A15,Leticia M. Cuellar-Pompa,lcuellarpompa@gmail.com
-G1,Elena Primo,eprimo@isciii.es
-G2,Cristina Bojo,cbojo@isciii.es
-T1,Usuario Tutorial,tutorial@ejemplo.es
-T2,Alejandro Asensio,alejandro.asensio@bsc.es
-T3,Aitor González,aitor.gonzalez@bsc.es
-T4,Antonio Miranda,antonio.miranda@bsc.es
-T5,Marta Villegas,marta.villegas@bsc.es
-T6,Martin Krallinger,martin.krallinger@bsc.es
-T7,Marvin Agüero,marvin.aguero@bsc.es
-T8,Jordi Armengol,jordi.armengol@bsc.es
+id,fullname,email,role
+A1,Angélica Novillo,anovillo74@gmail.com,annotator
+A2,Francisca Valero,franciscavalero@hotmail.com,annotator
+A3,Mónica Aldea,monicaldea@hotmail.com,annotator
+A4,Fabiola Triviño Güiza,f.guiza@ntgs.es,annotator
+A6,Carlos Hortal Muñoz,carloshm1980@gmail.com,annotator
+A7,Luis Quevedo,luisquevedo@educatiosalud.com,annotator
+A12,Carolina Suárez Medina,caritosuarezm@gmail.com,annotator
+S4,Fabiola Triviño Güiza,f.guiza@ntgs.es,superannotator
+G1,Elena Primo,eprimo@isciii.es,guest
+G2,Cristina Bojo,cbojo@isciii.es,guest
+T0,Usuario Tutorial,tutorial@ejemplo.es,tester
+T1,Martin Krallinger,martin.krallinger@bsc.es,tester
+T2,Marta Villegas,marta.villegas@bsc.es,tester
+T3,Aitor González,aitor.gonzalez@bsc.es,tester
+T4,Jordi Armengol,jordi.armengol@bsc.es,tester
+T5,Alejandro Asensio,alejandro.asensio@bsc.es,tester
+T6,Antonio Miranda,antonio.miranda@bsc.es,tester
+T7,Marvin Agüero,marvin.aguero@bsc.es,tester

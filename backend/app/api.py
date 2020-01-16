@@ -67,16 +67,17 @@ def register_many_users():
     '''Register many users.'''
     users = request.json
 
-    # Encrypt all the passwords
-    users_with_excrypted_passwords = []
-    for user in users:
-        user['password'] = bcrypt.generate_password_hash(
-            user['password']).decode('utf-8')
-        users_with_excrypted_passwords.append(user)
+    # [Encrypt approach]
+    # users_with_excrypted_passwords = []
+    # for user in users:
+    #     user['password'] = bcrypt.generate_password_hash(user['password']).decode('utf-8')
+    #     users_with_excrypted_passwords.append(user)
 
     # Try to insert many new users, except BulkWriteError occurs.
     try:
-        result = mongo.db.users.insert_many(users_with_excrypted_passwords)
+        # result = mongo.db.users.insert_many(users_with_excrypted_passwords)
+        result = mongo.db.users.insert_many(users)
+        # result = mongo.db.users.update_many(users, {'$set': users}, upsert=True)
         success = result.acknowledged
         error_message = None
         registered_users_cursor = mongo.db.users.find(
@@ -91,25 +92,33 @@ def register_many_users():
 
 @app.route('/user/login', methods=['POST'])
 def login():
-    '''Log in an existing user.'''
+    '''Check if the given email and password match the ones for that user in database.'''
     user = request.json
     found_user = mongo.db.users.find_one({'email': user['email']}, {'_id': 0})
 
+    result = {'invalidCredentials': 'No user found'}
     if found_user:
-        if bcrypt.check_password_hash(found_user['password'], user['password']):
-            # access_token = create_access_token(identity={
-            #     'id': str(found_user['id']),
-            #     'name': found_user['name'],
-            #     'email': found_user['email'],
-            #     'registered': found_user['_id'].generation_time.timestamp()
-            # })
-            # access_token = create_access_token(identity=dict(found_user))
-            # result = jsonify({'token': access_token})
+        # [Encrypt approach]
+        # if bcrypt.check_password_hash(found_user['password'], user['password']):
+        #     # [Token approach]    
+        #     access_token = create_access_token(identity=dict(found_user))
+        #     result = jsonify({'token': access_token})
+        #     # Plain user approach
+        #     result = {'user': found_user}
+        # else:
+        #     result['invalidCredentials'] = 'Invalid password'
+
+        # More than one user with the same email with different passwords (superannotators) approach
+        # for found_user in found_users:
+        #     if user['password'] == found_user['password']:
+        #         result = {'user': found_user}
+        #     else:
+        #         result['invalidCredentials'] = 'Invalid password'
+
+        if found_user['password'] == user['password']:
             result = {'user': found_user}
         else:
-            result = {'invalidCredentials': 'Invalid password'}
-    else:
-        result = {'invalidCredentials': 'No user found'}
+            result['invalidCredentials'] = 'Invalid password'
     return jsonify(result)
 
 

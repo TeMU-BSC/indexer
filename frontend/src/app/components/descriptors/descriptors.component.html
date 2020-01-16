@@ -1,7 +1,7 @@
 <mat-form-field appearance="outline" class="w-100">
   <mat-label>Descriptores de Ciencias de la Salud (DeCS)</mat-label>
   <mat-chip-list #chipList multiple="true" [selectable]="selectable" autofilled>
-    <mat-chip *ngFor="let chip of chips" #matChip="matChip" [color]="color" selected [removable]="removable"
+    <mat-chip *ngFor="let chip of chips" #matChip="matChip" [color]="chip.color" selected [removable]="removable"
       (removed)="openConfirmDialog(chip)" (click)="matChip.toggleSelected()">
       {{ chip.termSpanish }} ({{ chip.decsCode }})
       <mat-icon matChipRemove>cancel</mat-icon>

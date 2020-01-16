@@ -76,7 +76,9 @@ export class DescriptorsComponent implements OnInit, OnChanges {
    */
   ngOnChanges() {
     // Update the chips list each time a different doc is selected
-    this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.termSpanish))
+    this.options = this.api.allDescriptors
+    this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
+    // this.chips.forEach(chip => chip.color = 'accent')
   }
 
   /**
@@ -88,7 +90,9 @@ export class DescriptorsComponent implements OnInit, OnChanges {
 
     // If numeric, find the exact decsCode match
     if (!isNaN(Number(input))) {
-      return this.api.allDescriptors.filter(descriptor => descriptor.decsCode === input && !this.chips.includes(descriptor))
+      const decsFiltered = this.api.allDescriptors
+        .filter(descriptor => descriptor.decsCode.startsWith(input) && !this.chips.includes(descriptor))
+      return _sort(decsFiltered, input, 'decsCode')
     }
 
     // Normalize the lower-cased input

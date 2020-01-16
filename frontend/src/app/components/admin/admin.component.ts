@@ -47,9 +47,9 @@ export class AdminComponent {
   ]
 
   constructor(
+    public api: ApiService,
     public auth: AuthService,
-    private snackBar: MatSnackBar,
-    public api: ApiService
+    private snackBar: MatSnackBar
   ) { }
 
   /**

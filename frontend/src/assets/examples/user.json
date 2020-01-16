@@ -2,5 +2,6 @@
   "id": "usuario1",
   "fullname": "Nombre Apellido",
   "email": "nombre.apellido@ejemplo.com",
+  "role": "annotator",
   "password": "contraseña-del-usuario1"
 }

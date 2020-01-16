@@ -1,1 +1,128 @@
-[{"id": "A1", "fullname": "Angélica Novillo", "email": "anovillo74@gmail.com", "password": "7189ba122e1efcef1a0497afd8403299"}, {"id": "A2", "fullname": "Francisca Valero", "email": "franciscavalero@hotmail.com", "password": "cbfc45a13bf0c22644b2621839db1353"}, {"id": "A3", "fullname": "Mónica Aldea", "email": "monicaldea@hotmail.com", "password": "5f94456bd341f05d015802f9d6655874"}, {"id": "A4", "fullname": "Fabiola Triviño Güiza", "email": "f.guiza@ntgs.es", "password": "6179a8a3becf971cf37f5900b91ad681"}, {"id": "A6", "fullname": "Carlos Hortal Muñoz", "email": "carloshm1980@gmail.com", "password": "57bc56ea43e9eb17cd369449ff65a962"}, {"id": "A7", "fullname": "Luis Quevedo", "email": "luisquevedo@educatiosalud.com", "password": "622140731b19fc85f5ee5ebb40e07cb7"}, {"id": "A12", "fullname": "Carolina Suárez Medina", "email": "caritosuarezm@gmail.com", "password": "7ce7359afe39cfe9a36e18dbe40dae4d"}, {"id": "A15", "fullname": "Leticia M. Cuellar-Pompa", "email": "lcuellarpompa@gmail.com", "password": "2dcbf0b3ac53ae8f4566ee880ed6d0c2"}, {"id": "G1", "fullname": "Elena Primo", "email": "eprimo@isciii.es", "password": "guest"}, {"id": "G2", "fullname": "Cristina Bojo", "email": "cbojo@isciii.es", "password": "guest"}, {"id": "T1", "fullname": "Usuario Tutorial", "email": "tutorial@ejemplo.es", "password": "tester"}, {"id": "T2", "fullname": "Alejandro Asensio", "email": "alejandro.asensio@bsc.es", "password": "tester"}, {"id": "T3", "fullname": "Aitor González", "email": "aitor.gonzalez@bsc.es", "password": "tester"}, {"id": "T4", "fullname": "Antonio Miranda", "email": "antonio.miranda@bsc.es", "password": "tester"}, {"id": "T5", "fullname": "Marta Villegas", "email": "marta.villegas@bsc.es", "password": "tester"}, {"id": "T6", "fullname": "Martin Krallinger", "email": "martin.krallinger@bsc.es", "password": "tester"}, {"id": "T7", "fullname": "Marvin Agüero", "email": "marvin.aguero@bsc.es", "password": "tester"}, {"id": "T8", "fullname": "Jordi Armengol", "email": "jordi.armengol@bsc.es", "password": "tester"}]
+[
+    {
+        "id": "A1",
+        "fullname": "Angélica Novillo",
+        "email": "anovillo74@gmail.com",
+        "role": "annotator",
+        "password": "7189ba122e1efcef1a0497afd8403299"
+    },
+    {
+        "id": "A2",
+        "fullname": "Francisca Valero",
+        "email": "franciscavalero@hotmail.com",
+        "role": "annotator",
+        "password": "cbfc45a13bf0c22644b2621839db1353"
+    },
+    {
+        "id": "A3",
+        "fullname": "Mónica Aldea",
+        "email": "monicaldea@hotmail.com",
+        "role": "annotator",
+        "password": "5f94456bd341f05d015802f9d6655874"
+    },
+    {
+        "id": "A4",
+        "fullname": "Fabiola Triviño Güiza",
+        "email": "f.guiza@ntgs.es",
+        "role": "annotator",
+        "password": "6179a8a3becf971cf37f5900b91ad681"
+    },
+    {
+        "id": "A6",
+        "fullname": "Carlos Hortal Muñoz",
+        "email": "carloshm1980@gmail.com",
+        "role": "annotator",
+        "password": "57bc56ea43e9eb17cd369449ff65a962"
+    },
+    {
+        "id": "A7",
+        "fullname": "Luis Quevedo",
+        "email": "luisquevedo@educatiosalud.com",
+        "role": "annotator",
+        "password": "622140731b19fc85f5ee5ebb40e07cb7"
+    },
+    {
+        "id": "A12",
+        "fullname": "Carolina Suárez Medina",
+        "email": "caritosuarezm@gmail.com",
+        "role": "annotator",
+        "password": "7ce7359afe39cfe9a36e18dbe40dae4d"
+    },
+    {
+        "id": "S4",
+        "fullname": "Fabiola Triviño Güiza",
+        "email": "f.guiza@ntgs.es",
+        "role": "superannotator",
+        "password": "e689cd614ef90929900fdd41a92447b1"
+    },
+    {
+        "id": "G1",
+        "fullname": "Elena Primo",
+        "email": "eprimo@isciii.es",
+        "role": "guest",
+        "password": "ed5458cca161c8cff8e22f292a59f04a"
+    },
+    {
+        "id": "G2",
+        "fullname": "Cristina Bojo",
+        "email": "cbojo@isciii.es",
+        "role": "guest",
+        "password": "e96eddfb2586139e453536d332ac6bca"
+    },
+    {
+        "id": "T0",
+        "fullname": "Usuario Tutorial",
+        "email": "tutorial@ejemplo.es",
+        "role": "tester",
+        "password": "a4062dfbb3fa0434b14371f9d53178be"
+    },
+    {
+        "id": "T1",
+        "fullname": "Martin Krallinger",
+        "email": "martin.krallinger@bsc.es",
+        "role": "tester",
+        "password": "aa1888666a4c79fdf730c8df36b673f9"
+    },
+    {
+        "id": "T2",
+        "fullname": "Marta Villegas",
+        "email": "marta.villegas@bsc.es",
+        "role": "tester",
+        "password": "7a350649ab7261dcbcfb3df40b54d3ab"
+    },
+    {
+        "id": "T3",
+        "fullname": "Aitor González",
+        "email": "aitor.gonzalez@bsc.es",
+        "role": "tester",
+        "password": "0be07e72da329e70fc33465944624e67"
+    },
+    {
+        "id": "T4",
+        "fullname": "Jordi Armengol",
+        "email": "jordi.armengol@bsc.es",
+        "role": "tester",
+        "password": "b3ed09f51017ff994fd6f7f346860a34"
+    },
+    {
+        "id": "T5",
+        "fullname": "Alejandro Asensio",
+        "email": "alejandro.asensio@bsc.es",
+        "role": "tester",
+        "password": "6e5fd98c642d32b720ff8582b795357c"
+    },
+    {
+        "id": "T6",
+        "fullname": "Antonio Miranda",
+        "email": "antonio.miranda@bsc.es",
+        "role": "tester",
+        "password": "f1e30aee2a99a6e30c02e42f1c0716ab"
+    },
+    {
+        "id": "T7",
+        "fullname": "Marvin Agüero",
+        "email": "marvin.aguero@bsc.es",
+        "role": "tester",
+        "password": "9b0371eb8e4a28cb55b835007a1fa881"
+    }
+]
