@@ -30,10 +30,11 @@ export class DescriptorsComponent implements OnChanges {
   autocompleteChipList = new FormControl()
   // Set up values to use with chips
   addOnBlur = true
-  color = 'primary'
   removable = true
   selectable = true
   separatorKeysCodes: number[] = [ENTER]
+  color = 'primary'
+  selected = true
   // Set up options array
   options: Descriptor[]
   precodedDescriptors: Descriptor[]
@@ -69,7 +70,7 @@ export class DescriptorsComponent implements OnChanges {
     // Update the chip list
     this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
     // Set the color for each chip
-    // this.chips.forEach(chip => chip.color = 'accent')
+    // this.chips.forEach(chip => {chip.color = 'primary', chip.selected = true})
     // Separate the short, medium and long descriptors
     this.shortDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length <= this.SHORT_LENGTH)
     // tslint:disable-next-line: max-line-length
