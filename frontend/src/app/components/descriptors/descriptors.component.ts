@@ -91,8 +91,8 @@ export class DescriptorsComponent implements OnChanges {
   _filter(input: string, sortingKey: string) {
     // Ignore the starting and ending whitespaces
     input = input.trim()
-    // If numeric, find the exact decsCode match
-    if (!isNaN(Number(input))) {
+    // If numeric, find the exact decsCode match (there are no decsCodes with 1 digit)
+    if (input.length >= 2 && !isNaN(Number(input))) {
       const decsFiltered = this.api.allDescriptors
         .filter(descriptor => descriptor.decsCode.startsWith(input) && !this.chips.includes(descriptor))
       return _sort(decsFiltered, input, 'decsCode')
