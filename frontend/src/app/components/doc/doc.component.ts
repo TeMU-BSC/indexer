@@ -26,14 +26,13 @@ export class DocComponent {
   onChange(event: MatSlideToggleChange): void {
     // Visualy toggle the completed property (boolean)
     this.doc.completed = event.checked
-
     // Make that change permanent into database
     const docToMark = {
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id,
       mode: this.api.revisionMode ? 'revision' : 'assignment'
     }
-    this.doc.completed ? this.api.addCompletedDoc(docToMark).subscribe() : this.api.removeCompletedDoc(docToMark).subscribe()
+    this.doc.completed ? this.api.addCompletion(docToMark).subscribe() : this.api.removeCompletion(docToMark).subscribe()
   }
 
 }

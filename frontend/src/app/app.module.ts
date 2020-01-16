@@ -1,63 +1,46 @@
-import { BrowserModule } from '@angular/platform-browser'
 import { NgModule } from '@angular/core'
-
-import { AppRoutingModule } from './app-routing.module'
-import { AppComponent } from './app.component'
+import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
-// Angular OAuth2
-// import { OAuthModule } from 'angular-oauth2-oidc'
-
+// Angular Routing
+import { AppRoutingModule } from './app-routing.module'
 // Angular Forms
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-
 // Angular HTTP
 import { HttpClientModule } from '@angular/common/http'
-
-// Angular Material
+// Angular Material Design Styling
 import { MaterialModule } from './material.module'
-
 // Angular Flex-Layout
 import { FlexLayoutModule } from '@angular/flex-layout'
-
-// Simple Material Table
+// Simple Material Table: https://www.npmjs.com/package/simplemattable
 import { SimplemattableModule } from 'simplemattable'
-
 // Own App Components
+import { AppComponent } from './app.component'
 import { HeaderComponent } from './components/header/header.component'
+import { FooterComponent } from './components/footer/footer.component'
+import { HomeComponent } from './components/home/home.component'
+import { AdminComponent } from './components/admin/admin.component'
 import { LoginComponent } from './components/login/login.component'
+import { DocsComponent } from './components/docs/docs.component'
 import { DocComponent } from './components/doc/doc.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
-import { HomeComponent } from './components/home/home.component'
-import { HomeOldComponent } from './components/home/home.old.component'
-import { HighlightPipe } from './pipes/highlight.pipe'
-import { ProfileComponent } from './components/profile/profile.component'
-import { AuthService } from './services/auth.service'
-import { AuthGuardService } from './services/auth-guard.service'
-import { RegisterComponent } from './components/register/register.component'
-import { DocsComponent } from './components/docs/docs.component'
-import { SlideToggleComponent } from './components/slide-toggle/slide-toggle.component'
-import { FooterComponent } from './components/footer/footer.component'
-import { AdminComponent } from './components/admin/admin.component'
 import { DialogComponent } from './components/dialog/dialog.component'
+import { HighlightPipe } from './pipes/highlight.pipe'
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
     HeaderComponent,
+    FooterComponent,
+    HomeComponent,
+    AdminComponent,
+    LoginComponent,
+    DocsComponent,
     DocComponent,
     DescriptorsComponent,
-    HomeComponent,
-    HomeOldComponent,
-    HighlightPipe,
-    ProfileComponent,
-    RegisterComponent,
-    DocsComponent,
-    SlideToggleComponent,
-    FooterComponent,
-    AdminComponent,
     DialogComponent,
+    HighlightPipe
   ],
   imports: [
     BrowserModule,
@@ -71,15 +54,10 @@ import { DialogComponent } from './components/dialog/dialog.component'
     SimplemattableModule
   ],
   entryComponents: [
-    DocComponent,
-    SlideToggleComponent,
     LoginComponent,
-    DialogComponent,
+    DialogComponent
   ],
-  providers: [
-    AuthService,
-    AuthGuardService
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -38,13 +38,12 @@ export class AuthService {
   public login(user: User): void {
     this.http.post(`${environment.apiUrl}/user/login`, user).subscribe(
       (response: ApiResponse) => {
-        if (response.user) {
-          this.user = response.user
-          localStorage.setItem(this.BROWSER_SESSION_KEY, JSON.stringify(this.user))
+        if (response.message) {
+          alert(response.message)
+          return
         }
-        if (response.invalidCredentials) {
-          alert(response.invalidCredentials)
-        }
+        this.user = response.user
+        localStorage.setItem(this.BROWSER_SESSION_KEY, JSON.stringify(this.user))
       },
       error => console.error(error),
       () => this.router.navigateByUrl('/docs')

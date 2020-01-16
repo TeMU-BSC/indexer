@@ -1,4 +1,4 @@
-import { COMMA, ENTER } from '@angular/cdk/keycodes'
+import { ENTER } from '@angular/cdk/keycodes'
 import { Component, ElementRef, ViewChild, Input, OnInit, OnChanges } from '@angular/core'
 import { FormControl } from '@angular/forms'
 import { Observable } from 'rxjs'
@@ -20,7 +20,7 @@ import { DialogComponent } from 'src/app/components/dialog/dialog.component'
   templateUrl: './descriptors.component.html',
   styleUrls: ['./descriptors.component.scss']
 })
-export class DescriptorsComponent implements OnInit, OnChanges {
+export class DescriptorsComponent implements OnChanges {
 
   @Input() doc: Doc
   @ViewChild('chipInput', { static: false }) chipInput: ElementRef<HTMLInputElement>
@@ -33,9 +33,10 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   color = 'primary'
   removable = true
   selectable = true
-  separatorKeysCodes: number[] = [ENTER, COMMA]
+  separatorKeysCodes: number[] = [ENTER]
   // Set up options array
   options: Descriptor[]
+  precodedDescriptors: Descriptor[]
   // Define filteredOptins Array and Chips Array
   filteredOptions: Observable<Descriptor[]>
   chips = []
@@ -54,10 +55,21 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     private auth: AuthService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar
-  ) { }
-
-  ngOnInit() {
+  ) {
+    // Init the options
     this.options = this.api.allDescriptors
+    // Init the precoded descriptors
+    this.precodedDescriptors = this.api.getPrecodedDescriptors()
+  }
+
+  /**
+   * This 'descriptors' component implements OnChanges method so it can react to parent changes on its @Input() 'doc' property.
+   */
+  ngOnChanges() {
+    // Update the chip list
+    this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
+    // Set the color for each chip
+    // this.chips.forEach(chip => chip.color = 'accent')
     // Separate the short, medium and long descriptors
     this.shortDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length <= this.SHORT_LENGTH)
     // tslint:disable-next-line: max-line-length
@@ -67,18 +79,10 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     this.filteredOptions = this.autocompleteChipList.valueChanges.pipe(
       debounceTime(100),
       startWith(''),
-      map((value: string | null) => value ? this._filter(value, 'termSpanish') : this.api.getPrecodedDescriptors())
+      map((value: string | null) => value
+        ? this._filter(value, 'termSpanish')
+        : this.precodedDescriptors.filter(d => !this.chips.includes(d)))
     )
-  }
-
-  /**
-   * This 'descriptors' component implements OnChanges method so it can react to parent changes on its @Input() 'doc' property.
-   */
-  ngOnChanges() {
-    // Update the chips list each time a different doc is selected
-    this.options = this.api.allDescriptors
-    this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
-    // this.chips.forEach(chip => chip.color = 'accent')
   }
 
   /**
@@ -87,17 +91,14 @@ export class DescriptorsComponent implements OnInit, OnChanges {
   _filter(input: string, sortingKey: string) {
     // Ignore the starting and ending whitespaces
     input = input.trim()
-
     // If numeric, find the exact decsCode match
     if (!isNaN(Number(input))) {
       const decsFiltered = this.api.allDescriptors
         .filter(descriptor => descriptor.decsCode.startsWith(input) && !this.chips.includes(descriptor))
       return _sort(decsFiltered, input, 'decsCode')
     }
-
     // Normalize the lower-cased input
     input = _normalize(input.toLowerCase())
-
     // Choose the according subset of descriptors
     let subsetToFilter: Descriptor[]
     if (input.length <= this.SHORT_LENGTH) {
@@ -107,10 +108,8 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     } else {
       subsetToFilter = this.longDescriptors
     }
-
     // Avoid showing the descriptors that are already added to doc
     subsetToFilter = subsetToFilter.filter(descriptor => !this.chips.some(chip => chip.decsCode === descriptor.decsCode))
-
     // Filter the descriptors by some properties
     const filtered = subsetToFilter.filter(descriptor =>
       // TODO REFACTOR: Hardcoded properties and very long multiline condition
@@ -120,7 +119,6 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       || _normalize(descriptor.synonyms.toLowerCase()).includes(input)
       // || _normalize(descriptor.definitionSpanish.toLowerCase()).includes(input)
     )
-
     // Return the sorted results by matching importance
     return _sort(filtered, input, sortingKey)
   }
@@ -143,8 +141,8 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id
     }
-    // this.api.addDescriptor(descriptorToAdd).subscribe()
-    this.api.addDescriptor(descriptorToAdd).subscribe(
+    // this.api.addAnnotation(descriptorToAdd).subscribe()
+    this.api.addAnnotation(descriptorToAdd).subscribe(
       response => {
         if (!response.success) {
           alert(this.inactiveServiceMessage)
@@ -169,7 +167,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id
     }
-    this.api.removeDescriptor(descriptorToRemove).subscribe(
+    this.api.removeAnnotation(descriptorToRemove).subscribe(
       response => {
         if (response.deletedCount !== 1) {
           alert(this.inactiveServiceMessage)
@@ -183,7 +181,7 @@ export class DescriptorsComponent implements OnInit, OnChanges {
     // If the action button is clicked, re-add the recently removed descriptor
     snackBarRef.onAction().subscribe(() => {
       this.chips.push(chip)
-      this.api.addDescriptor(descriptorToRemove).subscribe()
+      this.api.addAnnotation(descriptorToRemove).subscribe()
     })
   }
 

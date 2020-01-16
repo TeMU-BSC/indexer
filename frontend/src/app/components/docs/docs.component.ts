@@ -21,9 +21,10 @@ export class DocsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    // Init the docs array
     this.api.getAssignedDocs({ user: this.auth.getCurrentUser().id, mode: this.api.revisionMode ? 'revision' : 'assignment' })
       .subscribe(docs => this.docs = docs)
-
+    // Init the columns of the table
     this.columns = [
       new TableColumn<Doc, 'title'>('Título', 'title')
         .isHiddenXs(true)

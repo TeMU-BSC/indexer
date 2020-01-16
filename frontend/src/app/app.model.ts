@@ -33,9 +33,8 @@ export class User {
 
 export interface ApiResponse {
   success?: boolean
-  registeredUsers?: number
-  errorMessage?: string
-  deletedCount?: number
+  message?: string
   user?: User
-  invalidCredentials?: string
+  registeredUsers?: number
+  deletedCount?: number
 }

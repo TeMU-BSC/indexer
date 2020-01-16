@@ -16,7 +16,6 @@ import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.
 export class ApiService {
 
   public allDescriptors: Descriptor[]
-  public precodedDescriptors: Descriptor[]
   precodedDecsCodes: string[] = (PRECODED_DECS_CODES as any).default
   public revisionMode = false
 
@@ -24,6 +23,13 @@ export class ApiService {
     private http: HttpClient,
     private papa: Papa
   ) {
+    this.getAllDescriptors()
+  }
+
+  /**
+   * Get all descriptors from TSV file.
+   */
+  getAllDescriptors() {
     this.papa.parse('assets/sourcedata/DeCS.2019.both.v5.tsv', {
       download: true,
       header: true,
@@ -40,6 +46,17 @@ export class ApiService {
   getPrecodedDescriptors(): Descriptor[] {
     const precodedDescriptors = this.allDescriptors.filter(descriptor => this.precodedDecsCodes.includes(descriptor.decsCode))
     return _sortByOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
+
+    // let precodedDescriptors: Descriptor[]
+    // this.papa.parse('assets/sourcedata/DeCS.precoded.tsv', {
+    //   download: true,
+    //   header: true,
+    //   delimiter: '\t',
+    //   skipEmptyLines: true,
+    //   quoteChar: '',
+    //   complete: results => precodedDescriptors = results.data
+    // })
+    // return _sortByOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
   }
 
   /**
@@ -54,37 +71,38 @@ export class ApiService {
   }
 
   /**
-   * Send a new descriptor to add to the backend.
+   * Send a new annotation to add to the backend.
    */
-  addDescriptor(descriptor: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/descriptor/add`, descriptor)
+  addAnnotation(annotation: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation/add`, annotation)
   }
 
   /**
-   * Send an existing descriptor to remove to the backend.
+   * Send an existing annotation to remove to the backend.
    */
-  removeDescriptor(descriptor: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/descriptor/remove`, descriptor)
+  removeAnnotation(annotation: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation/remove`, annotation)
   }
 
   /**
    * Mark an doc as completed by the current user in database.
    */
-  addCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/document/completed`, doc)
+  addCompletion(completion: any): Observable<Doc> {
+    return this.http.post<Doc>(`${environment.apiUrl}/completion/add`, completion)
   }
 
   /**
    * Mark an doc as uncompleted by the current user in database.
    */
-  removeCompletedDoc(doc): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/document/pending`, doc)
+  removeCompletion(completion: any): Observable<Doc> {
+    return this.http.post<Doc>(`${environment.apiUrl}/completion/remove`, completion)
   }
 
+  /**
+   * Toggle between normal mode and revision mode.
+   */
   toggleMode() {
     this.revisionMode = !this.revisionMode
-    console.log(this.revisionMode)
-
   }
 
 }

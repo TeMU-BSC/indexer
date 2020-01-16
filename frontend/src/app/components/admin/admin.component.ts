@@ -89,7 +89,7 @@ export class AdminComponent {
         if (this.response.success) {
           this.snackBar.open(`Usuarios registrados: ${this.response.registeredUsers}`, 'OK')
         } else {
-          this.snackBar.open(`Error: ${this.response.errorMessage}`, 'REVISAR FICHERO')
+          this.snackBar.open(`Error: ${this.response.message}`, 'REVISAR FICHERO')
         }
       }
     )
