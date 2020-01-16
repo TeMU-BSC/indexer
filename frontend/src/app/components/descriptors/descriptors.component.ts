@@ -13,6 +13,7 @@ import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { _normalize, _sort } from 'src/app/utilities/functions'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
+import { MatChipList } from '@angular/material'
 
 
 @Component({
@@ -70,7 +71,7 @@ export class DescriptorsComponent implements OnChanges {
     // Update the chip list
     this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
     // Set the color for each chip
-    // this.chips.forEach(chip => {chip.color = 'primary', chip.selected = true})
+    this.chips.forEach(chip => {chip.color = 'primary'; chip.selected = true})
     // Separate the short, medium and long descriptors
     this.shortDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length <= this.SHORT_LENGTH)
     // tslint:disable-next-line: max-line-length
@@ -201,87 +202,5 @@ export class DescriptorsComponent implements OnChanges {
     })
     dialogRef.afterClosed().subscribe(result => result ? this.removeChip(chip) : null)
   }
-
-
-
-
-
-
-  // =========================================================================================
-  // @Input() doc: Doc
-
-  // // Set up reactive formcontrol
-  // autocompleteChipList: FormControl = new FormControl()
-  // // Set up values to use with Chips
-  // visible = true
-  // selectable = true
-  // removable = true
-  // addOnBlur = true
-  // // Set up Options Array
-  // // options = [
-  // //   { name: 'Lemon' },
-  // //   { name: 'Lime' },
-  // //   { name: 'Apple' },
-  // // ]
-  // options: Descriptor[]
-  // // Define filteredOptins Array and Chips Array
-  // filteredOptions = []
-  // // filteredOptions: Observable<Descriptor[]>
-  // chips = []
-
-  // constructor(
-  //   private api: ApiService,
-  //   private auth: AuthService,
-  //   public dialog: MatDialog,
-  //   private snackBar: MatSnackBar
-  // ) { }
-
-  // ngOnInit() {
-  //   // Set initial value of filteredOptions to all Options
-  //   this.options = this.api.allDescriptors
-  //   // this.filteredOptions = this.options
-  //   // Subscribe to listen for changes to AutoComplete input and run filter
-  //   this.autocompleteChipList.valueChanges.subscribe(val => {
-  //     this.filterOptions(val)
-  //   })
-  //   // this.filteredOptions = this.autocompleteChipList.valueChanges.pipe(
-  //   //   debounceTime(100),
-  //   //   startWith(''),
-  //   //   // map((value: string | null) => value ? this._filter(value, 'termSpanish') : this.api.getPrecodedDescriptors())
-  //   //   map((value: string | null) => value ? this.filterOptions(value) : this.api.getPrecodedDescriptors())
-  //   // )
-  // }
-
-  // filterOptions(text: string) {
-  //   // Set filteredOptions array to filtered options
-  //   this.filteredOptions = this.options
-  //     .filter(obj => obj.termSpanish.toLowerCase().indexOf(text.toString().toLowerCase()) === 0)
-  // }
-
-  // addChip(event: MatAutocompleteSelectedEvent, input: any): void {
-  //   // Define selection constant
-  //   const selection = event.option.value
-  //   // Add chip for selected option
-  //   this.chips.push(selection)
-  //   // Remove selected option from available options and set filteredOptions
-  //   this.options = this.options.filter(obj => obj.termSpanish !== selection.termSpanish)
-  //   this.filteredOptions = this.options
-  //   // Reset the autocomplete input text value
-  //   if (input) {
-  //     input.value = ''
-  //   }
-  // }
-
-  // removeChip(chip: any): void {
-  //   // Find key of object in array
-  //   const index = this.chips.indexOf(chip)
-  //   // If key exists
-  //   if (index >= 0) {
-  //     // Remove key from chips array
-  //     this.chips.splice(index, 1)
-  //     // Add key to options array
-  //     this.options.push(chip)
-  //   }
-  // }
 
 }

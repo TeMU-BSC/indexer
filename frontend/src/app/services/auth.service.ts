@@ -40,13 +40,12 @@ export class AuthService {
       (response: ApiResponse) => {
         if (response.message) {
           alert(response.message)
-          return
+        } else if (response.user) {
+          this.user = response.user
+          localStorage.setItem(this.BROWSER_SESSION_KEY, JSON.stringify(this.user))
+          this.router.navigateByUrl('/docs')
         }
-        this.user = response.user
-        localStorage.setItem(this.BROWSER_SESSION_KEY, JSON.stringify(this.user))
-      },
-      error => console.error(error),
-      () => this.router.navigateByUrl('/docs')
+      }
     )
   }
 

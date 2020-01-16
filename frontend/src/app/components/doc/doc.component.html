@@ -1,17 +1,18 @@
-<mat-card *ngIf="doc" class="example-card p-0">
-  <mat-card-header class="pt-3" style="background-color: #f2f2f2">
-    <mat-card-title>
-      {{ doc.title }} <span class="text-muted">({{ doc.id }})</span>
-    </mat-card-title>
-  </mat-card-header>
-  <mat-card-content class="p-3">
-    <p [innerHTML]="doc.abstract"></p>
-    <app-descriptors [doc]="doc"></app-descriptors>
-  </mat-card-content>
-  <mat-card-actions fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="end" class="p-4">
-    <mat-slide-toggle color="primary" [checked]="doc.completed" (change)="onChange($event)">
-      Marcar como indizado
-      <!-- Marcar como revisado -->
-    </mat-slide-toggle>
-  </mat-card-actions>
-</mat-card>
+<div fxLayout fxLayoutAlign="center">
+  <mat-card *ngIf="doc" class="p-0" fxFlex.gt-xs="80">
+    <mat-card-header class="pt-3" style="background-color: #f2f2f2">
+      <mat-card-title>
+        {{ doc.title }} <span class="text-muted">({{ doc.id }})</span>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="p-3">
+      <p [innerHTML]="doc.abstract"></p>
+      <app-descriptors [doc]="doc"></app-descriptors>
+    </mat-card-content>
+    <mat-card-actions fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="end" class="p-4">
+      <mat-slide-toggle color="primary" [checked]="doc.completed" (change)="onChange($event)">
+        Marcar como completado
+      </mat-slide-toggle>
+    </mat-card-actions>
+  </mat-card>
+</div>

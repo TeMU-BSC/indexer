@@ -39,10 +39,10 @@ export class DocsComponent implements OnInit {
         .withColFilter()
         .withTransform(data => data.length.toString())
         .withSortTransform(data => Number(data.length.toString())),
-      new TableColumn<Doc, 'completed'>('Estado indización', 'completed')
+      new TableColumn<Doc, 'completed'>('Estado', 'completed')
         .withWidth(Width.pct(10))
         .withColFilter()
-        .withTransform(data => data ? 'Indizado' : 'Pendiente')
+        .withTransform(data => data ? 'Completado' : 'Pendiente')
         .withNgStyle(data => ({ color: data ? 'green' : 'red' }))
     ]
   }

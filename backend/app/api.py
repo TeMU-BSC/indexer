@@ -53,7 +53,7 @@ def login():
     '''Check if the given email and password match the ones for that user in database.'''
     user = request.json
     # found_user = mongo.db.users.find_one({'email': user['email']}, {'_id': 0})
-    found_user = mongo.db.users.find_one({'email': user['email'], 'password': user['password']}, {'_id': 0})
+    found_user = mongo.db.users.find_one({'email': user['email'], 'password': user['password']}, {'_id': 0, 'password': 0})
     if found_user:
         # [Encrypt approach]
         # if bcrypt.check_password_hash(found_user['password'], user['password']):
@@ -61,10 +61,9 @@ def login():
         #     result = {'user': found_user}
         # else:
         #     result['error'] = 'Invalid password'
-
         result = {'user': found_user}
     else:
-        result = {'error': 'Invalid user and/or password'}
+        result = {'message': 'Invalid user and/or password'}
     return jsonify(result)
 
 
