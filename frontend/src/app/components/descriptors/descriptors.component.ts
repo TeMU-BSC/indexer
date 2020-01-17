@@ -45,12 +45,11 @@ export class DescriptorsComponent implements OnChanges {
   // Optimize the autocomplete performance
   SHORT_LENGTH = 3
   MEDIUM_LENGTH = 15
-  shortDescriptors: Descriptor[] = []  // searchable string length less or equal than SHORT_LENGTH
-  mediumDescriptors: Descriptor[] = []  // searchable string length greater than SHORT_LENGTH and less or equal than MEDIUM_LENGTH
-  longDescriptors: Descriptor[] = []  // searchable string length greater than MEDIUM_LENGTH
+  shortDescriptors: Descriptor[] = []
+  mediumDescriptors: Descriptor[] = []
+  longDescriptors: Descriptor[] = []
   // Improve user usability
   inactiveServiceMessage = 'El servicio está temporalmente inactivo. Por favor, contacta por email con el administrador de esta aplicación web: alejandro.asensio@bsc.es'
-  userConfirm: boolean
 
   constructor(
     private api: ApiService,
@@ -65,13 +64,13 @@ export class DescriptorsComponent implements OnChanges {
   }
 
   /**
-   * This 'descriptors' component implements OnChanges method so it can react to parent changes on its @Input() 'doc' property.
+   * This component implements OnChanges method so it can react to parent changes on its @Input() 'doc' property.
    */
   ngOnChanges() {
     // Update the chip list
     this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
     // Set the color for each chip
-    this.chips.forEach(chip => {chip.color = 'primary'; chip.selected = true})
+    this.chips.forEach(chip => { chip.color = 'primary'; chip.selected = true })
     // Separate the short, medium and long descriptors
     this.shortDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length <= this.SHORT_LENGTH)
     // tslint:disable-next-line: max-line-length
@@ -112,50 +111,45 @@ export class DescriptorsComponent implements OnChanges {
     }
     // Avoid showing the descriptors that are already added to doc
     subsetToFilter = subsetToFilter.filter(descriptor => !this.chips.some(chip => chip.decsCode === descriptor.decsCode))
-    // Filter the descriptors by some properties
+    // Filter the descriptors by some HARDCODED properties (#TODO refactor)
     const filtered = subsetToFilter.filter(descriptor =>
-      // TODO REFACTOR: Hardcoded properties and very long multiline condition
       _normalize(descriptor.termSpanish.toLowerCase()).includes(input)
       || _normalize(descriptor.termEnglish.toLowerCase()).includes(input)
       || _normalize(descriptor.meshCode.toLowerCase()).includes(input)
       || _normalize(descriptor.synonyms.toLowerCase()).includes(input)
-      // || _normalize(descriptor.definitionSpanish.toLowerCase()).includes(input)
     )
     // Return the sorted results by matching importance
     return _sort(filtered, input, sortingKey)
   }
 
   /**
-   * When selecting a descriptor from the autocomplete displayed options (by clicking over it or pressing ENTER when it's highligthed),
-   * add a descriptor to the visual list of chips and make a request through the app service to send it to backend.
+   * Add a chip to chip list and send it to the backend to add it to database.
    */
   addChip(event: MatAutocompleteSelectedEvent): void {
-    // Get the selected descriptor from the event
+    // Get the selected chip from the event
     const selectedDescriptor: Descriptor = event.option.value
-    // Add the descriptor to the chips list
+    // Add the chip to the chips list
     this.chips.push(selectedDescriptor)
     // Clear the typed text from the input field
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
-    // Add the clicked chip descriptor to database
-    const descriptorToAdd = {
+    // Build the object to sent to backend
+    const annotationToAdd = {
       decsCode: selectedDescriptor.decsCode,
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id
     }
-    // this.api.addAnnotation(descriptorToAdd).subscribe()
-    this.api.addAnnotation(descriptorToAdd).subscribe(
-      response => {
-        if (!response.success) {
-          alert(this.inactiveServiceMessage)
-        }
+    // Add the clicked chip descriptor to database
+    this.api.addAnnotation(annotationToAdd).subscribe(response => {
+      // Warn the user that service is temporarily unavailable
+      if (!response.success) {
+        alert(this.inactiveServiceMessage)
       }
-    )
+    })
   }
 
   /**
-   * When clicking over the cross ('x') icon inside a descriptor chip or pressing delete key when chip is selected,
-   * remove the chip from the visual list and make a request through the app service to send it to backend.
+   * Remove a chip from the chip list and send it to the backend to remove it from database.
    */
   removeChip(chip: Descriptor): void {
     // Remove chip from input field
@@ -163,13 +157,14 @@ export class DescriptorsComponent implements OnChanges {
     if (index >= 0) {
       this.chips.splice(index, 1)
     }
-    // Remove the clicked chip descriptor from database
-    const descriptorToRemove = {
+    // Build the object to sent to backend
+    const annotationToRemove = {
       decsCode: chip.decsCode,
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id
     }
-    this.api.removeAnnotation(descriptorToRemove).subscribe(
+    // Remove the annotation from database
+    this.api.removeAnnotation(annotationToRemove).subscribe(
       response => {
         if (response.deletedCount !== 1) {
           alert(this.inactiveServiceMessage)
@@ -180,21 +175,21 @@ export class DescriptorsComponent implements OnChanges {
     const snackBarRef = this.snackBar.open(`DeCS borrado: ${chip.termSpanish} (${chip.decsCode})`, 'DESHACER',
       { panelClass: 'success-dialog' }
     )
-    // If the action button is clicked, re-add the recently removed descriptor
+    // If the action button is clicked, re-add the recently removed annotation
     snackBarRef.onAction().subscribe(() => {
       this.chips.push(chip)
-      this.api.addAnnotation(descriptorToRemove).subscribe()
+      this.api.addAnnotation(annotationToRemove).subscribe()
     })
   }
 
   /**
-   * Open a confirmation dialog to confirm the removal of a descriptor from a document.
+   * Open a confirmation dialog to confirm the removal of a annotation from a document.
    */
   openConfirmDialog(chip: Descriptor): void {
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '350px',
       data: {
-        title: '¿Quieres borrar este descriptor?',
+        title: '¿Quieres borrar esta anotación?',
         content: `${chip.termSpanish} (${chip.decsCode})`,
         no: 'Cancelar',
         yes: 'Borrar'
