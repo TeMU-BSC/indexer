@@ -1,9 +1,8 @@
 /**
- * Remove typographic accents or tildes in the given string.
+ * Remove the spelling accents may contain the given text.
  * https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript
- * @param text string that may contain accents/tildes
  */
-export function _normalize(text: string): string {
+export function removeAccents(text: string): string {
   return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
@@ -21,7 +20,7 @@ export function _sortByOrder(items: any[], order: string[], key: string): any[] 
  * 2. Second: Items without starting match and with a match at any place of their key, then sort them by that key.
  * 3. Third: Items without matches of their key.
  */
-export function _sort(items: any[], input: string, key: string) {
+export function customSort(items: any[], input: string, key: string) {
   const start = items.filter(item => item[key].startsWith(input)).sort((a, b) => a[key].localeCompare(b[key]))
   const inner = items.filter(item => !item[key].startsWith(input) && item[key].includes(input)).sort((a, b) => a[key].localeCompare(b[key]))
   const others = items.filter(item => !item[key].includes(input)).sort((a, b) => a[key].localeCompare(b[key]))

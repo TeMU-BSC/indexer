@@ -11,9 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Doc, Descriptor } from 'src/app/app.model'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { _normalize, _sort } from 'src/app/utilities/functions'
+import { removeAccents, customSort } from 'src/app/utilities/functions'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
-import { MatChipList } from '@angular/material'
 
 
 @Component({
@@ -53,7 +52,7 @@ export class DescriptorsComponent implements OnChanges {
 
   constructor(
     private api: ApiService,
-    private auth: AuthService,
+    public auth: AuthService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
@@ -81,7 +80,7 @@ export class DescriptorsComponent implements OnChanges {
       debounceTime(100),
       startWith(''),
       map((value: string | null) => value
-        ? this._filter(value, 'termSpanish')
+        ? this.customFilter(value, 'termSpanish')
         : this.precodedDescriptors.filter(d => !this.chips.includes(d)))
     )
   }
@@ -89,17 +88,17 @@ export class DescriptorsComponent implements OnChanges {
   /**
    * Custom filter for the descriptors.
    */
-  _filter(input: string, sortingKey: string) {
+  customFilter(input: string, sortingKey: string) {
     // Ignore the starting and ending whitespaces
     input = input.trim()
     // If numeric, find the exact decsCode match (there are no decsCodes with 1 digit)
     if (input.length >= 2 && !isNaN(Number(input))) {
       const decsFiltered = this.api.allDescriptors
         .filter(descriptor => descriptor.decsCode.startsWith(input) && !this.chips.includes(descriptor))
-      return _sort(decsFiltered, input, 'decsCode')
+      return customSort(decsFiltered, input, 'decsCode')
     }
     // Normalize the lower-cased input
-    input = _normalize(input.toLowerCase())
+    input = removeAccents(input.toLowerCase())
     // Choose the according subset of descriptors
     let subsetToFilter: Descriptor[]
     if (input.length <= this.SHORT_LENGTH) {
@@ -113,13 +112,13 @@ export class DescriptorsComponent implements OnChanges {
     subsetToFilter = subsetToFilter.filter(descriptor => !this.chips.some(chip => chip.decsCode === descriptor.decsCode))
     // Filter the descriptors by some HARDCODED properties (#TODO refactor)
     const filtered = subsetToFilter.filter(descriptor =>
-      _normalize(descriptor.termSpanish.toLowerCase()).includes(input)
-      || _normalize(descriptor.termEnglish.toLowerCase()).includes(input)
-      || _normalize(descriptor.meshCode.toLowerCase()).includes(input)
-      || _normalize(descriptor.synonyms.toLowerCase()).includes(input)
+      removeAccents(descriptor.termSpanish.toLowerCase()).includes(input)
+      || removeAccents(descriptor.termEnglish.toLowerCase()).includes(input)
+      || removeAccents(descriptor.meshCode.toLowerCase()).includes(input)
+      || removeAccents(descriptor.synonyms.toLowerCase()).includes(input)
     )
     // Return the sorted results by matching importance
-    return _sort(filtered, input, sortingKey)
+    return customSort(filtered, input, sortingKey)
   }
 
   /**
@@ -172,9 +171,7 @@ export class DescriptorsComponent implements OnChanges {
       }
     )
     // Visual information to the user
-    const snackBarRef = this.snackBar.open(`DeCS borrado: ${chip.termSpanish} (${chip.decsCode})`, 'DESHACER',
-      { panelClass: 'success-dialog' }
-    )
+    const snackBarRef = this.snackBar.open(`DeCS borrado: ${chip.termSpanish} (${chip.decsCode})`, 'DESHACER')
     // If the action button is clicked, re-add the recently removed annotation
     snackBarRef.onAction().subscribe(() => {
       this.chips.push(chip)

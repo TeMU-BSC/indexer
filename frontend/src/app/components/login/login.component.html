@@ -2,7 +2,7 @@
 <div mat-dialog-content>
   <form fxLayout="column" fxLayoutAlign="space-around" class="p-3">
     <mat-form-field>
-      <input matInput placeholder="Email" [(ngModel)]="data.user.email" name="email" required>
+      <input matInput placeholder="Email" [(ngModel)]="data.user.email" name="email" required autofocus>
     </mat-form-field>
     <mat-form-field>
       <input matInput type="password" placeholder="Contraseña" [(ngModel)]="data.user.password" name="password" required>
