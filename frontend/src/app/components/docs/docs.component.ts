@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, AfterViewInit, ViewChild } from '@angular/core'
 import { Doc } from 'src/app/app.model'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
@@ -9,21 +9,16 @@ import { TableColumn, Width } from 'simplemattable'
   templateUrl: './docs.component.html',
   styleUrls: ['./docs.component.css']
 })
-export class DocsComponent implements OnInit {
+export class DocsComponent implements AfterViewInit {
 
-  docs: Doc[]
-  doc: Doc
   columns = []
+  data: Doc[]
+  @ViewChild('doc', { static: false }) doc: Doc
 
   constructor(
     private api: ApiService,
     public auth: AuthService
-  ) { }
-
-  ngOnInit() {
-    // Init the docs array
-    this.api.getAssignedDocs({ user: this.auth.getCurrentUser().id, mode: this.api.revisionMode ? 'revision' : 'assignment' })
-      .subscribe(docs => this.docs = docs)
+  ) {
     // Init the columns of the table
     this.columns = [
       new TableColumn<Doc, 'title'>('Título', 'title')
@@ -45,6 +40,11 @@ export class DocsComponent implements OnInit {
         .withTransform(data => data ? 'Completado' : 'Pendiente')
         .withNgStyle(data => ({ color: data ? 'green' : 'red' }))
     ]
+  }
+
+  ngAfterViewInit() {
+    // Init the docs array
+    this.api.getAssignedDocs({ user: this.auth.getCurrentUser().id }).subscribe(next => this.data = next)
   }
 
   selectDoc(event: Doc) {

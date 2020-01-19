@@ -1,5 +1,5 @@
 import { ENTER } from '@angular/cdk/keycodes'
-import { Component, ElementRef, ViewChild, Input, OnInit, OnChanges } from '@angular/core'
+import { Component, ElementRef, ViewChild, Input, OnChanges } from '@angular/core'
 import { FormControl } from '@angular/forms'
 import { Observable } from 'rxjs'
 import { map, startWith, debounceTime } from 'rxjs/operators'
