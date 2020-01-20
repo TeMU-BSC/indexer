@@ -6,10 +6,17 @@
     al español por nuestro traductor automático. En esta ocasión, para la indización solamente nos vamos a
     basar en el título y <i>abstract</i> (resumen) de cada articulo.
   </p>
-  <button *ngIf="auth.isLoggedIn()" mat-raised-button color="primary" routerLink="/docs">
-    Ver mis documentos asignados
-  </button>
-  <button *ngIf="!auth.isLoggedIn()" mat-raised-button color="accent" (click)=auth.openLoginDialog()>
-    Iniciar sesión
-  </button>
+  <div *ngIf="!auth.isLoggedIn()">
+    <button mat-raised-button color="accent" (click)=auth.openLoginDialog()>
+      Iniciar sesión
+    </button>
+  </div>
+  <div *ngIf="auth.isLoggedIn()" fxLayout="column" fxLayoutGap="2em">
+    <button *ngIf="['tester', 'annotator', 'superannotator'].includes(auth.getCurrentUser().role)" mat-raised-button color="primary" routerLink="/docs">
+      Ver mis documentos asignados
+    </button>
+    <button *ngIf="['tester', 'admin'].includes(auth.getCurrentUser().role)" mat-raised-button color="warn" routerLink="/admin">
+      Ir al panel de administración
+    </button>
+  </div>
 </div>

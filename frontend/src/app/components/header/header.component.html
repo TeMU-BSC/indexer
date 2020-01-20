@@ -1,5 +1,4 @@
 <mat-toolbar [color]="auth.getCurrentUser()?.role === 'superannotator' ? 'warn' : 'primary'">
-<!-- <mat-toolbar [color]="auth.getCurrentUser().role === 'superannotator' ? 'warn' : 'primary'"> -->
   <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="1em">
     <h1 routerLink="/">
       <button mat-button fxHide.gt-sm>PlanTL DeCS Indexer</button>
@@ -13,10 +12,6 @@
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <!-- <button mat-menu-item (click)="api.toggleMode()">
-          <mat-icon>invert_colors</mat-icon>
-          <span>Modo revisión</span>
-        </button> -->
         <a mat-menu-item style="text-decoration: none"
           href="http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start">
           <mat-icon style="color: #669966">open_in_new</mat-icon>

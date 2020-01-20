@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
 
 import { Papa } from 'ngx-papaparse'
@@ -15,9 +15,12 @@ import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.
 })
 export class ApiService {
 
+  options = {
+    headers: new HttpHeaders('Access-Control-Allow-Credentials'),
+    withCredentials: true
+  }
   public allDescriptors: Descriptor[]
   precodedDecsCodes: string[] = (PRECODED_DECS_CODES as any).default
-  public revisionMode = false
 
   constructor(
     private http: HttpClient,
@@ -46,28 +49,17 @@ export class ApiService {
   getPrecodedDescriptors(): Descriptor[] {
     const precodedDescriptors = this.allDescriptors.filter(descriptor => this.precodedDecsCodes.includes(descriptor.decsCode))
     return _sortByOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
-
-    // let precodedDescriptors: Descriptor[]
-    // this.papa.parse('assets/sourcedata/DeCS.precoded.tsv', {
-    //   download: true,
-    //   header: true,
-    //   delimiter: '\t',
-    //   skipEmptyLines: true,
-    //   quoteChar: '',
-    //   complete: results => precodedDescriptors = results.data
-    // })
-    // return _sortByOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
   }
 
   /**
    * Get the assigned docs to the current user.
    */
   getAssignedDocs(assignment: any): Observable<Doc[]> {
-    return this.http.post<Doc[]>(`${environment.apiUrl}/document/assigned`, assignment)
+    return this.http.post<Doc[]>(`${environment.apiUrl}/assignment/get`, assignment)
   }
 
   assignDocsToUsers(assignments: any[]): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/document/assign/many`, assignments)
+    return this.http.post<any>(`${environment.apiUrl}/assignment/add`, assignments)
   }
 
   /**
@@ -92,17 +84,10 @@ export class ApiService {
   }
 
   /**
-   * Mark an doc as uncompleted by the current user in database.
+   * Mark an doc as pending by the current user in database.
    */
   removeCompletion(completion: any): Observable<Doc> {
     return this.http.post<Doc>(`${environment.apiUrl}/completion/remove`, completion)
-  }
-
-  /**
-   * Toggle between normal mode and revision mode.
-   */
-  toggleMode() {
-    this.revisionMode = !this.revisionMode
   }
 
 }

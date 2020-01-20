@@ -1,13 +1,12 @@
 <h1 mat-dialog-title class="text-center">Inicio de sesión</h1>
-<div mat-dialog-content>
-  <form fxLayout="column" fxLayoutAlign="space-around" class="p-3">
-    <mat-form-field>
-      <input matInput placeholder="Email" [(ngModel)]="data.user.email" name="email" required autofocus>
-    </mat-form-field>
-    <mat-form-field>
-      <input matInput type="password" placeholder="Contraseña" [(ngModel)]="data.user.password" name="password" required>
-    </mat-form-field>
-    <button type="submit" mat-raised-button color="primary" class="w-100" [mat-dialog-close]="data"
-      cdkFocusInitial>Iniciar sesión</button>
-  </form>
-</div>
+<form mat-dialog-content fxLayout="column" fxLayoutAlign="space-around">
+  <mat-form-field>
+    <input matInput placeholder="Email" [(ngModel)]="data.user.email" name="email" required autofocus>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput type="password" placeholder="Contraseña" [(ngModel)]="data.user.password" name="password" required>
+  </mat-form-field>
+  <button type="submit" mat-raised-button color="accent" class="w-100" [mat-dialog-close]="data" cdkFocusInitial>
+    Iniciar sesión
+  </button>
+</form>

@@ -2,13 +2,11 @@
 
 // Import _variables.css to the component's sass file where you want to use it.
 @import "src/app/_variables.scss";
-// .selected {
-//   background-color: $accent;
-// }
 
 footer {
   background-color: $primary;
 }
+
 a {
   color: white;
 }

@@ -1,22 +1,20 @@
-// https://github.com/ArjunAranetaCodes/MoreCodes-Youtube/tree/master/angular-flask-mongodb-login-reg
-
 import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { Router } from '@angular/router'
+import { Router, CanActivate } from '@angular/router'
 import { MatDialog } from '@angular/material/dialog'
 import { Observable } from 'rxjs'
 
-import { User, ApiResponse } from 'src/app/app.model'
 import { environment } from 'src/environments/environment'
-import { LoginComponent } from '../components/login/login.component'
+import { User, ApiResponse } from 'src/app/app.model'
+import { LoginComponent } from 'src/app/components/login/login.component'
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService implements CanActivate {
 
-  BROWSER_SESSION_KEY = 'loggedUser'
+  USER_KEY = 'user'
   user: User
 
   constructor(
@@ -26,10 +24,21 @@ export class AuthService {
   ) { }
 
   /**
-   * Register many new users.
+   * Prevent loading certain pages without being logged in.
+   */
+  canActivate() {
+    if (!this.isLoggedIn()) {
+      this.openLoginDialog()
+      return false
+    }
+    return true
+  }
+
+  /**
+   * Register new users.
    */
   public registerMany(users: User[]): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/user/register/many`, users)
+    return this.http.post<any>(`${environment.apiUrl}/user/register`, users)
   }
 
   /**
@@ -42,33 +51,34 @@ export class AuthService {
           alert(response.message)
         } else if (response.user) {
           this.user = response.user
-          localStorage.setItem(this.BROWSER_SESSION_KEY, JSON.stringify(this.user))
-          this.router.navigateByUrl('/docs')
+          localStorage.setItem(this.USER_KEY, JSON.stringify(this.user))
         }
       }
     )
   }
 
   /**
-   * Log out the current logged user
+   * Log out the current user.
    */
   public logout(): void {
-    localStorage.removeItem(this.BROWSER_SESSION_KEY)
+    localStorage.removeItem(this.USER_KEY)
     this.router.navigateByUrl('/')
   }
 
   /**
-   * Check if any user is logged.
+   * Check if any user is logged in.
    */
   public isLoggedIn(): boolean {
-    return localStorage.getItem(this.BROWSER_SESSION_KEY) !== null
+    return localStorage.getItem(this.USER_KEY) !== null
   }
 
   /**
    * Get the data from the current logged user.
    */
   public getCurrentUser(): User {
-    return JSON.parse(localStorage.getItem(this.BROWSER_SESSION_KEY))
+    if (this.isLoggedIn()) {
+      return JSON.parse(localStorage.getItem(this.USER_KEY))
+    }
   }
 
   /**

@@ -108,8 +108,9 @@ export class DescriptorsComponent implements OnChanges {
     } else {
       subsetToFilter = this.longDescriptors
     }
-    // Avoid showing the descriptors that are already added to doc
-    subsetToFilter = subsetToFilter.filter(descriptor => !this.chips.some(chip => chip.decsCode === descriptor.decsCode))
+    // Avoid showing the descriptors that are already added to current doc
+    const alreadyAdded = (descriptor: Descriptor) => this.chips.some(chip => chip.decsCode === descriptor.decsCode)
+    subsetToFilter = subsetToFilter.filter(descriptor => !alreadyAdded(descriptor))
     // Filter the descriptors by some HARDCODED properties (#TODO refactor)
     const filtered = subsetToFilter.filter(descriptor =>
       removeAccents(descriptor.termSpanish.toLowerCase()).includes(input)

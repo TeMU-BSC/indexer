@@ -29,8 +29,7 @@ export class DocComponent {
     // Make that change permanent into database
     const docToMark = {
       user: this.auth.getCurrentUser().id,
-      doc: this.doc.id,
-      mode: this.api.revisionMode ? 'revision' : 'assignment'
+      doc: this.doc.id
     }
     this.doc.completed ? this.api.addCompletion(docToMark).subscribe() : this.api.removeCompletion(docToMark).subscribe()
   }

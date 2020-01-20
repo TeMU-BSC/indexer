@@ -10,9 +10,6 @@ import { ApiService } from 'src/app/services/api.service'
 })
 export class HeaderComponent {
 
-  constructor(
-    public auth: AuthService,
-    public api: ApiService
-  ) { }
+  constructor(public auth: AuthService) { }
 
 }
