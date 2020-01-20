@@ -29,22 +29,22 @@ def hello():
 
 
 @app.route('/user/register', methods=['POST'])
-def register_many_users():
+def register_users():
     '''Register many users.'''
-    # users = request.json
-    # # Try to insert many new users, except BulkWriteError occurs.
-    # try:
-    #     result = mongo.db.users.insert_many(users)
-    #     # result = mongo.db.users.update_many(users, {'$set': users}, upsert=True)
-    #     success = result.acknowledged
-    #     message = None
-    #     registered_users_cursor = mongo.db.users.find({'_id': {'$in': result.inserted_ids}}, {'_id': 0})
-    #     registered_users = len([user for user in registered_users_cursor])
-    # except BulkWriteError as error:
-    #     success = False
-    #     message = error.details['writeErrors'][0]['errmsg']
-    #     registered_users = 0
-    # return jsonify({'success': success, 'message': error_message, 'registeredUsers': registered_users})
+    users = request.json
+    # Try to insert many new users, except BulkWriteError occurs.
+    try:
+        result = mongo.db.users.insert_many(users)
+        # result = mongo.db.users.update_many(users, {'$set': users}, upsert=True)
+        success = result.acknowledged
+        message = None
+        registered_users_cursor = mongo.db.users.find({'_id': {'$in': result.inserted_ids}}, {'_id': 0})
+        registered_users = len([user for user in registered_users_cursor])
+    except BulkWriteError as error:
+        success = False
+        message = error.details['writeErrors'][0]['errmsg']
+        registered_users = 0
+    return jsonify({'success': success, 'message': error_message, 'registeredUsers': registered_users})
 
 
 @app.route('/user/login', methods=['POST'])
@@ -153,3 +153,37 @@ def mark_doc_as_pending():
         {'$pull': {'docs': completion['doc']}}
     )
     return jsonify({'success': result.acknowledged})
+
+
+@app.route('/results', methods=['GET'])
+def get_results():
+    '''Return the annotations per doc per user.'''
+    assignments = [assignment for assignment in mongo.db.assignments.find({}, {'_id': 0})]
+    annotations = [annotation for annotation in mongo.db.annotations.find({}, {'_id': 0})]
+    completions = [completion for completion in mongo.db.completions.find({}, {'_id': 0})]
+
+    completed_users = list()
+    completed_docs = list()
+    for completion in completions:
+        completed_users.append(completion.get('user'))
+        completed_docs.extend(completion.get('docs'))
+    unique_completed_docs = set(completed_docs)
+
+    annotations_per_user = list()
+    for completion in completions:
+        user = completion.get('user')
+        docs = list()
+        for completed_doc in completion.get('docs'):
+            decs_codes = [annotation.get('decsCode') for annotation in annotations if annotation.get('user') == user and annotation.get('doc') == completed_doc]
+            doc = {'doc': completed_doc, 'decsCodes': decs_codes}
+            docs.append(doc)
+        user_annotations = {'user': user, 'docs': docs}
+        annotations_per_user.append(user_annotations)
+    
+    result = {
+        'annotationsPerUser': annotations_per_user,
+        'totalCompletedDocCount': len(completed_docs),
+        'uniqueCompletedDocCount': len(unique_completed_docs),
+        'uniqueCompletedDocs': list(unique_completed_docs)
+    }
+    return jsonify(result)
