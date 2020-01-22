@@ -7,7 +7,7 @@ import { AppRoutingModule } from './app-routing.module'
 // Angular Forms
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 // Angular HTTP
-import { HttpClientModule } from '@angular/common/http'
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
 // Angular Material Design Styling
 import { MaterialModule } from './material.module'
 // Angular Flex-Layout
@@ -26,6 +26,7 @@ import { DocComponent } from './components/doc/doc.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
 import { DialogComponent } from './components/dialog/dialog.component'
 import { HighlightPipe } from './pipes/highlight.pipe'
+import { LoaderInterceptor } from './app.interceptor'
 
 
 @NgModule({
@@ -57,7 +58,9 @@ import { HighlightPipe } from './pipes/highlight.pipe'
     LoginComponent,
     DialogComponent
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

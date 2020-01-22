@@ -157,19 +157,26 @@ def mark_doc_as_pending():
 
 @app.route('/results', methods=['GET'])
 def get_results():
-    '''Return the annotations per doc per user.'''
+    '''Return the annotations per doc and per user.
+    Output results per doc:
+    [
+        {
+            'doc': 'doc1',
+            'users': [
+                {
+                    'user': 'user1',
+                    'decsCodes': ['decs1', 'decs2', 'decs3', ...]
+                }, ...
+            ]
+        }, ...
+    ]
+    '''
     assignments = [assignment for assignment in mongo.db.assignments.find({}, {'_id': 0})]
     annotations = [annotation for annotation in mongo.db.annotations.find({}, {'_id': 0})]
     completions = [completion for completion in mongo.db.completions.find({}, {'_id': 0})]
 
-    completed_users = list()
-    completed_docs = list()
-    for completion in completions:
-        completed_users.append(completion.get('user'))
-        completed_docs.extend(completion.get('docs'))
-    unique_completed_docs = set(completed_docs)
-
-    annotations_per_user = list()
+    # Results per user
+    results_per_user = list()
     for completion in completions:
         user = completion.get('user')
         docs = list()
@@ -178,12 +185,32 @@ def get_results():
             doc = {'doc': completed_doc, 'decsCodes': decs_codes}
             docs.append(doc)
         user_annotations = {'user': user, 'docs': docs}
-        annotations_per_user.append(user_annotations)
+        results_per_user.append(user_annotations)
+
+    # Results per doc
+    docs_ids_nested = [completion.get('docs') for completion in completions]
+    docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
+    completed_docs_ids_set = set(docs_ids_flatten)
+    results_per_doc = list()
+    results_per_doc_2 = list()
+    for doc in completed_docs_ids_set:
+        doc_users = [completion.get('user') for completion in completions if doc in completion.get('docs')]
+        users = list()
+        for user in doc_users:
+            decs_codes = [annotation.get('decsCode') for annotation in annotations if user == annotation.get('user') and doc == annotation.get('doc')]
+            user = {'user': user, 'decsCodes': decs_codes}
+            users.append(user)
+        doc_annotations = {'doc': doc, 'users': users}
+        results_per_doc.append(doc_annotations)
+        if len(users) >= 2:
+            results_per_doc_2.append(doc_annotations)
     
     result = {
-        'annotationsPerUser': annotations_per_user,
-        'totalCompletedDocCount': len(completed_docs),
-        'uniqueCompletedDocCount': len(unique_completed_docs),
-        'uniqueCompletedDocs': list(unique_completed_docs)
+        '_distinctDocCount': len(completed_docs_ids_set),
+        '_totalDocCount': len(docs_ids_flatten),
+        'annotationsPerDoc': results_per_doc,
+        'annotationsPerDocTwoOrMoreAnnotators': results_per_doc_2,
+        'annotationsPerUser': results_per_user
     }
+
     return jsonify(result)

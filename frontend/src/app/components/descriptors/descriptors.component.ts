@@ -44,11 +44,13 @@ export class DescriptorsComponent implements OnChanges {
   // Optimize the autocomplete performance
   SHORT_LENGTH = 3
   MEDIUM_LENGTH = 15
+  MIN_LENGTH = 2
+  LENGTH = 10
   shortDescriptors: Descriptor[] = []
   mediumDescriptors: Descriptor[] = []
   longDescriptors: Descriptor[] = []
-  // Improve user usability
-  inactiveServiceMessage = 'El servicio está temporalmente inactivo. Por favor, contacta por email con el administrador de esta aplicación web: alejandro.asensio@bsc.es'
+  short: Descriptor[] = []
+  long: Descriptor[] = []
 
   constructor(
     private api: ApiService,
@@ -60,6 +62,9 @@ export class DescriptorsComponent implements OnChanges {
     this.options = this.api.allDescriptors
     // Init the precoded descriptors
     this.precodedDescriptors = this.api.getPrecodedDescriptors()
+    // Init the subsets
+    this.short = this.api.allDescriptors.filter(d => d.termSpanish.length < this.LENGTH)
+    this.long = this.api.allDescriptors.filter(d => d.termSpanish.length >= this.LENGTH)
   }
 
   /**
@@ -89,6 +94,7 @@ export class DescriptorsComponent implements OnChanges {
    * Custom filter for the descriptors.
    */
   customFilter(input: string, sortingKey: string) {
+    // VERSION 1: WORKING
     // Ignore the starting and ending whitespaces
     input = input.trim()
     // If numeric, find the exact decsCode match (there are no decsCodes with 1 digit)
@@ -120,6 +126,41 @@ export class DescriptorsComponent implements OnChanges {
     )
     // Return the sorted results by matching importance
     return customSort(filtered, input, sortingKey)
+
+    // VERSION 2: filter by its length or more
+    // // Ignore the starting and ending whitespaces
+    // input = input.trim()
+    // // Avoid showing the descriptors that are already added to current doc
+    // const isAlreadyAdded = (d: Descriptor) => this.chips.some(chip => chip.decsCode === d.decsCode)
+    // const available = this.api.allDescriptors.filter(d => !isAlreadyAdded(d))
+    // // If numeric, find the exact decsCode match (there are no decsCodes with 1 digit)
+    // const isNumeric = (numericInput: string) => !isNaN(Number(numericInput))
+    // if (input.length >= this.MIN_LENGTH && isNumeric) {
+    //   const numericFiltered = available.filter(d => d.decsCode.startsWith(input))
+    //   return customSort(numericFiltered, input, 'decsCode')
+    // }
+    // // Otherwise, convert to lower case and remove accents
+    // input = removeAccents(input.toLowerCase())
+    // // Choose the according subset of descriptors
+    // let subset: Descriptor[]
+    // const isShort = () => input.length < this.LENGTH
+    // if (isShort) {
+    //   subset = this.short.filter(d => d.termSpanish.length < this.LENGTH)
+    // } else {
+    //   subset = this.long.filter(d => d.termSpanish.length >= this.LENGTH)
+    // }
+    // // Filter the descriptors that has it termSpanish prop length equal or greater than the input length;
+    // // matching some HARDCODED properties (#TODO refactor)
+    // const filtered = subset.filter(d => d.termSpanish.length >= input.length &&
+    //   (
+    //     removeAccents(d.termSpanish.toLowerCase()).includes(input)
+    //     || removeAccents(d.termEnglish.toLowerCase()).includes(input)
+    //     || removeAccents(d.meshCode.toLowerCase()).includes(input)
+    //     || removeAccents(d.synonyms.toLowerCase()).includes(input)
+    //   )
+    // )
+    // // Return the sorted results by matching importance
+    // return customSort(filtered, input, sortingKey)
   }
 
   /**
@@ -140,12 +181,7 @@ export class DescriptorsComponent implements OnChanges {
       doc: this.doc.id
     }
     // Add the clicked chip descriptor to database
-    this.api.addAnnotation(annotationToAdd).subscribe(response => {
-      // Warn the user that service is temporarily unavailable
-      if (!response.success) {
-        alert(this.inactiveServiceMessage)
-      }
-    })
+    this.api.addAnnotation(annotationToAdd).subscribe()
   }
 
   /**
@@ -164,13 +200,7 @@ export class DescriptorsComponent implements OnChanges {
       doc: this.doc.id
     }
     // Remove the annotation from database
-    this.api.removeAnnotation(annotationToRemove).subscribe(
-      response => {
-        if (response.deletedCount !== 1) {
-          alert(this.inactiveServiceMessage)
-        }
-      }
-    )
+    this.api.removeAnnotation(annotationToRemove).subscribe()
     // Visual information to the user
     const snackBarRef = this.snackBar.open(`DeCS borrado: ${chip.termSpanish} (${chip.decsCode})`, 'DESHACER')
     // If the action button is clicked, re-add the recently removed annotation
