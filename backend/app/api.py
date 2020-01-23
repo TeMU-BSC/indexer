@@ -236,10 +236,16 @@ def get_results():
     # Metrics per user
     metrics_per_user = list()
     for comb in combinations(annotations_per_user, 2):
-        first_annotations = comb[0].get('annotations')
-        second_annotations = comb[1].get('annotations')
+        # first_annotations = comb[0].get('annotations')
+        # second_annotations = comb[1].get('annotations')
         # common = [for ann in first_annotations if ann.get('doc') in ]
         # set(first_annotations.get('doc')).intersection(second_annotations.get('doc'))
+
+        first_user = comb[0].get('user')
+        second_user = comb[1].get('user')
+        print(first_user, second_user)
+        common_annotations = [ann for ann in mongo.db.annotations.find({'user': {'$in': [first_user, second_user]}}, {'_id': 0})]
+        metrics_per_user.append(common_annotations)
 
     result = {
         '_distinctCompletedDocumentCount': len(completed_docs_ids_set),
@@ -250,7 +256,8 @@ def get_results():
         },
         'metrics': {
             'perDoc': metrics_per_doc,
-            'perUser': metrics_per_user
-        }
+            # 'perUser': metrics_per_user
+        },
+        'test': metrics_per_user
     }
     return jsonify(result)
