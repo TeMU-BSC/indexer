@@ -62,24 +62,14 @@ export class DescriptorsComponent implements OnChanges {
     this.options = this.api.allDescriptors
     // Init the precoded descriptors
     this.precodedDescriptors = this.api.getPrecodedDescriptors()
-    // Init the subsets
-    this.short = this.api.allDescriptors.filter(d => d.termSpanish.length < this.LENGTH)
-    this.long = this.api.allDescriptors.filter(d => d.termSpanish.length >= this.LENGTH)
-  }
-
-  /**
-   * This component implements OnChanges method so it can react to parent changes on its @Input() 'doc' property.
-   */
-  ngOnChanges() {
-    // Update the chip list
-    this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
-    // Set the color for each chip
-    this.chips.forEach(chip => { chip.color = 'primary'; chip.selected = true })
     // Separate the short, medium and long descriptors
     this.shortDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length <= this.SHORT_LENGTH)
     // tslint:disable-next-line: max-line-length
     this.mediumDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.SHORT_LENGTH && descriptor.termSpanish.length <= this.MEDIUM_LENGTH)
     this.longDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.MEDIUM_LENGTH)
+    // // Init the subsets
+    // this.short = this.api.allDescriptors.filter(d => d.termSpanish.length < this.LENGTH)
+    // this.long = this.api.allDescriptors.filter(d => d.termSpanish.length >= this.LENGTH)
     // Filter descriptors as the user types in the input field
     this.filteredOptions = this.autocompleteChipList.valueChanges.pipe(
       debounceTime(100),
@@ -88,6 +78,16 @@ export class DescriptorsComponent implements OnChanges {
         ? this.customFilter(value, 'termSpanish')
         : this.precodedDescriptors.filter(d => !this.chips.includes(d)))
     )
+  }
+
+  /**
+   * This component implements OnChanges method so it can react to parent changes on its @Input() 'doc' property.
+   */
+  ngOnChanges() {
+    // Update the chip list
+    this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
+    // // Set the color for each chip
+    // this.chips.forEach(chip => { chip.color = 'primary'; chip.selected = true })
   }
 
   /**

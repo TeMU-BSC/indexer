@@ -6,7 +6,9 @@ Author: alejandro.asensio@bsc.es
 
 from bson.objectid import ObjectId
 from datetime import datetime
+from itertools import combinations
 from os import environ
+from statistics import mean
 
 from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
@@ -157,12 +159,12 @@ def mark_doc_as_pending():
 
 @app.route('/results', methods=['GET'])
 def get_results():
-    '''Return the annotations per doc and per user.
-    Output results per doc:
+    '''Return the annotations and its metrics, per doc and per user.
+    Structure of annotations per doc:
     [
         {
             'doc': 'doc1',
-            'users': [
+            'annotators': [
                 {
                     'user': 'user1',
                     'decsCodes': ['decs1', 'decs2', 'decs3', ...]
@@ -171,46 +173,84 @@ def get_results():
         }, ...
     ]
     '''
-    assignments = [assignment for assignment in mongo.db.assignments.find({}, {'_id': 0})]
-    annotations = [annotation for annotation in mongo.db.annotations.find({}, {'_id': 0})]
-    completions = [completion for completion in mongo.db.completions.find({}, {'_id': 0})]
+    # Get the data from mongo
+    total_completions = [completion for completion in mongo.db.completions.find({}, {'_id': 0})]
+    total_annotations = [annotation for annotation in mongo.db.annotations.find({}, {'_id': 0})]
 
-    # Results per user
-    results_per_user = list()
-    for completion in completions:
+    # Get the completed docs set
+    docs_ids_nested = [completion.get('docs') for completion in total_completions]
+    docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
+    completed_docs_ids_set = set(docs_ids_flatten)
+
+    # Annotations per doc
+    annotations_per_doc = list()
+    for doc in completed_docs_ids_set:
+        doc_users = [completion.get('user') for completion in total_completions if doc in completion.get('docs')]
+        users = list()
+        for user in doc_users:
+            decs_codes = [annotation.get('decsCode') for annotation in total_annotations if user == annotation.get('user') and doc == annotation.get('doc')]
+            user = {'user': user, 'decsCodes': decs_codes}
+            users.append(user)
+        doc_annotations = {'doc': doc, 'annotations': users}
+        # annotations_per_doc.append(doc_annotations)
+        if len(users) >= 2:
+            annotations_per_doc.append(doc_annotations)
+
+    # Metrics per doc
+    metrics_per_doc = list()
+    for doc in annotations_per_doc:
+        annotations = doc.get('annotations')
+        metric = None
+        if len(annotations) == 2:
+            first = annotations[0].get('decsCodes')
+            second = annotations[1].get('decsCodes')
+            intersection = set(first).intersection(second)
+            union = set(first).union(second)
+            metric = len(intersection) / len(union)
+        elif len(annotations) > 2:
+            decs_codes_list = [annotation.get('decsCodes') for annotation in annotations]
+            partials = list()
+            for comb in combinations(decs_codes_list, 2):
+                first = comb[0]
+                second = comb[1]
+                intersection = set(first).intersection(second)
+                union = set(first).union(second)
+                partial = len(intersection) / len(union)
+                partials.append(metric)
+            metric = mean(partials)
+        metric_dict = {'doc': doc.get('doc'), 'annotatorCount': len(annotations), 'metric': metric}
+        metrics_per_doc.append(metric_dict)
+
+    # Annotations per user
+    annotations_per_user = list()
+    for completion in total_completions:
         user = completion.get('user')
         docs = list()
         for completed_doc in completion.get('docs'):
-            decs_codes = [annotation.get('decsCode') for annotation in annotations if annotation.get('user') == user and annotation.get('doc') == completed_doc]
+            decs_codes = [annotation.get('decsCode') for annotation in total_annotations if annotation.get('user') == user and annotation.get('doc') == completed_doc]
             doc = {'doc': completed_doc, 'decsCodes': decs_codes}
             docs.append(doc)
-        user_annotations = {'user': user, 'docs': docs}
-        results_per_user.append(user_annotations)
+        user_annotations = {'user': user, 'annotations': docs}
+        annotations_per_user.append(user_annotations)
 
-    # Results per doc
-    docs_ids_nested = [completion.get('docs') for completion in completions]
-    docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
-    completed_docs_ids_set = set(docs_ids_flatten)
-    results_per_doc = list()
-    results_per_doc_2 = list()
-    for doc in completed_docs_ids_set:
-        doc_users = [completion.get('user') for completion in completions if doc in completion.get('docs')]
-        users = list()
-        for user in doc_users:
-            decs_codes = [annotation.get('decsCode') for annotation in annotations if user == annotation.get('user') and doc == annotation.get('doc')]
-            user = {'user': user, 'decsCodes': decs_codes}
-            users.append(user)
-        doc_annotations = {'doc': doc, 'users': users}
-        results_per_doc.append(doc_annotations)
-        if len(users) >= 2:
-            results_per_doc_2.append(doc_annotations)
-    
+    # Metrics per user
+    metrics_per_user = list()
+    for comb in combinations(annotations_per_user, 2):
+        first_annotations = comb[0].get('annotations')
+        second_annotations = comb[1].get('annotations')
+        # common = [for ann in first_annotations if ann.get('doc') in ]
+        # set(first_annotations.get('doc')).intersection(second_annotations.get('doc'))
+
     result = {
-        '_distinctDocCount': len(completed_docs_ids_set),
-        '_totalDocCount': len(docs_ids_flatten),
-        'annotationsPerDoc': results_per_doc,
-        'annotationsPerDocTwoOrMoreAnnotators': results_per_doc_2,
-        'annotationsPerUser': results_per_user
+        '_distinctCompletedDocumentCount': len(completed_docs_ids_set),
+        '_totalCompletedDocumentCount': len(docs_ids_flatten),
+        'annotations': {
+            'perDoc': annotations_per_doc,
+            'perUser': annotations_per_user
+        },
+        'metrics': {
+            'perDoc': metrics_per_doc,
+            'perUser': metrics_per_user
+        }
     }
-
     return jsonify(result)
