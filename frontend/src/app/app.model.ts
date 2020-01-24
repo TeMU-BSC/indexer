@@ -21,6 +21,7 @@ export class Doc {
   abstract?: string
   decsCodes?: Descriptor['decsCode'][]
   completed?: boolean
+  validated?: boolean
 }
 
 export class User {

@@ -1,13 +1,14 @@
 <mat-form-field appearance="outline" class="w-100">
-  <mat-label>Descriptores de Ciencias de la Salud (DeCS)</mat-label>
-  <mat-chip-list #chipList multiple="true" [selectable]="selectable">
-    <mat-chip *ngFor="let chip of chips" #matChip="matChip" [removable]="removable" (removed)="openConfirmDialog(chip)"
-      (click)="matChip.toggleSelected()">
-      <mat-icon *ngIf="auth.getCurrentUser().role === 'superannotator'" matChipAvatar color="warn">check</mat-icon>
+  <mat-label>{{ label }}</mat-label>
+  <mat-chip-list #chipList multiple selectable>
+    <mat-chip *ngFor="let chip of chips" #matChip="matChip" [removable]="removable" (removed)="openConfirmDialog(chip)">
+      <mat-icon matChipAvatar [color]="chip.iconColor"
+        [innerHTML]="chip.fromOtherAnnotator ? 'supervised_user_circle' : 'person'">
+      </mat-icon>
       {{ chip.termSpanish }} ({{ chip.decsCode }})
       <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
-    <input matInput placeholder="Escribe el término o el código..." #chipInput [formControl]="autocompleteChipList"
+    <input matInput placeholder="Escribe el término o el código DeCS..." #chipInput [formControl]="autocompleteChipList"
       [matAutocomplete]="auto" matAutocompletePosition="below" [matChipInputFor]="chipList"
       [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur">
   </mat-chip-list>
@@ -18,14 +19,5 @@
       <span [innerHTML]="option.definitionSpanish" class="text-muted"></span>
     </mat-option>
   </mat-autocomplete>
-  <mat-hint>
-    Se puede buscar un descriptor por:
-    <ul>
-      <li>término en español</li>
-      <li>término en inglés</li>
-      <li>sinónimos aceptados</li>
-      <li>código DeCS (número de registro)</li>
-      <li>código MeSH análogo</li>
-    </ul>
-  </mat-hint>
+  <mat-hint></mat-hint>
 </mat-form-field>

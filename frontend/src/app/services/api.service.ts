@@ -79,15 +79,29 @@ export class ApiService {
   /**
    * Mark an doc as completed by the current user in database.
    */
-  addCompletion(completion: any): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/completion/add`, completion)
+  addCompletion(docToMark: any): Observable<Doc> {
+    return this.http.post<Doc>(`${environment.apiUrl}/completion/add`, docToMark)
   }
 
   /**
-   * Mark an doc as pending by the current user in database.
+   * Mark an doc as uncompleted by the current user in database.
    */
-  removeCompletion(completion: any): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/completion/remove`, completion)
+  removeCompletion(docToMark: any): Observable<Doc> {
+    return this.http.post<Doc>(`${environment.apiUrl}/completion/remove`, docToMark)
+  }
+
+  /**
+   * Mark an doc as validated by the current user in database.
+   */
+  addValidation(docToMark: any): Observable<Doc> {
+    return this.http.post<Doc>(`${environment.apiUrl}/validation/add`, docToMark)
+  }
+
+  /**
+   * Mark an doc as unvalidated by the current user in database.
+   */
+  removeValidation(dockToMark: any): Observable<Doc> {
+    return this.http.post<Doc>(`${environment.apiUrl}/validation/remove`, dockToMark)
   }
 
 }

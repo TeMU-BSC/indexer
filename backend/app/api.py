@@ -92,7 +92,15 @@ def get_assigned_docs():
     assigned_doc_ids = []
     if found_user:
         assigned_doc_ids = found_user.get('docs')
+
+    # TODO REMOVE
     docs = mongo.db.selected_importants.find({'_id': {'$in': assigned_doc_ids}})
+
+    # TODO ADD # Add extra clinical cases
+    # selected_importants = [doc for doc in mongo.db.selected_importants.find({'_id': {'$in': assigned_doc_ids}})]
+    # reec_clinical_cases = [doc for doc in mongo.db.reec_clinical_cases.find({'_id': {'$in': assigned_doc_ids}})]
+    # docs = selected_importants.extend(reec_clinical_cases)
+
     result = []
     for doc in docs:
         # Find the decsCodes added by the current user
@@ -147,12 +155,35 @@ def mark_doc_as_completed():
 
 
 @app.route('/completion/remove', methods=['POST'])
-def mark_doc_as_pending():
+def mark_doc_as_uncompleted():
     '''Remove an existing doc from the 'docs' key in the 'completions' collection.'''
     completion = request.json
     result = mongo.db.completions.update_one(
         {'user': completion['user']},
         {'$pull': {'docs': completion['doc']}}
+    )
+    return jsonify({'success': result.acknowledged})
+
+
+@app.route('/validation/add', methods=['POST'])
+def mark_doc_as_validated():
+    '''Add a new doc into the 'docs' key in the 'validations' collection.'''
+    validation = request.json
+    result = mongo.db.validations.update_one(
+        {'user': request.json['user']},
+        {'$push': {'docs': request.json['doc']}},
+        upsert=True
+    )
+    return jsonify({'success': result.acknowledged})
+
+
+@app.route('/validation/remove', methods=['POST'])
+def mark_doc_as_unvalidated():
+    '''Remove an existing doc from the 'docs' key in the 'validations' collection.'''
+    validation = request.json
+    result = mongo.db.validations.update_one(
+        {'user': validation['user']},
+        {'$pull': {'docs': validation['doc']}}
     )
     return jsonify({'success': result.acknowledged})
 
@@ -236,16 +267,12 @@ def get_results():
     # Metrics per user
     metrics_per_user = list()
     for comb in combinations(annotations_per_user, 2):
-        # first_annotations = comb[0].get('annotations')
-        # second_annotations = comb[1].get('annotations')
-        # common = [for ann in first_annotations if ann.get('doc') in ]
-        # set(first_annotations.get('doc')).intersection(second_annotations.get('doc'))
-
         first_user = comb[0].get('user')
         second_user = comb[1].get('user')
-        print(first_user, second_user)
-        common_annotations = [ann for ann in mongo.db.annotations.find({'user': {'$in': [first_user, second_user]}}, {'_id': 0})]
-        metrics_per_user.append(common_annotations)
+        both_annotations = [ann for ann in total_annotations if ann.get('user') in [first_user, second_user]]
+
+        metrics_per_user.append(both_annotations)
+
 
     result = {
         '_distinctCompletedDocumentCount': len(completed_docs_ids_set),

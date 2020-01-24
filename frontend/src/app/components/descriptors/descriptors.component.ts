@@ -23,6 +23,7 @@ import { DialogComponent } from 'src/app/components/dialog/dialog.component'
 export class DescriptorsComponent implements OnChanges {
 
   @Input() doc: Doc
+  @Input() label = 'Descriptores de Ciencias de la Salud (DeCS)'
   @ViewChild('chipInput', { static: false }) chipInput: ElementRef<HTMLInputElement>
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete
 
@@ -33,8 +34,6 @@ export class DescriptorsComponent implements OnChanges {
   removable = true
   selectable = true
   separatorKeysCodes: number[] = [ENTER]
-  color = 'primary'
-  selected = true
   // Set up options array
   options: Descriptor[]
   precodedDescriptors: Descriptor[]
@@ -86,8 +85,11 @@ export class DescriptorsComponent implements OnChanges {
   ngOnChanges() {
     // Update the chip list
     this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
-    // // Set the color for each chip
-    // this.chips.forEach(chip => { chip.color = 'primary'; chip.selected = true })
+    // Set the color for each chip
+    this.chips.forEach(chip => {
+      chip.fromOtherAnnotator = Number(chip.decsCode) > 1000
+      chip.iconColor = chip.fromOtherAnnotator ? 'accent' : 'primary'
+    })
   }
 
   /**
@@ -174,6 +176,9 @@ export class DescriptorsComponent implements OnChanges {
     // Clear the typed text from the input field
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
+    // Re-select all chips
+    this.chips.forEach(chip => chip.selected = true)
+    console.log(this.chips)
     // Build the object to sent to backend
     const annotationToAdd = {
       decsCode: selectedDescriptor.decsCode,
