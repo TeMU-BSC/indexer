@@ -12,10 +12,10 @@
     </button>
   </div>
   <div *ngIf="auth.isLoggedIn()" fxLayout="column" fxLayoutGap="2em">
-    <button *ngIf="['tester', 'annotator', 'superannotator'].includes(auth.getCurrentUser().role)" mat-raised-button color="primary" routerLink="/docs">
+    <button *ngIf="['admin', 'tester', 'annotator'].includes(auth.getCurrentUser().role)" mat-raised-button color="primary" routerLink="/docs">
       Ver mis documentos asignados
     </button>
-    <button *ngIf="['tester', 'admin'].includes(auth.getCurrentUser().role)" mat-raised-button color="warn" routerLink="/admin">
+    <button *ngIf="['admin'].includes(auth.getCurrentUser().role)" mat-raised-button color="warn" routerLink="/admin">
       Ir al panel de administración
     </button>
   </div>
