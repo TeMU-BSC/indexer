@@ -86,19 +86,18 @@ export class DescriptorsComponent implements OnChanges {
     // Update the chip list
     this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
     // Set the color for each chip
-    this.chips.forEach(chip => {
-      chip.fromOtherAnnotator = Number(chip.decsCode) > 1000
-      chip.iconColor = chip.fromOtherAnnotator ? 'accent' : 'primary'
-    })
+    // this.chips.forEach(chip => {
+    //   chip.fromOtherAnnotator = Number(chip.decsCode) > 1000
+    //   chip.iconColor = chip.fromOtherAnnotator ? 'accent' : 'primary'
+    // })
   }
 
   /**
    * Custom filter for the descriptors.
    */
   customFilter(input: string, sortingKey: string) {
-    // VERSION 1: WORKING
-    // Ignore the starting and ending whitespaces
-    input = input.trim()
+    // Ignore the starting and ending whitespaces. Replace double/multiple whitespaces by single whitespace.
+    input = input.trim().replace(/ +(?= )/g, '')
     // If numeric, find the exact decsCode match (there are no decsCodes with 1 digit)
     if (input.length >= 2 && !isNaN(Number(input))) {
       const decsFiltered = this.api.allDescriptors
@@ -130,39 +129,7 @@ export class DescriptorsComponent implements OnChanges {
     return customSort(filtered, input, sortingKey)
 
     // VERSION 2: filter by its length or more
-    // // Ignore the starting and ending whitespaces
-    // input = input.trim()
-    // // Avoid showing the descriptors that are already added to current doc
-    // const isAlreadyAdded = (d: Descriptor) => this.chips.some(chip => chip.decsCode === d.decsCode)
-    // const available = this.api.allDescriptors.filter(d => !isAlreadyAdded(d))
-    // // If numeric, find the exact decsCode match (there are no decsCodes with 1 digit)
-    // const isNumeric = (numericInput: string) => !isNaN(Number(numericInput))
-    // if (input.length >= this.MIN_LENGTH && isNumeric) {
-    //   const numericFiltered = available.filter(d => d.decsCode.startsWith(input))
-    //   return customSort(numericFiltered, input, 'decsCode')
-    // }
-    // // Otherwise, convert to lower case and remove accents
-    // input = removeAccents(input.toLowerCase())
-    // // Choose the according subset of descriptors
-    // let subset: Descriptor[]
-    // const isShort = () => input.length < this.LENGTH
-    // if (isShort) {
-    //   subset = this.short.filter(d => d.termSpanish.length < this.LENGTH)
-    // } else {
-    //   subset = this.long.filter(d => d.termSpanish.length >= this.LENGTH)
-    // }
-    // // Filter the descriptors that has it termSpanish prop length equal or greater than the input length;
-    // // matching some HARDCODED properties (#TODO refactor)
-    // const filtered = subset.filter(d => d.termSpanish.length >= input.length &&
-    //   (
-    //     removeAccents(d.termSpanish.toLowerCase()).includes(input)
-    //     || removeAccents(d.termEnglish.toLowerCase()).includes(input)
-    //     || removeAccents(d.meshCode.toLowerCase()).includes(input)
-    //     || removeAccents(d.synonyms.toLowerCase()).includes(input)
-    //   )
-    // )
-    // // Return the sorted results by matching importance
-    // return customSort(filtered, input, sortingKey)
+    // ...
   }
 
   /**

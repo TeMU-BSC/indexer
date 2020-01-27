@@ -41,11 +41,11 @@ export class DocsComponent implements AfterViewInit {
         .withColFilter().withColFilterLabel('Filtrar')
         .withTransform(data => data ? 'Sí' : 'No')
         .withNgStyle(data => ({ color: data ? 'green' : 'red' })),
-      new TableColumn<Doc, 'validated'>('Validado', 'validated')
-        .withWidth(Width.pct(5))
-        .withColFilter().withColFilterLabel('Filtrar')
-        .withTransform(data => data ? 'Sí' : 'No')
-        .withNgStyle(data => ({ color: data ? 'green' : 'red' }))
+      // new TableColumn<Doc, 'validated'>('Validado', 'validated')
+      //   .withWidth(Width.pct(5))
+      //   .withColFilter().withColFilterLabel('Filtrar')
+      //   .withTransform(data => data ? 'Sí' : 'No')
+      //   .withNgStyle(data => ({ color: data ? 'green' : 'red' }))
     ]
   }
 

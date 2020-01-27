@@ -32,12 +32,10 @@ def hello():
 
 @app.route('/user/register', methods=['POST'])
 def register_users():
-    '''Register many users.'''
+    '''Register many users. Try to insert many new users, except BulkWriteError occurs.'''
     users = request.json
-    # Try to insert many new users, except BulkWriteError occurs.
     try:
         result = mongo.db.users.insert_many(users)
-        # result = mongo.db.users.update_many(users, {'$set': users}, upsert=True)
         success = result.acknowledged
         message = None
         registered_users_cursor = mongo.db.users.find({'_id': {'$in': result.inserted_ids}}, {'_id': 0})
@@ -46,7 +44,7 @@ def register_users():
         success = False
         message = error.details['writeErrors'][0]['errmsg']
         registered_users = 0
-    return jsonify({'success': success, 'message': error_message, 'registeredUsers': registered_users})
+    return jsonify({'success': success, 'message': message, 'registeredUsers': registered_users})
 
 
 @app.route('/user/login', methods=['POST'])

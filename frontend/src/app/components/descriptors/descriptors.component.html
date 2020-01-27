@@ -1,14 +1,12 @@
 <mat-form-field appearance="outline" class="w-100">
   <mat-label>{{ label }}</mat-label>
-  <mat-chip-list #chipList multiple selectable>
+  <mat-chip-list #chipList>
     <mat-chip *ngFor="let chip of chips" #matChip="matChip" [removable]="removable" (removed)="openConfirmDialog(chip)">
-      <mat-icon matChipAvatar [color]="chip.iconColor"
-        [innerHTML]="chip.fromOtherAnnotator ? 'supervised_user_circle' : 'person'">
-      </mat-icon>
+      <!-- <mat-icon matChipAvatar [color]="chip.iconColor" [innerHTML]="chip.fromOtherAnnotator ? 'supervised_user_circle' : 'person'"></mat-icon> -->
       {{ chip.termSpanish }} ({{ chip.decsCode }})
       <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
-    <input matInput placeholder="Escribe el término o el código DeCS..." #chipInput [formControl]="autocompleteChipList"
+    <input matInput placeholder="Escribe el término o el número de registro..." #chipInput [formControl]="autocompleteChipList"
       [matAutocomplete]="auto" matAutocompletePosition="below" [matChipInputFor]="chipList"
       [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur">
   </mat-chip-list>
