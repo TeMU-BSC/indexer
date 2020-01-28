@@ -211,8 +211,11 @@ def get_results():
     docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
     completed_docs_ids_set = set(docs_ids_flatten)
 
+    # Init storing variables
+    annotations = {'perDoc': list(), 'perUser': list()}
+    metrics = {'perDoc': list(), 'perUser': list()}
+
     # Annotations per doc
-    annotations_per_doc = list()
     for doc in completed_docs_ids_set:
         doc_users = [completion.get('user') for completion in total_completions if doc in completion.get('docs')]
         users = list()
@@ -221,37 +224,27 @@ def get_results():
             user = {'user': user, 'decsCodes': decs_codes}
             users.append(user)
         doc_annotations = {'doc': doc, 'annotations': users}
-        # annotations_per_doc.append(doc_annotations)
+        # annotations['perDoc'].append(doc_annotations)
         if len(users) >= 2:
-            annotations_per_doc.append(doc_annotations)
+            annotations['perDoc'].append(doc_annotations)
 
     # Metrics per doc
-    metrics_per_doc = list()
-    for doc in annotations_per_doc:
-        annotations = doc.get('annotations')
-        metric = None
-        if len(annotations) == 2:
-            first = annotations[0].get('decsCodes')
-            second = annotations[1].get('decsCodes')
+    for doc in annotations.get('perDoc'):
+        doc_annotations = doc.get('annotations')
+        decs_codes_list = [ann.get('decsCodes') for ann in doc_annotations]
+        # Make combinations and the mean of them in case there are more than 2 annotators per document
+        partials = list()
+        for comb in combinations(decs_codes_list, 2):
+            first = comb[0]
+            second = comb[1]
             intersection = set(first).intersection(second)
             union = set(first).union(second)
-            metric = len(intersection) / len(union)
-        elif len(annotations) > 2:
-            decs_codes_list = [annotation.get('decsCodes') for annotation in annotations]
-            partials = list()
-            for comb in combinations(decs_codes_list, 2):
-                first = comb[0]
-                second = comb[1]
-                intersection = set(first).intersection(second)
-                union = set(first).union(second)
-                partial = len(intersection) / len(union)
-                partials.append(metric)
-            metric = mean(partials)
-        metric_dict = {'doc': doc.get('doc'), 'annotatorCount': len(annotations), 'metric': metric}
-        metrics_per_doc.append(metric_dict)
+            partial = len(intersection) / len(union)
+            partials.append(partial)
+        doc_metrics = {'doc': doc.get('doc'), 'annotatorCount': len(doc_annotations), 'metric': mean(partials)}
+        metrics['perDoc'].append(doc_metrics)
 
     # Annotations per user
-    annotations_per_user = list()
     for completion in total_completions:
         user = completion.get('user')
         docs = list()
@@ -260,29 +253,25 @@ def get_results():
             doc = {'doc': completed_doc, 'decsCodes': decs_codes}
             docs.append(doc)
         user_annotations = {'user': user, 'annotations': docs}
-        annotations_per_user.append(user_annotations)
+        annotations['perUser'].append(user_annotations)
 
     # Metrics per user
-    metrics_per_user = list()
-    for comb in combinations(annotations_per_user, 2):
-        first_user = comb[0].get('user')
-        second_user = comb[1].get('user')
-        both_annotations = [ann for ann in total_annotations if ann.get('user') in [first_user, second_user]]
 
-        metrics_per_user.append(both_annotations)
+    # Load all docs annotated per each user
+
+    # For each combination of users, find the docs annotated by they both
+    # set(docs_of_first).intersection(docs_of_second)
+
+    # For each common doc, calculate the correlation of decs
+
+    # Finally, the metric for a user is the weighted mean of the correlations with the rest of users
 
 
     result = {
-        '_distinctCompletedDocumentCount': len(completed_docs_ids_set),
         '_totalCompletedDocumentCount': len(docs_ids_flatten),
-        'annotations': {
-            'perDoc': annotations_per_doc,
-            'perUser': annotations_per_user
-        },
-        'metrics': {
-            'perDoc': metrics_per_doc,
-            # 'perUser': metrics_per_user
-        },
-        'test': metrics_per_user
+        '_distinctCompletedDocumentCount': len(completed_docs_ids_set),
+        '_comparedCompletedDocumentCount': len(docs_ids_flatten) - len(completed_docs_ids_set),
+        'annotations': annotations,
+        'metrics': metrics
     }
     return jsonify(result)
