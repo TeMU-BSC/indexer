@@ -20,12 +20,8 @@
       </div>
     </mat-card-content>
     <mat-card-actions fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="end" fxLayoutGap="2em" class="p-4">
-      <mat-slide-toggle color="primary" [checked]="doc.completed" (change)="toggleCompleted($event)" [disabled]="doc.validated">
-        Indizado
-      </mat-slide-toggle>
-      <mat-slide-toggle color="accent" [checked]="doc.validated" (change)="toggleValidated($event)" [disabled]="!doc.completed">
-        Validado
-      </mat-slide-toggle>
+      <mat-slide-toggle color="primary" [checked]="doc.completed" (change)="toggleCompleted($event)" [disabled]="doc.validated">Indizado</mat-slide-toggle>
+      <!-- <mat-slide-toggle color="accent" [checked]="doc.validated" (change)="toggleValidated($event)" [disabled]="!doc.completed">Validado</mat-slide-toggle> -->
     </mat-card-actions>
   </mat-card>
 </div>

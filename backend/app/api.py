@@ -27,7 +27,7 @@ CORS(app)
 
 @app.route('/hello')
 def hello():
-    return f'Hello from Flask by Alejandro. ENV={environ.get("ENV")} FLASK_ENV={environ.get("FLASK_ENV")}'
+    return f"Hello from Flask by Alejandro. ENV={environ.get('ENV')} FLASK_ENV={environ.get('FLASK_ENV')} MONGO_URI={environ.get('MONGO_URI')}"
 
 
 @app.route('/user/register', methods=['POST'])
