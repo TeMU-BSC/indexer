@@ -145,7 +145,6 @@ export class DescriptorsComponent implements OnChanges {
     this.autocompleteChipList.setValue('')
     // Re-select all chips
     this.chips.forEach(chip => chip.selected = true)
-    console.log(this.chips)
     // Build the object to sent to backend
     const annotationToAdd = {
       decsCode: selectedDescriptor.decsCode,

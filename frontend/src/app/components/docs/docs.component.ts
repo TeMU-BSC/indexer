@@ -36,7 +36,7 @@ export class DocsComponent implements AfterViewInit {
         .withColFilter().withColFilterLabel('Filtrar')
         .withTransform(data => data.length.toString())
         .withSortTransform(data => Number(data.length.toString())),
-      new TableColumn<Doc, 'completed'>('Indizado', 'completed')
+      new TableColumn<Doc, 'completed'>('Completado', 'completed')
         .withWidth(Width.pct(5))
         .withColFilter().withColFilterLabel('Filtrar')
         .withTransform(data => data ? 'Sí' : 'No')

@@ -35,7 +35,7 @@ export class LoaderInterceptor implements HttpInterceptor {
             }
           },
           err => {
-            alert('Esta aplicación web está temporalmente inactiva. Por favor, contacta por email con el administrador: alejandro.asensio@bsc.es')
+            alert('Borra la caché de la herramienta web pulsando Ctrl + F5. Si continúas viendo este aviso, por favor, envíame un email a: alejandro.asensio@bsc.es')
             this.removeRequest(req)
             observer.error(err)
           },

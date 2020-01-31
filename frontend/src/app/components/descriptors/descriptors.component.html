@@ -10,7 +10,7 @@
       [matAutocomplete]="auto" matAutocompletePosition="below" [matChipInputFor]="chipList"
       [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur">
   </mat-chip-list>
-  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addChip($event)" autoActiveFirstOption>
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addChip($event)">
     <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
       <span [innerHTML]="option.termSpanish | highlight: autocompleteChipList.value"></span>
       (<span [innerHTML]="option.decsCode | highlight: autocompleteChipList.value"></span>)

@@ -2,26 +2,6 @@ version: '3.7'
 
 services:
 
-  flask:
-    build: ./backend
-    hostname: flask
-    container_name: flask
-    restart: always
-    environment:
-      - MONGO_URI=mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud
-    command: uwsgi app.ini
-
-  nginx:
-    build: ./server
-    hostname: nginx
-    container_name: nginx
-    restart: always
-    links:
-      - flask
-      - angular
-    ports:
-      - 80:80
-
   angular:
     build: ./frontend
     hostname: angular
@@ -33,5 +13,23 @@ services:
     ports:
       - 4200:4200
     command: ng serve --host 0.0.0.0 --disableHostCheck --liveReload=false --prod --aot --sourceMap=false
-    # command: ng serve --host bsccnio01.bsc.es --disableHostCheck --liveReload=false --prod --aot --sourceMap=false
-    # command: ng build --prod
+
+  flask:
+    build: ./backend
+    hostname: flask
+    container_name: flask
+    restart: always
+    environment:
+      - MONGO_URI=mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud
+    command: uwsgi app.ini
+  
+  nginx:
+    build: ./server
+    hostname: nginx
+    container_name: nginx
+    restart: always
+    links:
+      - angular
+      - flask
+    ports:
+      - 80:80

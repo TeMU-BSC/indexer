@@ -1,9 +1,7 @@
 <mat-toolbar [color]="auth.getCurrentUser()?.role === 'superannotator' ? 'warn' : 'primary'">
   <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="1em">
     <h1 routerLink="/">
-      <button mat-button fxHide.gt-sm>PlanTL DeCS Indexer</button>
-      <button *ngIf="auth.getCurrentUser()?.role !== 'superannotator'" mat-button fxHide fxShow.gt-sm>PlanTL DeCS Indexing Web Tool</button>
-      <button *ngIf="auth.getCurrentUser()?.role === 'superannotator'" mat-button fxHide fxShow.gt-sm>PlanTL DeCS Validation Web Tool</button>
+      <button mat-button>PlanTL Indizador DeCS</button>
     </h1>
     <button *ngIf="!auth.isLoggedIn()" mat-button (click)="auth.openLoginDialog()">Iniciar sesión</button>
     <div *ngIf="auth.isLoggedIn()">
