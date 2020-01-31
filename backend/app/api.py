@@ -258,6 +258,12 @@ def get_results():
     # Metrics per user
 
     # Load all docs annotated per each user
+    annotators = [id for id in mongo.db.users.find({'role': 'annotator'}, {'_id': 0})]
+    print(annotators)
+    # for id in user_ids:
+    #     print(list(mongo.db.annotations.find({'user': id}, {'_id': 0})))
+
+
 
     # For each combination of users, find the docs annotated by they both
     # set(docs_of_first).intersection(docs_of_second)
@@ -275,3 +281,8 @@ def get_results():
         'metrics': metrics
     }
     return jsonify(result)
+
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    return jsonify([user for user in mongo.db.users.find({}, {'_id': 0})])
