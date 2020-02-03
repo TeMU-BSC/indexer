@@ -38,7 +38,7 @@ services:
     # https://codinglatte.com/posts/angular/using-os-environment-variables-in-angular-with-docker/
     environment:
       - REST_API_URL=http://localhost:5000
-      - BROWSER_SESSION_KEY=loggedUser
+      - BROWSER_SESSION_KEY=user
     command: ng serve --host 0.0.0.0
     ports:
       - 4200:4200
@@ -52,7 +52,6 @@ services:
   #   hostname: nginx
   #   container_name: nginx
   #   links:
-  #     - flask
   #     - angular
   #   ports:
   #     - 80:80

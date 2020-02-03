@@ -163,6 +163,13 @@ def mark_doc_as_uncompleted():
     )
     return jsonify({'success': result.acknowledged})
 
+@app.route('/completion/check', methods=['POST'])
+def check_doc_completed_by_others():
+    '''Check if other users have been marked this doc as completed.'''
+    completion = request.json
+    result = mongo.db.completions.distinct('user', {'docs': completion['doc'], 'user': {'$ne': completion['user']}})
+    return jsonify({'otherCompletions': list(result)})
+
 
 @app.route('/validation/add', methods=['POST'])
 def mark_doc_as_validated():

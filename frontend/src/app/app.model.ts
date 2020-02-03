@@ -22,6 +22,7 @@ export class Doc {
   decsCodes?: Descriptor['decsCode'][]
   completed?: boolean
   validated?: boolean
+  otherCompletions?: boolean
 }
 
 export class User {
@@ -38,4 +39,5 @@ export interface ApiResponse {
   user?: User
   registeredUsers?: number
   deletedCount?: number
+  otherCompletions?: any
 }

@@ -31,7 +31,22 @@ export class DocComponent {
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id
     }
-    this.doc.completed ? this.api.addCompletion(docToMark).subscribe() : this.api.removeCompletion(docToMark).subscribe()
+    if (this.doc.completed) {
+      this.api.addCompletion(docToMark).subscribe(() => this.checkOthersCompleted(docToMark))
+    } else {
+      this.api.removeCompletion(docToMark).subscribe()
+    }
+  }
+
+  /**
+   * Check if there are any other annotators that have completed the same document.
+   */
+  checkOthersCompleted(docToCheck: any) {
+    this.api.checkOtherCompletions(docToCheck).subscribe(
+      next => this.doc.otherCompletions = next.otherCompletions,
+      error => console.error(error),
+      () => alert(this.doc.otherCompletions)
+    )
   }
 
   /**

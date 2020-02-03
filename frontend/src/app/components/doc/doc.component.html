@@ -8,7 +8,7 @@
     <mat-card-content class="p-3">
       <p [innerHTML]="doc.abstract"></p>
       <app-descriptors [doc]="doc"></app-descriptors>
-      <div>
+      <!-- <div>
         <p>Se puede buscar un descriptor por:</p>
         <ul>
           <li>término en español</li>
@@ -17,11 +17,11 @@
           <li>código DeCS (número de registro)</li>
           <li>código MeSH análogo</li>
         </ul>
-      </div>
+      </div> -->
     </mat-card-content>
     <mat-card-actions fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="end" fxLayoutGap="2em" class="p-4">
       <mat-slide-toggle color="primary" [checked]="doc.completed" (change)="toggleCompleted($event)" [disabled]="doc.validated">Completado</mat-slide-toggle>
-      <!-- <mat-slide-toggle color="accent" [checked]="doc.validated" (change)="toggleValidated($event)" [disabled]="!doc.completed">Validado</mat-slide-toggle> -->
+      <mat-slide-toggle color="accent" [checked]="doc.validated" (change)="toggleValidated($event)" [disabled]="!doc.completed">Validado</mat-slide-toggle>
     </mat-card-actions>
   </mat-card>
 </div>

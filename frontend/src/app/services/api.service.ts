@@ -104,4 +104,11 @@ export class ApiService {
     return this.http.post<Doc>(`${environment.apiUrl}/validation/remove`, dockToMark)
   }
 
+  /**
+   * Check if there are any other annotators that have completed the same document.
+   */
+  checkOtherCompletions(dockToCheck: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/completion/check`, dockToCheck)
+  }
+
 }
