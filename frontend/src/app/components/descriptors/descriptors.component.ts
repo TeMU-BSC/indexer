@@ -23,8 +23,8 @@ import { DialogComponent } from 'src/app/components/dialog/dialog.component'
 export class DescriptorsComponent implements OnChanges {
 
   @Input() doc: Doc
-  @ViewChild('chipInput', { static: false }) chipInput: ElementRef<HTMLInputElement>
-  @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete
+  @ViewChild('chipInput') chipInput: ElementRef<HTMLInputElement>
+  @ViewChild('auto') matAutocomplete: MatAutocomplete
   // Set up reactive formControl
   autocompleteChipList = new FormControl()
   // Set up values to use with chips

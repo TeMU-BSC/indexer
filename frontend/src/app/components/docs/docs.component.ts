@@ -14,7 +14,7 @@ export class DocsComponent implements AfterViewInit {
 
   columns = []
   data: Doc[]
-  @ViewChild('doc', { static: false }) selectedDoc: Doc
+  @ViewChild('doc') selectedDoc: Doc
   loading = true
 
   constructor(
