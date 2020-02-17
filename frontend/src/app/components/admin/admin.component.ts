@@ -1,7 +1,7 @@
 import { Component } from '@angular/core'
 import { ApiResponse } from 'src/app/app.model'
 import { AuthService } from 'src/app/services/auth.service'
-import { MatSnackBar } from '@angular/material'
+import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { ApiService } from 'src/app/services/api.service'
 import * as EXAMPLE_USER from 'src/assets/examples/user.json'

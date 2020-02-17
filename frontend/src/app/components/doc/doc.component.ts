@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core'
-import { MatSlideToggleChange } from '@angular/material'
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 import { Doc } from 'src/app/app.model'
 import { ApiService } from 'src/app/services/api.service'
