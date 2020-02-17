@@ -104,18 +104,28 @@ def get_assigned_docs():
     for doc in docs:
         # Find the decsCodes added by the current user
         decsCodes = mongo.db.annotations.distinct('decsCode', {'doc': doc['_id'], 'user': user})
-        # Check if this doc has been marked as completed (indexed/validated) by the current user
+        # Check if this doc has been marked as completed by the current user
         completed = False
-        validated = False
         user_completions = mongo.db.completions.find_one({'user': user})
         if user_completions:
             completed = doc['_id'] in user_completions.get('docs')
+        # Check if this doc has been marked as validated by the current user
+        validated = False
+        user_validations = mongo.db.validations.find_one({'user': user})
+        if user_validations:
+            validated = doc['_id'] in user_validations.get('docs')
+        # Get the suggestions from other users
+        other_users = mongo.db.completions.distinct('user', {'docs': doc['_id'], 'user': {'$ne': user}})
+        # print('OTHER USERS:', other_users)
+        suggestions = mongo.db.annotations.distinct('decsCode', {'doc': doc['_id'], 'user': {'$in': other_users}})
+        # print('SUGGESTIONS:', suggestions)
         # Prepare the relevant info to be returned
         doc_relevant_info = {
             'id': doc['_id'],
             'title': doc['ti_es'],
             'abstract': doc['ab_es'],
             'decsCodes': decsCodes,
+            'suggestions': suggestions,
             'completed': completed,
             'validated': validated
         }
@@ -141,6 +151,16 @@ def remove_annotation():
     return jsonify({'deletedCount': result.deleted_count})
 
 
+@app.route('/annotation/suggestions', methods=['POST'])
+def get_suggestions():
+    '''Get the decs codes for a specific document from other annotators that
+    have marked as completed that same document.'''
+    completion = request.json
+    other_users = mongo.db.completions.distinct('user', {'docs': completion['doc'], 'user': {'$ne': completion['user']}})
+    suggestions = mongo.db.annotations.distinct('decsCode', {'doc': completion['doc'], 'user': {'$in': other_users}})
+    return jsonify({'decsCodesFromOthers': list(suggestions)})
+
+
 @app.route('/completion/add', methods=['POST'])
 def mark_doc_as_completed():
     '''Add a new doc into the 'docs' key in the 'completions' collection.'''
@@ -162,13 +182,6 @@ def mark_doc_as_uncompleted():
         {'$pull': {'docs': completion['doc']}}
     )
     return jsonify({'success': result.acknowledged})
-
-@app.route('/completion/check', methods=['POST'])
-def check_doc_completed_by_others():
-    '''Check if other users have been marked this doc as completed.'''
-    completion = request.json
-    result = mongo.db.completions.distinct('user', {'docs': completion['doc'], 'user': {'$ne': completion['user']}})
-    return jsonify({'otherCompletions': list(result)})
 
 
 @app.route('/validation/add', methods=['POST'])

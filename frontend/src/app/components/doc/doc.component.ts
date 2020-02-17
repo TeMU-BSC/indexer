@@ -32,21 +32,16 @@ export class DocComponent {
       doc: this.doc.id
     }
     if (this.doc.completed) {
-      this.api.addCompletion(docToMark).subscribe(() => this.checkOthersCompleted(docToMark))
+      this.api.addCompletion(docToMark).subscribe(
+        () => this.api.getSuggestions(docToMark).subscribe(
+          next => this.doc.suggestions = next.decsCodesFromOthers,
+          error => console.error(error),
+          () => console.log(this.doc.suggestions)
+        )
+      )
     } else {
       this.api.removeCompletion(docToMark).subscribe()
     }
-  }
-
-  /**
-   * Check if there are any other annotators that have completed the same document.
-   */
-  checkOthersCompleted(docToCheck: any) {
-    this.api.checkOtherCompletions(docToCheck).subscribe(
-      next => this.doc.otherCompletions = next.otherCompletions,
-      error => console.error(error),
-      () => alert(this.doc.otherCompletions)
-    )
   }
 
   /**

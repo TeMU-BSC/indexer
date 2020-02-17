@@ -26,7 +26,8 @@ import { DocComponent } from './components/doc/doc.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
 import { DialogComponent } from './components/dialog/dialog.component'
 import { HighlightPipe } from './pipes/highlight.pipe'
-import { LoaderInterceptor } from './app.interceptor'
+import { LoaderInterceptor } from './app.interceptor';
+import { SuggestionsComponent } from './components/suggestions/suggestions.component'
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { LoaderInterceptor } from './app.interceptor'
     DocComponent,
     DescriptorsComponent,
     DialogComponent,
-    HighlightPipe
+    HighlightPipe,
+    SuggestionsComponent
   ],
   imports: [
     BrowserModule,

@@ -28,8 +28,8 @@ services:
       - 5000:5000
     volumes:
       - ./backend:/app
-    # links:
-    #   - mongo
+    links:
+      - mongo
 
   angular:
     build: ./frontend

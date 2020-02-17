@@ -5,8 +5,9 @@
         {{ doc.title }} <span class="text-muted">({{ doc.id }})</span>
       </mat-card-title>
     </mat-card-header>
-    <mat-card-content class="p-3">
+    <mat-card-content fxLayout="column" fxLayoutGap="3em" class="p-3">
       <p [innerHTML]="doc.abstract"></p>
+      <app-suggestions [doc]="doc"></app-suggestions>
       <app-descriptors [doc]="doc"></app-descriptors>
       <!-- <div>
         <p>Se puede buscar un descriptor por:</p>

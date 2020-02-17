@@ -105,10 +105,10 @@ export class ApiService {
   }
 
   /**
-   * Check if there are any other annotators that have completed the same document.
+   * Get the decs codes for a specific document from other annotators that have marked as completed that same document.
    */
-  checkOtherCompletions(dockToCheck: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/completion/check`, dockToCheck)
+  getSuggestions(dockToCheck: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation/suggestions`, dockToCheck)
   }
 
 }

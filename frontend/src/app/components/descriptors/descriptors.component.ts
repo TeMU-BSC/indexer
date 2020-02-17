@@ -18,15 +18,13 @@ import { DialogComponent } from 'src/app/components/dialog/dialog.component'
 @Component({
   selector: 'app-descriptors',
   templateUrl: './descriptors.component.html',
-  styleUrls: ['./descriptors.component.scss']
+  styleUrls: ['./descriptors.component.css']
 })
 export class DescriptorsComponent implements OnChanges {
 
   @Input() doc: Doc
-  @Input() label = 'Descriptores de Ciencias de la Salud (DeCS)'
   @ViewChild('chipInput', { static: false }) chipInput: ElementRef<HTMLInputElement>
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete
-
   // Set up reactive formControl
   autocompleteChipList = new FormControl()
   // Set up values to use with chips
@@ -40,6 +38,7 @@ export class DescriptorsComponent implements OnChanges {
   // Define filteredOptins Array and Chips Array
   filteredOptions: Observable<Descriptor[]>
   chips = []
+  suggestionChips = []
   // Optimize the autocomplete performance
   SHORT_LENGTH = 3
   MEDIUM_LENGTH = 15
@@ -61,14 +60,6 @@ export class DescriptorsComponent implements OnChanges {
     this.options = this.api.allDescriptors
     // Init the precoded descriptors
     this.precodedDescriptors = this.api.getPrecodedDescriptors()
-    // Separate the short, medium and long descriptors
-    this.shortDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length <= this.SHORT_LENGTH)
-    // tslint:disable-next-line: max-line-length
-    this.mediumDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.SHORT_LENGTH && descriptor.termSpanish.length <= this.MEDIUM_LENGTH)
-    this.longDescriptors = this.api.allDescriptors.filter(descriptor => descriptor.termSpanish.length > this.MEDIUM_LENGTH)
-    // // Init the subsets
-    // this.short = this.api.allDescriptors.filter(d => d.termSpanish.length < this.LENGTH)
-    // this.long = this.api.allDescriptors.filter(d => d.termSpanish.length >= this.LENGTH)
     // Filter descriptors as the user types in the input field
     this.filteredOptions = this.autocompleteChipList.valueChanges.pipe(
       debounceTime(100),
@@ -83,13 +74,9 @@ export class DescriptorsComponent implements OnChanges {
    * This component implements OnChanges method so it can react to parent changes on its @Input() 'doc' property.
    */
   ngOnChanges() {
-    // Update the chip list
+    // Update the chip lists
     this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
-    // Set the color for each chip
-    // this.chips.forEach(chip => {
-    //   chip.fromOtherAnnotator = Number(chip.decsCode) > 1000
-    //   chip.iconColor = chip.fromOtherAnnotator ? 'accent' : 'primary'
-    // })
+    this.suggestionChips = this.options.filter(descriptor => this.doc.suggestions.includes(descriptor.decsCode))
   }
 
   /**
@@ -106,18 +93,9 @@ export class DescriptorsComponent implements OnChanges {
     }
     // Normalize the lower-cased input
     input = removeAccents(input.toLowerCase())
-    // Choose the according subset of descriptors
-    let subsetToFilter: Descriptor[]
-    if (input.length <= this.SHORT_LENGTH) {
-      subsetToFilter = this.shortDescriptors
-    } else if (input.length > this.SHORT_LENGTH && input.length <= this.MEDIUM_LENGTH) {
-      subsetToFilter = this.mediumDescriptors
-    } else {
-      subsetToFilter = this.longDescriptors
-    }
     // Avoid showing the descriptors that are already added to current doc
     const alreadyAdded = (descriptor: Descriptor) => this.chips.some(chip => chip.decsCode === descriptor.decsCode)
-    subsetToFilter = subsetToFilter.filter(descriptor => !alreadyAdded(descriptor))
+    const subsetToFilter = this.api.allDescriptors.filter(descriptor => !alreadyAdded(descriptor))
     // Filter the descriptors by some HARDCODED properties (#TODO refactor)
     const filtered = subsetToFilter.filter(descriptor =>
       removeAccents(descriptor.termSpanish.toLowerCase()).includes(input)
@@ -128,7 +106,7 @@ export class DescriptorsComponent implements OnChanges {
     // Return the sorted results by matching importance
     return customSort(filtered, input, sortingKey)
 
-    // VERSION 2: filter by its length or more
+    // VERSION 2: filter by its length or grater than its length
     // ...
   }
 
