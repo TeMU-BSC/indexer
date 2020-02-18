@@ -3,7 +3,7 @@
   <mat-chip-list #chipList>
     <mat-chip *ngFor="let chip of chips" #matChip="matChip" [removable]="removable" (removed)="openConfirmDialog(chip)">
       {{ chip.termSpanish }} ({{ chip.decsCode }})
-      <mat-icon matChipRemove>cancel</mat-icon>
+      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
     <input matInput placeholder="Escribe el término o el número de registro..." #chipInput
       [formControl]="autocompleteChipList" [matAutocomplete]="auto" matAutocompletePosition="below"
@@ -17,8 +17,10 @@
       <span [innerHTML]="option.definitionSpanish" class="text-muted"></span>
     </mat-option>
   </mat-autocomplete>
-  <mat-hint>Añade tantos descriptores como consideres oportunos. Se puede buscar un descriptor por su término en español, término en inglés, número de registro (DeCS),
-    código MeSH análogo o alguno de sus sinónimos aceptados.</mat-hint>
+  <mat-hint>
+    Añade tantos descriptores como consideres oportunos. Se puede buscar un descriptor por su término en
+    español, término en inglés, número de registro (DeCS), código MeSH análogo o alguno de sus sinónimos aceptados.
+  </mat-hint>
 </mat-form-field>
 <!-- <mat-form-field appearance="fill">
   <mat-label>Pre-codificados</mat-label>

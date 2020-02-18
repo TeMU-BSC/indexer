@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core'
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle'
 
 import { Doc } from 'src/app/app.model'
 import { ApiService } from 'src/app/services/api.service'
@@ -33,11 +33,7 @@ export class DocComponent {
     }
     if (this.doc.completed) {
       this.api.addCompletion(docToMark).subscribe(
-        () => this.api.getSuggestions(docToMark).subscribe(
-          next => this.doc.suggestions = next.decsCodesFromOthers,
-          error => console.error(error),
-          () => console.log(this.doc.suggestions)
-        )
+        () => this.api.getSuggestions(docToMark).subscribe(next => this.doc.suggestions = next.decsCodesFromOthers)
       )
     } else {
       this.api.removeCompletion(docToMark).subscribe()
