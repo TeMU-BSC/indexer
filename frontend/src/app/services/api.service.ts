@@ -9,6 +9,13 @@ import { Doc, Descriptor, ApiResponse } from 'src/app/app.model'
 import { _sortByOrder } from 'src/app/utilities/functions'
 import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
 
+// BROWSER
+import {
+  getSupportedInputTypes,
+  Platform,
+  supportsPassiveEventListeners,
+  supportsScrollBehavior,
+} from '@angular/cdk/platform'
 
 @Injectable({
   providedIn: 'root'
@@ -22,9 +29,17 @@ export class ApiService {
   public allDescriptors: Descriptor[]
   precodedDecsCodes: string[] = (PRECODED_DECS_CODES as any).default
 
+  // BROWSER
+  supportedInputTypes = Array.from(getSupportedInputTypes()).join(', ')
+  supportsPassiveEventListeners = supportsPassiveEventListeners()
+  supportsScrollBehavior = supportsScrollBehavior()
+
   constructor(
     private http: HttpClient,
-    private papa: Papa
+    private papa: Papa,
+
+    // BROWSER
+    public platform: Platform
   ) {
     this.getAllDescriptors()
   }

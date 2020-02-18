@@ -51,7 +51,7 @@ export class DescriptorsComponent implements OnChanges {
   long: Descriptor[] = []
 
   constructor(
-    private api: ApiService,
+    public api: ApiService,
     public auth: AuthService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar

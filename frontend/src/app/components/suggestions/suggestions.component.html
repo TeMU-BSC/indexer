@@ -1,11 +1,16 @@
-<mat-form-field *ngIf="doc.completed" appearance="fill" class="w-100">
+<mat-form-field appearance="outline" class="w-100">
   <mat-label>Descriptores añadidos por otros</mat-label>
-  <mat-icon matChipAvatar>supervised_user_circle</mat-icon>
   <mat-chip-list #chipList>
-    <mat-chip *ngFor="let chip of chips" #matChip="matChip" [removable]="removable" (removed)="openConfirmDialog(chip)"
-      [color]="doc.validated ? 'accent' : 'primary'" selected>
+    <mat-chip *ngFor="let chip of chips" [selectable]="selectable" [removable]="removable" (removed)="openConfirmDialog(chip)"
+      selected [color]="doc.validated ? 'accent' : 'primary'">
       {{ chip.termSpanish }} ({{ chip.decsCode }})
-      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      <mat-icon matChipRemove *ngIf="!doc.validated && !api.platform.FIREFOX">cancel</mat-icon>
+
+      <!-- REMOVE WHEN matChipRemove GLITCH ON FIREFOX BE SOLVED -->
+      <button mat-icon-button>
+        <mat-icon *ngIf="!doc.validated && api.platform.FIREFOX" (click)="openConfirmDialog(chip)">cancel</mat-icon>
+      </button>
+
     </mat-chip>
   </mat-chip-list>
   <mat-hint>

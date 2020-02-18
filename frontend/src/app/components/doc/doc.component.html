@@ -1,28 +1,16 @@
 <div fxLayout fxLayoutAlign="center">
   <mat-card *ngIf="doc" class="p-0" fxFlex.gt-xs="80">
     <mat-card-header class="pt-3" style="background-color: #f2f2f2">
-      <mat-card-title>
+      <mat-card-title class="pb-4">
         {{ doc.title }} <span class="text-muted">({{ doc.id }})</span>
       </mat-card-title>
     </mat-card-header>
     <mat-card-content fxLayout="column" fxLayoutGap="3em" class="p-3">
       <p [innerHTML]="doc.abstract"></p>
-      <app-suggestions [doc]="doc"></app-suggestions>
       <app-descriptors [doc]="doc"></app-descriptors>
-      <!-- <div>
-        <p>Se puede buscar un descriptor por:</p>
-        <ul>
-          <li>término en español</li>
-          <li>término en inglés</li>
-          <li>sinónimos aceptados</li>
-          <li>código DeCS (número de registro)</li>
-          <li>código MeSH análogo</li>
-        </ul>
-      </div> -->
-    </mat-card-content>
-    <mat-card-actions fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="end" fxLayoutGap="2em" class="p-4">
       <mat-slide-toggle color="primary" [checked]="doc.completed" (change)="toggleCompleted($event)" [disabled]="doc.validated">Completado</mat-slide-toggle>
-      <mat-slide-toggle color="accent" [checked]="doc.validated" (change)="toggleValidated($event)" [disabled]="!doc.completed">Validado</mat-slide-toggle>
-    </mat-card-actions>
+      <app-suggestions *ngIf="doc.completed" [doc]="doc"></app-suggestions>
+      <mat-slide-toggle *ngIf="doc.completed" [checked]="doc.validated" (change)="toggleValidated($event)" [disabled]="!doc.completed">Validado</mat-slide-toggle>
+    </mat-card-content>
   </mat-card>
 </div>

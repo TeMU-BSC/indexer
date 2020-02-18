@@ -1,14 +1,21 @@
 <mat-form-field appearance="outline" class="w-100">
   <mat-label>Descriptores añadidos por ti</mat-label>
   <mat-chip-list #chipList>
-    <mat-chip *ngFor="let chip of chips" #matChip="matChip" [removable]="removable" (removed)="openConfirmDialog(chip)">
+    <mat-chip *ngFor="let chip of chips" [selectable]="selectable" [removable]="removable"
+      (removed)="openConfirmDialog(chip)">
       {{ chip.termSpanish }} ({{ chip.decsCode }})
-      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      <mat-icon matChipRemove *ngIf="!doc.validated && !api.platform.FIREFOX">cancel</mat-icon>
+
+      <!-- REMOVE WHEN matChipRemove GLITCH ON FIREFOX BE SOLVED -->
+      <button mat-icon-button>
+        <mat-icon *ngIf="!doc.validated && api.platform.FIREFOX" (click)="openConfirmDialog(chip)">cancel</mat-icon>
+      </button>
+
     </mat-chip>
-    <input matInput placeholder="Escribe el término o el número de registro..." #chipInput
+    <input matInput [placeholder]="doc.validated ? '' : 'Escribe el término o el número de registro...'" #chipInput
       [formControl]="autocompleteChipList" [matAutocomplete]="auto" matAutocompletePosition="below"
       [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-      [matChipInputAddOnBlur]="addOnBlur">
+      [matChipInputAddOnBlur]="addOnBlur" [readonly]="doc.validated">
   </mat-chip-list>
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addChip($event)">
     <mat-option *ngFor="let option of filteredOptions | async | slice : 0 : 15" [value]="option">

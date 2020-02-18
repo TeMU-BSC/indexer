@@ -14,12 +14,13 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 export class SuggestionsComponent implements OnChanges {
 
   @Input() doc: Doc
+  selectable = true
   removable = true
   chips = []
   options: Descriptor[]
 
   constructor(
-    private api: ApiService,
+    public api: ApiService,
     public auth: AuthService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar

@@ -20,6 +20,7 @@ import { MatTableModule } from '@angular/material/table'
 import { MatTabsModule } from '@angular/material/tabs'
 import { MatToolbarModule } from '@angular/material/toolbar'
 import { MatTooltipModule } from '@angular/material/tooltip'
+import { PlatformModule } from '@angular/cdk/platform'
 import { MaterialFileInputModule } from 'ngx-material-file-input'
 
 const material = [
@@ -42,7 +43,8 @@ const material = [
   MaterialFileInputModule,
   MatDialogModule,
   MatButtonToggleModule,
-  MatMenuModule
+  MatMenuModule,
+  PlatformModule
 ]
 
 @NgModule({
