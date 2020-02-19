@@ -13,6 +13,7 @@ export interface Descriptor {
   treeNumber?: string
   definitionSpanish?: string
   definitionLatin?: string
+  new?: boolean
 }
 
 export interface Doc {
@@ -23,4 +24,5 @@ export interface Doc {
   completed?: boolean
   validated?: boolean
   suggestions?: Descriptor['decsCode'][]
+  decsCodesValidated?: Descriptor['decsCode'][]
 }

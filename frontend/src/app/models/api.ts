@@ -6,5 +6,5 @@ export interface ApiResponse {
   user?: User
   registeredUsers?: number
   deletedCount?: number
-  decsCodesFromOthers?: any
+  suggestions?: any
 }

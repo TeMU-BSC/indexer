@@ -10,7 +10,7 @@
       <app-descriptors [doc]="doc"></app-descriptors>
       <mat-slide-toggle color="primary" [checked]="doc.completed" (change)="toggleCompleted($event)" [disabled]="doc.validated">Completado</mat-slide-toggle>
       <app-suggestions *ngIf="doc.completed" [doc]="doc"></app-suggestions>
-      <mat-slide-toggle *ngIf="doc.completed" [checked]="doc.validated" (change)="toggleValidated($event)" [disabled]="!doc.completed">Validado</mat-slide-toggle>
+      <mat-slide-toggle *ngIf="doc.completed" [checked]="doc.validated" (change)="toggleValidated($event)">Validado</mat-slide-toggle>
     </mat-card-content>
   </mat-card>
 </div>

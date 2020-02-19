@@ -79,36 +79,50 @@ export class ApiService {
   /**
    * Mark an doc as completed by the current user in database.
    */
-  addCompletion(docToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/completion/add`, docToMark)
+  markAsCompleted(docToMark: any): Observable<Doc> {
+    return this.http.post<Doc>(`${environment.apiUrl}/mark_doc_as/completed`, docToMark)
   }
 
   /**
    * Mark an doc as uncompleted by the current user in database.
    */
-  removeCompletion(docToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/completion/remove`, docToMark)
+  markAsUncompleted(docToMark: any): Observable<Doc> {
+    return this.http.post<Doc>(`${environment.apiUrl}/mark_doc_as/uncompleted`, docToMark)
   }
 
   /**
    * Mark an doc as validated by the current user in database.
    */
-  addValidation(docToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/validation/add`, docToMark)
+  markAsValidated(docToMark: any): Observable<Doc> {
+    return this.http.post<Doc>(`${environment.apiUrl}/mark_doc_as/validated`, docToMark)
   }
 
   /**
    * Mark an doc as unvalidated by the current user in database.
    */
-  removeValidation(dockToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/validation/remove`, dockToMark)
+  markAsUnvalidated(dockToMark: any): Observable<Doc> {
+    return this.http.post<Doc>(`${environment.apiUrl}/mark_doc_as/unvalidated`, dockToMark)
   }
 
   /**
    * Get the decs codes for a specific document from other annotators that have marked as completed that same document.
    */
   getSuggestions(dockToCheck: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation/suggestions`, dockToCheck)
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/suggestions`, dockToCheck)
+  }
+
+  /**
+   * Send a new validation to add to the backend.
+   */
+  addValidation(validation: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation_validated/add`, validation)
+  }
+
+  /**
+   * Send an existing validation to remove to the backend.
+   */
+  removeValidation(validation: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation_validated/remove`, validation)
   }
 
 }

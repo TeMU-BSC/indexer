@@ -116,17 +116,19 @@ def get_assigned_docs():
             validated = doc['_id'] in user_validations.get('docs')
         # Get the suggestions from other users
         other_users = mongo.db.completions.distinct('user', {'docs': doc['_id'], 'user': {'$ne': user}})
-        # print('OTHER USERS:', other_users)
         suggestions = mongo.db.annotations.distinct('decsCode', {'doc': doc['_id'], 'user': {'$in': other_users}})
-        # print('SUGGESTIONS:', suggestions)
+        suggestions = list(set(suggestions).difference(decsCodes))
+        # Get the validated decs codes
+        decsCodesValidated = mongo.db.annotationsValidated.distinct('decsCode', {'doc': doc['_id'], 'user': user})
         # Prepare the relevant info to be returned
         doc_relevant_info = {
             'id': doc['_id'],
             'title': doc['ti_es'],
             'abstract': doc['ab_es'],
             'decsCodes': decsCodes,
-            'suggestions': suggestions,
             'completed': completed,
+            'suggestions': suggestions,
+            'decsCodesValidated': decsCodesValidated,
             'validated': validated
         }
         result.append(doc_relevant_info)
@@ -151,59 +153,56 @@ def remove_annotation():
     return jsonify({'deletedCount': result.deleted_count})
 
 
-@app.route('/annotation/suggestions', methods=['POST'])
+@app.route('/annotation_validated/<action>', methods=['POST'])
+def add_or_remove_validation(action):
+    '''Add or remove a validated anotation on or from the annotationsValidated collection.'''
+    annotation_validated = request.json
+    if action == 'add':
+        result = mongo.db.annotationsValidated.replace_one(annotation_validated, annotation_validated, upsert=True)
+        return jsonify({'success': result.acknowledged})
+    if action == 'remove':
+        result = mongo.db.annotationsValidated.delete_one(annotation_validated)
+        return jsonify({'deletedCount': result.deleted_count})
+    return None
+
+
+@app.route('/suggestions', methods=['POST'])
 def get_suggestions():
     '''Get the decs codes for a specific document from other annotators that
     have marked as completed that same document.'''
     completion = request.json
     other_users = mongo.db.completions.distinct('user', {'docs': completion['doc'], 'user': {'$ne': completion['user']}})
     suggestions = mongo.db.annotations.distinct('decsCode', {'doc': completion['doc'], 'user': {'$in': other_users}})
-    return jsonify({'decsCodesFromOthers': list(suggestions)})
+    return jsonify({'suggestions': list(suggestions)})
 
 
-@app.route('/completion/add', methods=['POST'])
-def mark_doc_as_completed():
+@app.route('/mark_doc_as/<status>', methods=['POST'])
+def mark_doc_as(status):
     '''Add a new doc into the 'docs' key in the 'completions' collection.'''
-    completion = request.json
-    result = mongo.db.completions.update_one(
-        {'user': completion['user']},
-        {'$push': {'docs': request.json['doc']}},
-        upsert=True
-    )
-    return jsonify({'success': result.acknowledged})
-
-
-@app.route('/completion/remove', methods=['POST'])
-def mark_doc_as_uncompleted():
-    '''Remove an existing doc from the 'docs' key in the 'completions' collection.'''
-    completion = request.json
-    result = mongo.db.completions.update_one(
-        {'user': completion['user']},
-        {'$pull': {'docs': completion['doc']}}
-    )
-    return jsonify({'success': result.acknowledged})
-
-
-@app.route('/validation/add', methods=['POST'])
-def mark_doc_as_validated():
-    '''Add a new doc into the 'docs' key in the 'validations' collection.'''
-    validation = request.json
-    result = mongo.db.validations.update_one(
-        {'user': validation['user']},
-        {'$push': {'docs': request.json['doc']}},
-        upsert=True
-    )
-    return jsonify({'success': result.acknowledged})
-
-
-@app.route('/validation/remove', methods=['POST'])
-def mark_doc_as_unvalidated():
-    '''Remove an existing doc from the 'docs' key in the 'validations' collection.'''
-    validation = request.json
-    result = mongo.db.validations.update_one(
-        {'user': validation['user']},
-        {'$pull': {'docs': validation['doc']}}
-    )
+    doc_to_mark = request.json
+    result = None
+    if status == 'completed':
+        result = mongo.db.completions.update_one(
+            {'user': doc_to_mark['user']},
+            {'$push': {'docs': request.json['doc']}},
+            upsert=True
+        )
+    if status == 'uncompleted':
+        result = mongo.db.completions.update_one(
+            {'user': doc_to_mark['user']},
+            {'$pull': {'docs': doc_to_mark['doc']}}
+        )
+    if status == 'validated':
+        result = mongo.db.validations.update_one(
+            {'user': doc_to_mark['user']},
+            {'$push': {'docs': request.json['doc']}},
+            upsert=True
+        )
+    if status == 'unvalidated':
+        result = mongo.db.validations.update_one(
+            {'user': doc_to_mark['user']},
+            {'$pull': {'docs': doc_to_mark['doc']}}
+        )
     return jsonify({'success': result.acknowledged})
 
 

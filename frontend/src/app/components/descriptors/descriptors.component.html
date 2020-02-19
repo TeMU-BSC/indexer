@@ -4,12 +4,12 @@
     <mat-chip *ngFor="let chip of chips" [selectable]="selectable" [removable]="removable"
       (removed)="openConfirmDialog(chip)">
       {{ chip.termSpanish }} ({{ chip.decsCode }})
-      <mat-icon matChipRemove *ngIf="!doc.validated">cancel</mat-icon>
+      <mat-icon matChipRemove *ngIf="!doc.completed">cancel</mat-icon>
     </mat-chip>
-    <input matInput [placeholder]="doc.validated ? '' : 'Escribe el término o el número de registro...'" #chipInput
+    <input matInput [placeholder]="doc.completed ? '' : 'Escribe el término o el número de registro...'" #chipInput
       [formControl]="autocompleteChipList" [matAutocomplete]="auto" matAutocompletePosition="below"
       [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-      [matChipInputAddOnBlur]="addOnBlur" [readonly]="doc.validated">
+      [matChipInputAddOnBlur]="addOnBlur" [readonly]="doc.completed">
   </mat-chip-list>
   <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="addChip($event)">
     <mat-option *ngFor="let option of filteredOptions | async | slice : 0 : 15" [value]="option">
@@ -21,5 +21,6 @@
   <mat-hint>
     Añade tantos descriptores como consideres oportunos. Se puede buscar un descriptor por su término en
     español, término en inglés, número de registro (DeCS), código MeSH análogo o alguno de sus sinónimos aceptados.
+    Puedes borrar cualquier descriptor si consideras que no es adecuado para este documento.
   </mat-hint>
 </mat-form-field>

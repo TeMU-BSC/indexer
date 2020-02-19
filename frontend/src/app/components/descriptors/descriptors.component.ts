@@ -39,16 +39,6 @@ export class DescriptorsComponent implements OnChanges {
   filteredOptions: Observable<Descriptor[]>
   chips = []
   suggestionChips = []
-  // Optimize the autocomplete performance
-  SHORT_LENGTH = 3
-  MEDIUM_LENGTH = 15
-  MIN_LENGTH = 2
-  LENGTH = 10
-  shortDescriptors: Descriptor[] = []
-  mediumDescriptors: Descriptor[] = []
-  longDescriptors: Descriptor[] = []
-  short: Descriptor[] = []
-  long: Descriptor[] = []
 
   constructor(
     public api: ApiService,
@@ -121,8 +111,6 @@ export class DescriptorsComponent implements OnChanges {
     // Clear the typed text from the input field
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
-    // Re-select all chips
-    this.chips.forEach(chip => chip.selected = true)
     // Build the object to sent to backend
     const annotationToAdd = {
       decsCode: selectedDescriptor.decsCode,
