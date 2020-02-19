@@ -1,32 +1,30 @@
-import { NgModule } from '@angular/core'
 import { BrowserModule } from '@angular/platform-browser'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-
-// Angular Routing
+import { NgModule } from '@angular/core'
 import { AppRoutingModule } from './app-routing.module'
-// Angular Forms
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-// Angular HTTP
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
-// Angular Material Design Styling
-import { MaterialModule } from './material.module'
-// Angular Flex-Layout
-import { FlexLayoutModule } from '@angular/flex-layout'
-// Simple Material Table: https://www.npmjs.com/package/simplemattable
-import { SimplemattableModule } from 'simplemattable'
-// Own App Components
 import { AppComponent } from './app.component'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { MaterialModule } from './styling/material.module'
+import { FlexLayoutModule } from '@angular/flex-layout'
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
+
+// npm third-party libraries
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
+import { MaterialFileInputModule } from 'ngx-material-file-input'
+import { SimplemattableModule } from 'simplemattable'
+
+// Created components, pipes, interceptors
 import { HeaderComponent } from './components/header/header.component'
 import { FooterComponent } from './components/footer/footer.component'
 import { HomeComponent } from './components/home/home.component'
 import { AdminComponent } from './components/admin/admin.component'
 import { LoginComponent } from './components/login/login.component'
+import { DialogComponent } from './components/dialog/dialog.component'
+import { LoaderInterceptor } from './interceptors/loader.interceptor'
 import { DocsComponent } from './components/docs/docs.component'
 import { DocComponent } from './components/doc/doc.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
-import { DialogComponent } from './components/dialog/dialog.component'
 import { HighlightPipe } from './pipes/highlight.pipe'
-import { LoaderInterceptor } from './app.interceptor';
 import { SuggestionsComponent } from './components/suggestions/suggestions.component'
 
 
@@ -38,27 +36,25 @@ import { SuggestionsComponent } from './components/suggestions/suggestions.compo
     HomeComponent,
     AdminComponent,
     LoginComponent,
+    DialogComponent,
     DocsComponent,
     DocComponent,
     DescriptorsComponent,
-    DialogComponent,
     HighlightPipe,
-    SuggestionsComponent
+    SuggestionsComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
+    MaterialFileInputModule,
+    FontAwesomeModule,
     FlexLayoutModule,
-    SimplemattableModule
-  ],
-  entryComponents: [
-    LoginComponent,
-    DialogComponent
+    SimplemattableModule,
+    HttpClientModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }

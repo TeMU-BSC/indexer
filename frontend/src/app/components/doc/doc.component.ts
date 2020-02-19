@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core'
 import { MatSlideToggleChange } from '@angular/material/slide-toggle'
 
-import { Doc } from 'src/app/app.model'
+import { Doc } from 'src/app/models/decs'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 
@@ -9,7 +9,7 @@ import { AuthService } from 'src/app/services/auth.service'
 @Component({
   selector: 'app-doc',
   templateUrl: './doc.component.html',
-  styleUrls: ['./doc.component.css']
+  styleUrls: ['./doc.component.scss']
 })
 export class DocComponent {
 

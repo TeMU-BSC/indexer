@@ -1,5 +1,5 @@
 import { Component, OnChanges, Input } from '@angular/core'
-import { Doc, Descriptor } from 'src/app/app.model'
+import { Doc, Descriptor } from 'src/app/models/decs'
 import { DialogComponent } from '../dialog/dialog.component'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 @Component({
   selector: 'app-suggestions',
   templateUrl: './suggestions.component.html',
-  styleUrls: ['./suggestions.component.css']
+  styleUrls: ['./suggestions.component.scss']
 })
 export class SuggestionsComponent implements OnChanges {
 

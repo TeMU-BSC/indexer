@@ -1,5 +1,5 @@
 import { Component, AfterViewInit, ViewChild } from '@angular/core'
-import { Doc } from 'src/app/app.model'
+import { Doc } from 'src/app/models/decs'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { TableColumn, Width } from 'simplemattable'
@@ -8,7 +8,7 @@ import { TableColumn, Width } from 'simplemattable'
 @Component({
   selector: 'app-docs',
   templateUrl: './docs.component.html',
-  styleUrls: ['./docs.component.css']
+  styleUrls: ['./docs.component.scss']
 })
 export class DocsComponent implements AfterViewInit {
 

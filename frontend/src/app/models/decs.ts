@@ -4,7 +4,7 @@
  * its final 's' of its acronym, the class has been named 'Descriptor', and
  * its plural should be 'descriptors'.
  */
-export class Descriptor {
+export interface Descriptor {
   decsCode: string
   termSpanish?: string
   termEnglish?: string
@@ -15,7 +15,7 @@ export class Descriptor {
   definitionLatin?: string
 }
 
-export class Doc {
+export interface Doc {
   id: string
   title?: string
   abstract?: string
@@ -23,21 +23,4 @@ export class Doc {
   completed?: boolean
   validated?: boolean
   suggestions?: Descriptor['decsCode'][]
-}
-
-export class User {
-  id: string
-  fullname?: string
-  email?: string
-  role?: string
-  password?: string
-}
-
-export interface ApiResponse {
-  success?: boolean
-  message?: string
-  user?: User
-  registeredUsers?: number
-  deletedCount?: number
-  decsCodesFromOthers?: any
 }

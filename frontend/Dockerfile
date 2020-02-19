@@ -1,5 +1,6 @@
-FROM node:12.16.0-alpine
+FROM node:12-alpine
 WORKDIR /app
-ADD . /app
+COPY package.json ./
 RUN npm install
 RUN npm install -g @angular/cli
+COPY . .

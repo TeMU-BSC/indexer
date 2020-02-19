@@ -5,7 +5,8 @@ import { MatDialog } from '@angular/material/dialog'
 import { Observable } from 'rxjs'
 
 import { environment } from 'src/environments/environment'
-import { User, ApiResponse } from 'src/app/app.model'
+import { User } from 'src/app/models/user'
+import { ApiResponse } from 'src/app/models/api'
 import { LoginComponent } from 'src/app/components/login/login.component'
 
 

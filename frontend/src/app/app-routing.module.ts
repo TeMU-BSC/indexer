@@ -7,7 +7,6 @@ import { DocsComponent } from './components/docs/docs.component'
 import { AuthService } from './services/auth.service'
 import { AuthAdminService } from './services/auth-admin.service'
 
-
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'docs', component: DocsComponent, canActivate: [AuthService] },

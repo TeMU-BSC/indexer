@@ -1,12 +1,8 @@
-<!-- <footer [style.backgroundColor]="validationMode ? '$warn' : '$primary'" fxLayout="column" fxLayout.gt-xs="row"
-  fxLayoutAlign="center center" fxLayoutAlign.gt-md="space-around center" fxLayoutGap="2em"
-  class="text-light text-center p-3 mt-5"> -->
 <footer fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign="center center" fxLayoutAlign.gt-md="space-around center"
-  fxLayoutGap="2em" class="text-light text-center p-3 mt-5">
+  fxLayoutGap="2em">
   <small fxFlex="33">
-    <a href="https://www.plantl.gob.es/" matTooltip="PlanTL">
-      <img src="assets/images/plantl.png" alt="Logo del PlanTL" class="img-fluid bg-light rounded"
-        style="max-height: 6em">
+    <a href="https://www.plantl.gob.es/">
+      <img src="assets/images/plantl.png" alt="Logo del PlanTL" class="img-fluid rounded plantl-logo">
     </a>
   </small>
   <small fxFlex="33">
@@ -24,13 +20,13 @@
     <br />
     <span fxLayout="row" fxLayoutAlign="center" fxLayoutGap="2em">
       <a href="https://es.linkedin.com/in/plan-tl-tecnolog%C3%ADas-lenguaje-5b49aa182" matTooltip="LinkedIn">
-        <i class="fab fa-linkedin h2"></i>
+        <fa-icon [icon]="faLinkedin"></fa-icon>
       </a>
       <a href="https://github.com/PlanTL-SANIDAD" matTooltip="GitHub">
-        <i class="fab fa-github h2"></i>
+        <fa-icon [icon]="faGithub"></fa-icon>
       </a>
       <a href="https://twitter.com/TeMU_BSC" matTooltip="Twitter">
-        <i class="fab fa-twitter h2"></i>
+        <fa-icon [icon]="faTwitter"></fa-icon>
       </a>
     </span>
   </small>

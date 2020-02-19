@@ -8,7 +8,7 @@ import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material
 import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
-import { Doc, Descriptor } from 'src/app/app.model'
+import { Doc, Descriptor } from 'src/app/models/decs'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { removeAccents, customSort } from 'src/app/utilities/functions'
@@ -18,7 +18,7 @@ import { DialogComponent } from 'src/app/components/dialog/dialog.component'
 @Component({
   selector: 'app-descriptors',
   templateUrl: './descriptors.component.html',
-  styleUrls: ['./descriptors.component.css']
+  styleUrls: ['./descriptors.component.scss']
 })
 export class DescriptorsComponent implements OnChanges {
 

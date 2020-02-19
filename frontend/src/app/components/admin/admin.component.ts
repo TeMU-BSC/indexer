@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { ApiResponse } from 'src/app/app.model'
+import { ApiResponse } from 'src/app/models/api'
 import { AuthService } from 'src/app/services/auth.service'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
@@ -12,7 +12,7 @@ import * as EXAMPLE_DESCRIPTOR from 'src/assets/examples/descriptor.json'
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.css']
+  styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent {
 
