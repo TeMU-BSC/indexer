@@ -1,6 +1,6 @@
 /**
  * Remove the spelling accents may contain the given text.
- * https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript
+ * https://stackoverflow.com/a/37511463
  */
 export function removeAccents(text: string): string {
   return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -21,8 +21,20 @@ export function _sortByOrder(items: any[], order: string[], key: string): any[] 
  * 3. Third: Items without matches of their key.
  */
 export function customSort(items: any[], input: string, key: string) {
-  const start = items.filter(item => item[key].startsWith(input)).sort((a, b) => a[key].localeCompare(b[key]))
-  const inner = items.filter(item => !item[key].startsWith(input) && item[key].includes(input)).sort((a, b) => a[key].localeCompare(b[key]))
-  const others = items.filter(item => !item[key].includes(input)).sort((a, b) => a[key].localeCompare(b[key]))
+  let start = []
+  let inner = []
+  let others = []
+  items.forEach(item => {
+    if (item[key].startsWith(input)) {
+      start.push(item)
+    } else if (item[key].includes(input)) {
+      inner.push(item)
+    } else {
+      others.push(item)
+    }
+  })
+  start = start.sort((a, b) => a[key].localeCompare(b[key]))
+  inner = inner.sort((a, b) => a[key].localeCompare(b[key]))
+  others = others.sort((a, b) => a[key].localeCompare(b[key]))
   return start.concat(inner).concat(others)
 }

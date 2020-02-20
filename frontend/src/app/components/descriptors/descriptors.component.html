@@ -1,26 +1,73 @@
-<mat-form-field appearance="outline">
-  <mat-label>Descriptores añadidos por ti</mat-label>
-  <mat-chip-list #chipList>
-    <mat-chip *ngFor="let chip of chips" [selectable]="selectable" [removable]="removable"
-      (removed)="openConfirmDialog(chip)">
-      {{ chip.termSpanish }} ({{ chip.decsCode }})
-      <mat-icon matChipRemove *ngIf="!doc.completed">cancel</mat-icon>
-    </mat-chip>
-    <input matInput [placeholder]="doc.completed ? '' : 'Escribe el término o el número de registro...'" #chipInput
-      [formControl]="autocompleteChipList" [matAutocomplete]="auto" matAutocompletePosition="below"
-      [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-      [matChipInputAddOnBlur]="addOnBlur" [readonly]="doc.completed">
-  </mat-chip-list>
-  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="addChip($event)">
-    <mat-option *ngFor="let option of filteredOptions | async | slice : 0 : 15" [value]="option">
-      <span [innerHTML]="option.termSpanish | highlight: autocompleteChipList.value"></span>
-      (<span [innerHTML]="option.decsCode | highlight: autocompleteChipList.value"></span>)
-      <span [innerHTML]="option.definitionSpanish" class="text-muted"></span>
-    </mat-option>
-  </mat-autocomplete>
-  <mat-hint>
-    Añade tantos descriptores como consideres oportunos. Se puede buscar un descriptor por su término en
-    español, término en inglés, número de registro (DeCS), código MeSH análogo o alguno de sus sinónimos aceptados.
-    Puedes borrar cualquier descriptor si consideras que no es adecuado para este documento.
-  </mat-hint>
-</mat-form-field>
+<div fxLayout="column" fxLayoutAlign="space-around" fxLayoutGap="1em">
+  <section fxLayout="column" fxLayoutGap="1em">
+    <mat-form-field appearance="outline">
+      <mat-label>Descriptores añadidos por ti</mat-label>
+      <mat-chip-list #chipList>
+        <mat-chip *ngFor="let chip of chips" matTooltip="{{ chip.decsCode }}" [selectable]="selectable"
+          [removable]="removable" (removed)="confirmDialogBeforeRemove(chip)">
+          {{ chip.termSpanish }}
+          <mat-icon matChipRemove *ngIf="!doc.completed">cancel</mat-icon>
+        </mat-chip>
+        <input matInput [placeholder]="doc.completed ? '' : 'Busca un descriptor...'" #chipInput
+          [formControl]="autocompleteChipList" [matAutocomplete]="auto" matAutocompletePosition="below"
+          [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          [matChipInputAddOnBlur]="addOnBlur" [readonly]="doc.completed">
+      </mat-chip-list>
+      <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="addChip($event)">
+        <mat-option *ngFor="let option of filteredOptions | async | slice : 0 : 15" [value]="option"
+          matTooltip="{{ option.definitionSpanish }}" matTooltipPosition="right">
+          <span [innerHTML]="option.termSpanish | highlight: autocompleteChipList.value"></span>
+          (<span [innerHTML]="option.decsCode | highlight: autocompleteChipList.value"></span>)
+          <span [innerHTML]="option.definitionSpanish" class="text-muted"></span>
+        </mat-option>
+      </mat-autocomplete>
+      <mat-hint>
+        Se puede buscar un descriptor por su término en español, término en inglés, número de registro (DeCS), código
+        MeSH análogo o alguno de sus sinónimos aceptados.
+      </mat-hint>
+    </mat-form-field>
+    <mat-slide-toggle [checked]="doc.completed" [disabled]="doc.completed" (change)="confirmDialogBeforeComplete()">
+      Completado
+    </mat-slide-toggle>
+  </section>
+  <section fxLayout="column" *ngIf="doc.completed">
+    <mat-form-field appearance="outline">
+      <mat-label>Descriptores añadidos por otroz indizadores</mat-label>
+      <mat-chip-list #chipList>
+        <mat-chip *ngFor="let chip of chips" matTooltip="{{ chip.decsCode }}" [removable]="removable"
+          (removed)="confirmDialogBeforeRemove(chip)">
+          {{ chip.termSpanish }}
+          <mat-icon color="accent">person</mat-icon>
+          <mat-icon matChipRemove *ngIf="!doc.validated">cancel</mat-icon>
+        </mat-chip>
+        <mat-chip *ngFor="let chip of validatedChips" matTooltip="{{ chip.decsCode }}" [removable]="removable"
+          (removed)="confirmDialogBeforeRemove(chip)">
+          {{ chip.termSpanish }}
+          <mat-icon color="primary">people</mat-icon>
+          <button mat-icon-button (click)="myAlert('quieres validar?')">
+            <mat-icon class="custom-green">check</mat-icon>
+          </button>
+          <mat-icon matChipRemove *ngIf="!doc.validated">cancel</mat-icon>
+        </mat-chip>
+        <input matInput [placeholder]="doc.validated ? '' : 'Busca un descriptor...'" #chipInput
+          [formControl]="autocompleteChipList" [matAutocomplete]="auto" matAutocompletePosition="below"
+          [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          [matChipInputAddOnBlur]="addOnBlur" [readonly]="doc.validated">
+      </mat-chip-list>
+      <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="addChip($event)">
+        <mat-option *ngFor="let option of filteredOptions | async | slice : 0 : 15" [value]="option">
+          <span [innerHTML]="option.termSpanish | highlight: autocompleteChipList.value"></span>
+          (<span [innerHTML]="option.decsCode | highlight: autocompleteChipList.value"></span>)
+          <span [innerHTML]="option.definitionSpanish" class="text-muted"></span>
+        </mat-option>
+      </mat-autocomplete>
+      <mat-hint>
+        Acepta o rechaza estas sugerencias; también puedes añadir códigos adicionales.
+      </mat-hint>
+    </mat-form-field>
+    <mat-slide-toggle [checked]="doc.validated" [disabled]="doc.validated" (change)="confirmDialogBeforeValidate()"
+      color="primary">
+      Validado
+    </mat-slide-toggle>
+  </section>
+</div>

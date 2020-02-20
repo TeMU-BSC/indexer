@@ -1,38 +1,40 @@
-<mat-form-field appearance="fill" style="margin-bottom: 1.5em;">
-  <mat-label>Descriptores añadidos por otros indizadores</mat-label>
-  <mat-chip-list>
-    <mat-chip *ngFor="let suggestion of suggestionChips" selected>
-      {{ suggestion.termSpanish }} ({{ suggestion.decsCode }})
-      <button mat-icon-button (click)="moveToFinalDescriptors(suggestion)">
-        <mat-icon>arrow_downward</mat-icon>
-      </button>
-    </mat-chip>
-  </mat-chip-list>
-</mat-form-field>
+<div cdkDropListGroup fxLayout="row" fxLayoutGap="2em">
+  <mat-form-field appearance="outline">
+    <mat-label>Descriptores añadidos por otros indizadores</mat-label>
+    <mat-chip-list class="mat-chip-list-stacked">
+      <mat-chip *ngFor="let suggestion of suggestionChips" cdkDrag>
+        {{ suggestion.termSpanish }} ({{ suggestion.decsCode }})
+        <button mat-icon-button (click)="confirmBeforeMoveChip(suggestion, '¿Quieres mover esta sugerencia a tus anotaciones?')">
+          <mat-icon color="primary">people</mat-icon>
+        </button>
+      </mat-chip>
+    </mat-chip-list>
+  </mat-form-field>
 
-<mat-form-field appearance="outline">
-  <mat-label>Descriptores adicionales que desees añadir</mat-label>
-  <mat-chip-list #chipList>
-    <mat-chip *ngFor="let chip of chips" [selectable]="selectable" [removable]="removable"
-      (removed)="openConfirmDialog(chip)" color="accent">
-      {{ chip.termSpanish }} ({{ chip.decsCode }})
-      <mat-icon *ngIf="chip.new" color="primary">fiber_new</mat-icon>
-      <mat-icon matChipRemove *ngIf="!doc.validated">cancel</mat-icon>
-    </mat-chip>
+  <mat-form-field appearance="outline">
+    <mat-label>Descriptores adicionales que desees añadir</mat-label>
+    <mat-chip-list #chipList class="mat-chip-list-stacked">
+      <mat-chip *ngFor="let chip of chips" cdkDrag [removable]="removable"
+        (removed)="confirmBeforeRemove(chip, '¿Quieres borrar esta anotación?')" color="accent">
+        {{ chip.termSpanish }} ({{ chip.decsCode }})
+        <mat-icon *ngIf="chip.new" color="warn">person</mat-icon>
+        <mat-icon matChipRemove *ngIf="!doc.validated">cancel</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
     <input matInput [placeholder]="doc.validated ? '' : 'Escribe el término o el número de registro...'" #chipInput
-      [formControl]="autocompleteChipList" [matAutocomplete]="auto" matAutocompletePosition="below"
-      [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-      [matChipInputAddOnBlur]="addOnBlur" [readonly]="doc.validated">
-  </mat-chip-list>
-  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="addChip($event)">
-    <mat-option *ngFor="let option of filteredOptions | async | slice : 0 : 15" [value]="option">
-      <span [innerHTML]="option.termSpanish | highlight: autocompleteChipList.value"></span>
-      (<span [innerHTML]="option.decsCode | highlight: autocompleteChipList.value"></span>)
-      <span [innerHTML]="option.definitionSpanish" class="text-muted"></span>
-    </mat-option>
-  </mat-autocomplete>
-  <mat-hint>
-    Tras revisar los descriptores que han añadido otros indizadores para este documento, borra los que no te parezcan
-    adecuados y/o añade aquellos descriptores adicionales que consideres oportunos.
-  </mat-hint>
-</mat-form-field>
+        [formControl]="autocompleteChipList" [matAutocomplete]="auto" matAutocompletePosition="below"
+        [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        [matChipInputAddOnBlur]="addOnBlur" [readonly]="doc.validated">
+    <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="addChip($event)">
+      <mat-option *ngFor="let option of filteredOptions | async | slice : 0 : 15" [value]="option">
+        <span [innerHTML]="option.termSpanish | highlight: autocompleteChipList.value"></span>
+        (<span [innerHTML]="option.decsCode | highlight: autocompleteChipList.value"></span>)
+        <span [innerHTML]="option.definitionSpanish" class="text-muted"></span>
+      </mat-option>
+    </mat-autocomplete>
+    <mat-hint>
+      Tras revisar los descriptores que han añadido otros indizadores para este documento, borra los que no te parezcan
+      adecuados y/o añade aquellos descriptores adicionales que consideres oportunos.
+    </mat-hint>
+  </mat-form-field>
+</div>

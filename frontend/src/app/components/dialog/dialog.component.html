@@ -3,6 +3,6 @@
   <p>{{ data.content }}</p>
 </div>
 <div mat-dialog-actions fxLayout="row" fxLayoutAlign="end">
-  <button *ngIf="data.no" mat-button (click)="onNoClick()">{{ data.no }}</button>
-  <button mat-raised-button color="warn" [mat-dialog-close]="data" cdkFocusInitial>{{ data.yes }}</button>
+  <button mat-button (click)="onNoClick()">Cancelar</button>
+  <button mat-raised-button [color]="data.color" [mat-dialog-close]="data" cdkFocusInitial>{{ data.action | titlecase }}</button>
 </div>

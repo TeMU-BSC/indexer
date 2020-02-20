@@ -5,12 +5,12 @@
         {{ doc.title }} <span class="text-muted">({{ doc.id }})</span>
       </mat-card-title>
     </mat-card-header>
-    <mat-card-content fxLayout="column" fxLayoutGap="3em">
+    <mat-card-content>
       <p [innerHTML]="doc.abstract"></p>
       <app-descriptors [doc]="doc"></app-descriptors>
-      <mat-slide-toggle color="primary" [checked]="doc.completed" (change)="toggleCompleted($event)" [disabled]="doc.validated">Completado</mat-slide-toggle>
-      <app-suggestions *ngIf="doc.completed" [doc]="doc"></app-suggestions>
-      <mat-slide-toggle *ngIf="doc.completed" [checked]="doc.validated" (change)="toggleValidated($event)">Validado</mat-slide-toggle>
+
+      <!-- <mat-slide-toggle [checked]="doc.completed" (change)="toggleCompleted($event)">Completado</mat-slide-toggle> -->
+      <!-- <mat-slide-toggle *ngIf="doc.completed" [checked]="doc.validated" color="primary" (change)="toggleValidated($event)">Validado</mat-slide-toggle> -->
     </mat-card-content>
   </mat-card>
 </div>

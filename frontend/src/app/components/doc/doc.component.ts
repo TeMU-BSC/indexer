@@ -5,6 +5,7 @@ import { Doc } from 'src/app/models/decs'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { SuggestionsComponent } from 'src/app/components/suggestions/suggestions.component'
+import { MatCheckboxChange } from '@angular/material/checkbox'
 
 
 @Component({
@@ -25,7 +26,7 @@ export class DocComponent implements AfterViewInit {
   ngAfterViewInit() { }
 
   /**
-   * Toggle completed status of a doc.
+   * Mark a document as completed.
    */
   toggleCompleted(event: MatSlideToggleChange): void {
     // Visualy toggle the completed property (boolean)

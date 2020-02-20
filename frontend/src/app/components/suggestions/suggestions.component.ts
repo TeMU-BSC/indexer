@@ -11,6 +11,7 @@ import { ENTER } from '@angular/cdk/keycodes'
 import { Observable } from 'rxjs'
 import { customSort, removeAccents } from 'src/app/utilities/functions'
 import { debounceTime, startWith, map } from 'rxjs/operators'
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop'
 
 @Component({
   selector: 'app-suggestions',
@@ -121,7 +122,7 @@ export class SuggestionsComponent implements OnChanges {
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id
     }
-    // Add the clicked chip descriptor to database
+    // Add the new annotation to database
     this.api.addValidation(annotationToAdd).subscribe()
   }
 
@@ -154,14 +155,14 @@ export class SuggestionsComponent implements OnChanges {
   /**
    * Open a confirmation dialog to confirm the removal of a annotation from a document.
    */
-  openConfirmDialog(chip: Descriptor): void {
+  confirmBeforeRemove(chip: Descriptor, title: string): void {
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '350px',
       data: {
-        title: '¿Quieres borrar esta anotación?',
+        title,
         content: `${chip.termSpanish} (${chip.decsCode})`,
-        no: 'Cancelar',
-        yes: 'Borrar'
+        cancel: 'Cancelar',
+        action: 'Borrar'
       }
     })
     dialogRef.afterClosed().subscribe(result => result ? this.removeChip(chip) : null)
@@ -171,7 +172,20 @@ export class SuggestionsComponent implements OnChanges {
    * Merge with the addChip() method
    * ---> TODO avoid adding the same chip several times
    */
-  moveToFinalDescriptors(suggestion: Descriptor) {
+  confirmBeforeMoveChip(chip: Descriptor, title: string) {
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '350px',
+      data: {
+        title,
+        content: `${chip.termSpanish} (${chip.decsCode})`,
+        cancel: 'Cancelar',
+        action: 'Aceptar'
+      }
+    })
+    dialogRef.afterClosed().subscribe(result => result ? this.acceptSuggestion(chip) : null)
+  }
+
+  acceptSuggestion(suggestion: Descriptor) {
     // Add the NEW attribute to the chip
     suggestion.new = true
     // Add the chip to the chips list
@@ -179,16 +193,25 @@ export class SuggestionsComponent implements OnChanges {
     // Clear the typed text from the input field
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
-    // Re-select all chips
-    this.chips.forEach(chip => chip.selected = true)
     // Build the object to sent to backend
     const annotationToAdd = {
       decsCode: suggestion.decsCode,
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id
     }
-    // Add the clicked chip descriptor to database
+    // Add the new annotation to database
     this.api.addValidation(annotationToAdd).subscribe()
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex)
+    } else {
+      transferArrayItem(event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex)
+    }
   }
 
 }

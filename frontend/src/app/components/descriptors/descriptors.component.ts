@@ -13,6 +13,7 @@ import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { removeAccents, customSort } from 'src/app/utilities/functions'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
+import { MatSlideToggleChange } from '@angular/material/slide-toggle'
 
 
 @Component({
@@ -38,7 +39,7 @@ export class DescriptorsComponent implements OnChanges {
   // Define filteredOptins Array and Chips Array
   filteredOptions: Observable<Descriptor[]>
   chips = []
-  suggestionChips = []
+  validatedChips = []
 
   constructor(
     public api: ApiService,
@@ -66,7 +67,7 @@ export class DescriptorsComponent implements OnChanges {
   ngOnChanges() {
     // Update the chip lists
     this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
-    this.suggestionChips = this.options.filter(descriptor => this.doc.suggestions.includes(descriptor.decsCode))
+    this.validatedChips = this.options.filter(descriptor => this.doc.suggestions.includes(descriptor.decsCode))
   }
 
   /**
@@ -117,7 +118,7 @@ export class DescriptorsComponent implements OnChanges {
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id
     }
-    // Add the clicked chip descriptor to database
+    // Add the new annotation to database
     this.api.addAnnotation(annotationToAdd).subscribe()
   }
 
@@ -150,17 +151,86 @@ export class DescriptorsComponent implements OnChanges {
   /**
    * Open a confirmation dialog to confirm the removal of a annotation from a document.
    */
-  openConfirmDialog(chip: Descriptor): void {
+  confirmDialogBeforeRemove(chip: Descriptor): void {
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '350px',
       data: {
         title: '¿Quieres borrar esta anotación?',
         content: `${chip.termSpanish} (${chip.decsCode})`,
-        no: 'Cancelar',
-        yes: 'Borrar'
+        cancel: 'Cancelar',
+        action: 'Borrar',
+        color: 'warn'
       }
     })
     dialogRef.afterClosed().subscribe(result => result ? this.removeChip(chip) : null)
+  }
+
+  /**
+   * Mark a document as completed.
+   */
+  markAsCompleted() {
+    const docToMark = {
+      user: this.auth.getCurrentUser().id,
+      doc: this.doc.id
+    }
+    this.api.markAsCompleted(docToMark).subscribe(
+      // () => this.api.getSuggestions(docToMark).subscribe(next => this.doc.suggestions = next.suggestions)
+    )
+  }
+
+  /**
+   * Mark a document as validated.
+   */
+  markAsValidated(): void {
+    const docToMark = {
+      user: this.auth.getCurrentUser().id,
+      doc: this.doc.id
+    }
+    this.api.markAsValidated(docToMark).subscribe()
+  }
+
+  /**
+   * Open a confirmation dialog to confirm before marking a document as completed.
+   */
+  confirmDialogBeforeComplete(): void {
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '350px',
+      data: {
+        title: '¿Quieres marcar este documento como completado?',
+        content: 'Esta acción no se puede revertir.',
+        cancel: 'Cancelar',
+        action: 'Completar',
+        color: 'accent'
+      }
+    })
+    dialogRef.afterClosed().subscribe(result => result ? this.api.markAsCompleted({
+      user: this.auth.getCurrentUser().id,
+      doc: this.doc.id
+    }) : null)
+  }
+
+  /**
+   * Open a confirmation dialog to confirm before marking a document as validated.
+   */
+  confirmDialogBeforeValidate(): void {
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '350px',
+      data: {
+        title: '¿Quieres marcar este documento como validado?',
+        content: 'Esta acción no se puede revertir.',
+        cancel: 'Cancelar',
+        action: 'Validar',
+        color: 'primary'
+      }
+    })
+    dialogRef.afterClosed().subscribe(result => result ? this.api.markAsValidated({
+      user: this.auth.getCurrentUser().id,
+      doc: this.doc.id
+    }) : null)
+  }
+
+  myAlert(msg) {
+    alert(msg)
   }
 
 }
