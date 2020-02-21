@@ -13,7 +13,8 @@ import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { removeAccents, customSort } from 'src/app/utilities/functions'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
-import { MatSlideToggleChange } from '@angular/material/slide-toggle'
+import { Annotation } from 'src/app/models/api'
+import { FormConfig } from 'src/app/models/form'
 
 
 @Component({
@@ -24,13 +25,15 @@ import { MatSlideToggleChange } from '@angular/material/slide-toggle'
 export class DescriptorsComponent implements OnChanges {
 
   @Input() doc: Doc
+  @Input() validation: boolean
+  @Input() formConfig: FormConfig
   @ViewChild('chipInput') chipInput: ElementRef<HTMLInputElement>
   @ViewChild('auto') matAutocomplete: MatAutocomplete
   // Set up reactive formControl
   autocompleteChipList = new FormControl()
   // Set up values to use with chips
   addOnBlur = true
-  removable = true
+  @Input() removable: boolean
   selectable = true
   separatorKeysCodes: number[] = [ENTER]
   // Set up options array
@@ -39,7 +42,6 @@ export class DescriptorsComponent implements OnChanges {
   // Define filteredOptins Array and Chips Array
   filteredOptions: Observable<Descriptor[]>
   chips = []
-  validatedChips = []
 
   constructor(
     public api: ApiService,
@@ -65,15 +67,48 @@ export class DescriptorsComponent implements OnChanges {
    * This component implements OnChanges method so it can react to parent changes on its @Input() 'doc' property.
    */
   ngOnChanges() {
-    // Update the chip lists
+    // get the current annotations from the user
     this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
-    this.validatedChips = this.options.filter(descriptor => this.doc.suggestions.includes(descriptor.decsCode))
+    // if normal mode, don't check anything more
+    if (!this.validation) {
+      return
+    }
+    // validation annotation view
+    if (this.doc.validated) {
+      // get the finished validated annotations
+      this.api.getValidatedDecsCodes({ user: this.auth.getCurrentUser().id, doc: this.doc.id }).subscribe(
+        response => this.chips = this.options.filter(descriptor => response.validatedDecsCodes.includes(descriptor.decsCode))
+      )
+      return
+    }
+    // get suggestions and add them to chips list
+    this.api.getSuggestions({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe(
+      response => {
+        // get suggestions from backend
+        const suggestions: any = this.options.filter(descriptor => response.suggestions.includes(descriptor.decsCode))
+        console.log(this.chips)
+        console.log(suggestions)
+        // set icon for previuos own chips
+        this.chips.forEach(chip => {
+          chip.iconColor = 'warn'
+          chip.iconName = 'person'
+        })
+        // set icon for suggestion chips
+        suggestions.forEach(chip => {
+          chip.iconColor = 'primary'
+          chip.iconName = 'people'
+        })
+        // merge the two lists
+        this.chips = this.chips.concat(suggestions)
+        console.log(this.chips)
+      }
+    )
   }
 
   /**
    * Custom filter for the descriptors.
    */
-  customFilter(input: string, sortingKey: string) {
+  customFilter(input: string, sortingKey: string): Descriptor[] {
     // Ignore the starting and ending whitespaces. Replace double/multiple whitespaces by single whitespace.
     input = input.trim().replace(/ +(?= )/g, '')
     // If numeric, find the exact decsCode match (there are no decsCodes with 1 digit)
@@ -96,15 +131,12 @@ export class DescriptorsComponent implements OnChanges {
     )
     // Return the sorted results by matching importance
     return customSort(filtered, input, sortingKey)
-
-    // VERSION 2: filter by its length or grater than its length
-    // ...
   }
 
   /**
    * Add a chip to chip list and send it to the backend to add it to database.
    */
-  addChip(event: MatAutocompleteSelectedEvent): void {
+  addChip(event: MatAutocompleteSelectedEvent, backend: boolean): void {
     // Get the selected chip from the event
     const selectedDescriptor: Descriptor = event.option.value
     // Add the chip to the chips list
@@ -112,125 +144,64 @@ export class DescriptorsComponent implements OnChanges {
     // Clear the typed text from the input field
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
-    // Build the object to sent to backend
-    const annotationToAdd = {
-      decsCode: selectedDescriptor.decsCode,
-      user: this.auth.getCurrentUser().id,
-      doc: this.doc.id
+    // Optionally, send new annotation to backend
+    if (backend) {
+      this.api.addAnnotation({
+        decsCode: selectedDescriptor.decsCode,
+        user: this.auth.getCurrentUser().id,
+        doc: this.doc.id,
+      }).subscribe()
     }
-    // Add the new annotation to database
-    this.api.addAnnotation(annotationToAdd).subscribe()
   }
 
   /**
    * Remove a chip from the chip list and send it to the backend to remove it from database.
    */
-  removeChip(chip: Descriptor): void {
+  removeChip(chip: Descriptor, backend: boolean): void {
     // Remove chip from input field
     const index = this.chips.indexOf(chip)
     if (index >= 0) {
       this.chips.splice(index, 1)
     }
-    // Build the object to sent to backend
-    const annotationToRemove = {
+    // Optionally, remove annotation from backend
+    const annotation: Annotation = {
       decsCode: chip.decsCode,
       user: this.auth.getCurrentUser().id,
-      doc: this.doc.id
+      doc: this.doc.id,
     }
-    // Remove the annotation from database
-    this.api.removeAnnotation(annotationToRemove).subscribe()
-    // Visual information to the user
-    const snackBarRef = this.snackBar.open(`DeCS borrado: ${chip.termSpanish} (${chip.decsCode})`, 'DESHACER')
-    // If the action button is clicked, re-add the recently removed annotation
-    snackBarRef.onAction().subscribe(() => {
-      this.chips.push(chip)
-      this.api.addAnnotation(annotationToRemove).subscribe()
-    })
+    if (backend) {
+      this.api.removeAnnotation(annotation).subscribe()
+      // Visual information to the user
+      const snackBarRef = this.snackBar.open(`DeCS borrado: ${chip.termSpanish} (${chip.decsCode})`, 'DESHACER')
+      // If the action button is clicked, re-add the recently removed annotation
+      snackBarRef.onAction().subscribe(() => {
+        this.chips.push(chip)
+        this.api.addAnnotation(annotation).subscribe()
+      })
+    }
   }
 
   /**
-   * Open a confirmation dialog to confirm the removal of a annotation from a document.
+   * Open a confirmation dialog before performing an action to a given array and optionally apply changes to backend.
    */
   confirmDialogBeforeRemove(chip: Descriptor): void {
     const dialogRef = this.dialog.open(DialogComponent, {
-      width: '350px',
+      width: '500px',
       data: {
-        title: '¿Quieres borrar esta anotación?',
-        content: `${chip.termSpanish} (${chip.decsCode})`,
+        title: `${chip.termSpanish} (${chip.decsCode})`,
+        content: '¿Quieres borrar esta anotación?',
         cancel: 'Cancelar',
-        action: 'Borrar',
+        buttonName: 'Borrar',
         color: 'warn'
       }
     })
-    dialogRef.afterClosed().subscribe(result => result ? this.removeChip(chip) : null)
-  }
-
-  /**
-   * Mark a document as completed.
-   */
-  markAsCompleted() {
-    const docToMark = {
-      user: this.auth.getCurrentUser().id,
-      doc: this.doc.id
-    }
-    this.api.markAsCompleted(docToMark).subscribe(
-      // () => this.api.getSuggestions(docToMark).subscribe(next => this.doc.suggestions = next.suggestions)
-    )
-  }
-
-  /**
-   * Mark a document as validated.
-   */
-  markAsValidated(): void {
-    const docToMark = {
-      user: this.auth.getCurrentUser().id,
-      doc: this.doc.id
-    }
-    this.api.markAsValidated(docToMark).subscribe()
-  }
-
-  /**
-   * Open a confirmation dialog to confirm before marking a document as completed.
-   */
-  confirmDialogBeforeComplete(): void {
-    const dialogRef = this.dialog.open(DialogComponent, {
-      width: '350px',
-      data: {
-        title: '¿Quieres marcar este documento como completado?',
-        content: 'Esta acción no se puede revertir.',
-        cancel: 'Cancelar',
-        action: 'Completar',
-        color: 'accent'
+    dialogRef.afterClosed().subscribe(confirmation => {
+      if (confirmation) {
+        // avoid removing from backend when validation mode is true
+        const backend = !this.validation
+        this.removeChip(chip, backend)
       }
     })
-    dialogRef.afterClosed().subscribe(result => result ? this.api.markAsCompleted({
-      user: this.auth.getCurrentUser().id,
-      doc: this.doc.id
-    }) : null)
-  }
-
-  /**
-   * Open a confirmation dialog to confirm before marking a document as validated.
-   */
-  confirmDialogBeforeValidate(): void {
-    const dialogRef = this.dialog.open(DialogComponent, {
-      width: '350px',
-      data: {
-        title: '¿Quieres marcar este documento como validado?',
-        content: 'Esta acción no se puede revertir.',
-        cancel: 'Cancelar',
-        action: 'Validar',
-        color: 'primary'
-      }
-    })
-    dialogRef.afterClosed().subscribe(result => result ? this.api.markAsValidated({
-      user: this.auth.getCurrentUser().id,
-      doc: this.doc.id
-    }) : null)
-  }
-
-  myAlert(msg) {
-    alert(msg)
   }
 
 }

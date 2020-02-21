@@ -5,12 +5,19 @@
         {{ doc.title }} <span class="text-muted">({{ doc.id }})</span>
       </mat-card-title>
     </mat-card-header>
-    <mat-card-content>
+    <mat-card-content fxLayout="column" fxLayoutAlign="space-around" fxLayoutGap="2em">
       <p [innerHTML]="doc.abstract"></p>
-      <app-descriptors [doc]="doc"></app-descriptors>
-
-      <!-- <mat-slide-toggle [checked]="doc.completed" (change)="toggleCompleted($event)">Completado</mat-slide-toggle> -->
-      <!-- <mat-slide-toggle *ngIf="doc.completed" [checked]="doc.validated" color="primary" (change)="toggleValidated($event)">Validado</mat-slide-toggle> -->
+      <app-descriptors [doc]="doc" [formConfig]="formConfigDescriptors" [removable]="!doc.completed"></app-descriptors>
+      <mat-slide-toggle [checked]="doc.completed" [disabled]="doc.completed" color="accent"
+        (change)="confirmDialogBeforeMark('complete')">
+        Completado
+      </mat-slide-toggle>
+      <app-descriptors *ngIf="doc.completed" #validations [doc]="doc" [formConfig]="formConfigValidations" [removable]="!doc.validated"
+        [validation]="true"></app-descriptors>
+      <mat-slide-toggle *ngIf="doc.completed" [checked]="doc.validated" [disabled]="doc.validated" color="primary"
+        (change)="confirmDialogBeforeMark('validate')">
+        Validado
+      </mat-slide-toggle>
     </mat-card-content>
   </mat-card>
 </div>

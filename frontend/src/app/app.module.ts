@@ -1,19 +1,19 @@
 import { BrowserModule } from '@angular/platform-browser'
 import { NgModule } from '@angular/core'
 import { AppRoutingModule } from './app-routing.module'
-import { AppComponent } from './app.component'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { MaterialModule } from './styling/material.module'
-import { FlexLayoutModule } from '@angular/flex-layout'
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
 
 // npm third-party libraries
+import { FlexLayoutModule } from '@angular/flex-layout'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { MaterialFileInputModule } from 'ngx-material-file-input'
+import { MaterialModule } from './styling/material.module'
 import { SimplemattableModule } from 'simplemattable'
 
 // Created components, pipes, interceptors
+import { AppComponent } from './app.component'
 import { HeaderComponent } from './components/header/header.component'
 import { FooterComponent } from './components/footer/footer.component'
 import { HomeComponent } from './components/home/home.component'
@@ -25,7 +25,6 @@ import { DocsComponent } from './components/docs/docs.component'
 import { DocComponent } from './components/doc/doc.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
 import { HighlightPipe } from './pipes/highlight.pipe'
-import { SuggestionsComponent } from './components/suggestions/suggestions.component'
 
 
 @NgModule({
@@ -41,7 +40,6 @@ import { SuggestionsComponent } from './components/suggestions/suggestions.compo
     DocComponent,
     DescriptorsComponent,
     HighlightPipe,
-    SuggestionsComponent,
   ],
   imports: [
     BrowserModule,

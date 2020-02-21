@@ -5,7 +5,7 @@ import { Observable } from 'rxjs'
 import { Papa } from 'ngx-papaparse'
 
 import { environment } from 'src/environments/environment'
-import { ApiResponse } from 'src/app/models/api'
+import { ApiResponse, Annotation } from 'src/app/models/api'
 import { Doc, Descriptor } from 'src/app/models/decs'
 import { _sortByOrder } from 'src/app/utilities/functions'
 import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
@@ -65,14 +65,14 @@ export class ApiService {
   /**
    * Send a new annotation to add to the backend.
    */
-  addAnnotation(annotation: any): Observable<ApiResponse> {
+  addAnnotation(annotation: Annotation): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation/add`, annotation)
   }
 
   /**
    * Send an existing annotation to remove to the backend.
    */
-  removeAnnotation(annotation: any): Observable<ApiResponse> {
+  removeAnnotation(annotation: Annotation): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation/remove`, annotation)
   }
 
@@ -107,22 +107,22 @@ export class ApiService {
   /**
    * Get the decs codes for a specific document from other annotators that have marked as completed that same document.
    */
-  getSuggestions(dockToCheck: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/suggestions`, dockToCheck)
+  getSuggestions(docToCheck: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/suggestions`, docToCheck)
   }
 
   /**
-   * Send a new validation to add to the backend.
+   * Save some validated annotations to be defenitely stored in database.
    */
-  addValidation(validation: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation_validated/add`, validation)
+  saveValidatedAnnotations(validatedAnnotations: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/validated_annotations/add`, validatedAnnotations)
   }
 
   /**
-   * Send an existing validation to remove to the backend.
+   * Get the validated decs codes for a specific document.
    */
-  removeValidation(validation: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation_validated/remove`, validation)
+  getValidatedDecsCodes(obj: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/validated_annotations/get`, obj)
   }
 
 }

@@ -1,4 +1,11 @@
-import {User} from 'src/app/models/user'
+import { User } from 'src/app/models/user'
+import { Descriptor, Doc } from './decs'
+
+export interface Annotation {
+  decsCode: Descriptor['decsCode']
+  doc: Doc['id']
+  user: User['id']
+}
 
 export interface ApiResponse {
   success?: boolean
@@ -7,4 +14,5 @@ export interface ApiResponse {
   registeredUsers?: number
   deletedCount?: number
   suggestions?: any
+  validatedDecsCodes?: Descriptor['decsCode'][]
 }

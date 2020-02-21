@@ -1,11 +1,13 @@
-import { Component, Input, ViewChild, AfterViewInit } from '@angular/core'
+import { Component, Input, ViewChild, AfterViewInit, ViewChildren } from '@angular/core'
 import { MatSlideToggleChange } from '@angular/material/slide-toggle'
 
 import { Doc } from 'src/app/models/decs'
+import { DescriptorsComponent } from '../descriptors/descriptors.component'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { SuggestionsComponent } from 'src/app/components/suggestions/suggestions.component'
-import { MatCheckboxChange } from '@angular/material/checkbox'
+import { FormConfig } from 'src/app/models/form'
+import { MatDialog } from '@angular/material/dialog'
+import { DialogComponent } from '../dialog/dialog.component'
 
 
 @Component({
@@ -16,68 +18,88 @@ import { MatCheckboxChange } from '@angular/material/checkbox'
 export class DocComponent implements AfterViewInit {
 
   @Input() doc: Doc
-  @ViewChild(SuggestionsComponent) suggestions: SuggestionsComponent
+  @ViewChild('validations') validations: DescriptorsComponent
+  formConfigDescriptors: FormConfig = {
+    label: 'Descriptores añadidos por ti inicialmente',
+    hint: `Se puede buscar un descriptor por su término en español, término en inglés, número de registro (DeCS),
+    código MeSH análogo o alguno de sus sinónimos aceptados.`,
+    buttonName: 'Completado',
+    color: 'accent',
+    action: 'complete'
+  }
+  formConfigValidations = {
+    label: 'Descriptores añadidos por ti y por otros indizadores',
+    hint: `Acepta las sugerencias de otros indizadores dejando el descriptor en esta lista, o bien recházalas
+    eliminándolas. También puedes añadir descriptores adicionales.`,
+    buttonName: 'Validado',
+    color: 'primary',
+    action: 'validate'
+  }
 
   constructor(
     public api: ApiService,
-    private auth: AuthService
+    private auth: AuthService,
+    public dialog: MatDialog,
   ) { }
 
   ngAfterViewInit() { }
 
   /**
-   * Mark a document as completed.
+   * Open a confirmation dialog before mark a document as completed/validated and apply changes to backend.
    */
-  toggleCompleted(event: MatSlideToggleChange): void {
-    // Visualy toggle the completed property (boolean)
-    this.doc.completed = event.checked
-    // Make that change permanent into database
-    const docToMark = {
-      user: this.auth.getCurrentUser().id,
-      doc: this.doc.id
+  confirmDialogBeforeMark(action: string): void {
+    let title: string
+    let content: string
+    let buttonName: string
+    let color: string
+    switch (action) {
+      case 'complete':
+        title = 'Esta acción no se puede revertir.'
+        content = '¿Quieres marcar este documento como completado?'
+        buttonName = 'Completar'
+        color = 'accent'
+        break
+      case 'validate':
+        title = 'Esta acción no se puede revertir.'
+        content = '¿Quieres marcar este documento como validado?'
+        buttonName = 'Validar'
+        color = 'primary'
+        break
     }
-    if (this.doc.completed) {
-      this.api.markAsCompleted(docToMark).subscribe(
-        () => this.api.getSuggestions(docToMark).subscribe(next => this.doc.suggestions = next.suggestions)
-      )
-    } else {
-      this.api.markAsUncompleted(docToMark).subscribe()
-    }
-  }
-
-  /**
-   * Toggle validated status of a doc.
-   */
-  toggleValidated(event: MatSlideToggleChange): void {
-    // Visualy toggle the completed property (boolean)
-    this.doc.validated = event.checked
-    // Make that change permanent into database
-    const docToMark = {
-      user: this.auth.getCurrentUser().id,
-      doc: this.doc.id
-    }
-    // this.doc.validated ? this.api.addValidation(docToMark).subscribe() : this.api.removeValidation(docToMark).subscribe()
-    if (this.doc.validated) {
-      this.api.markAsValidated(docToMark).subscribe()
-      this.suggestions.chips.forEach(chip => {
-        // Build the object to sent to backend
-        const annotationToAdd = {
-          decsCode: chip.decsCode,
-          user: this.auth.getCurrentUser().id,
-          doc: this.doc.id
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '500px',
+      data: {
+        title,
+        content,
+        cancel: 'Cancelar',
+        buttonName,
+        color
+      }
+    })
+    dialogRef.afterClosed().subscribe(confirmation => {
+      if (confirmation) {
+        switch (action) {
+          case 'complete':
+            this.doc.completed = true
+            this.api.markAsCompleted({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe()
+            break
+          case 'validate':
+            this.doc.validated = true
+            this.api.markAsValidated({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe()
+            console.log('myChild:', this.validations.chips)
+            const validatedAnnotations = []
+            this.validations.chips.forEach(chip => {
+              validatedAnnotations.push({
+                decsCode: chip.decsCode,
+                user: this.auth.getCurrentUser().id,
+                doc: this.doc.id,
+              })
+            })
+            this.api.saveValidatedAnnotations(validatedAnnotations).subscribe()
+            break
         }
-        // Add the clicked chip descriptor to database
-        // this.api.addValidation(annotationToAdd).subscribe()
-      })
-    } else {
-      this.api.markAsUnvalidated(docToMark).subscribe()
-      // REMOVE ANNOTATIONS FROM VALIDATIONS COLLECTION
-    }
-  }
-
-  testChild() {
-    console.log('myDoc:', this.doc)
-    console.log('myChild:', this.suggestions)
+      }
+    })
   }
 
 }

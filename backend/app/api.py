@@ -118,8 +118,8 @@ def get_assigned_docs():
         other_users = mongo.db.completions.distinct('user', {'docs': doc['_id'], 'user': {'$ne': user}})
         suggestions = mongo.db.annotations.distinct('decsCode', {'doc': doc['_id'], 'user': {'$in': other_users}})
         suggestions = list(set(suggestions).difference(decsCodes))
-        # Get the validated decs codes
-        decsCodesValidated = mongo.db.annotationsValidated.distinct('decsCode', {'doc': doc['_id'], 'user': user})
+        # # Get the validated decs codes
+        # decsCodesValidated = mongo.db.annotationsValidated.distinct('decsCode', {'doc': doc['_id'], 'user': user})
         # Prepare the relevant info to be returned
         doc_relevant_info = {
             'id': doc['_id'],
@@ -128,7 +128,7 @@ def get_assigned_docs():
             'decsCodes': decsCodes,
             'completed': completed,
             'suggestions': suggestions,
-            'decsCodesValidated': decsCodesValidated,
+            # 'decsCodesValidated': decsCodesValidated,
             'validated': validated
         }
         result.append(doc_relevant_info)
@@ -204,6 +204,22 @@ def mark_doc_as(status):
             {'$pull': {'docs': doc_to_mark['doc']}}
         )
     return jsonify({'success': result.acknowledged})
+
+
+@app.route('/validated_annotations/add', methods=['POST'])
+def add_validated_annotations():
+    '''Add some annotations validated by the user after comparing with suggestions from other users.'''
+    validated_annotations = request.json
+    result = mongo.db.annotationsValidated.insert_many(validated_annotations)
+    return jsonify({'success': result.acknowledged})
+
+
+@app.route('/validated_annotations/get', methods=['POST'])
+def get_validated_annotations():
+    '''Get the validated annotations by a given user for a given document.'''
+    obj = request.json
+    validated_decs_codes = mongo.db.annotationsValidated.distinct('decsCode', {'user': obj['user'], 'doc': obj['doc']})
+    return jsonify({'validatedDecsCodes': list(validated_decs_codes)})
 
 
 @app.route('/results', methods=['GET'])
