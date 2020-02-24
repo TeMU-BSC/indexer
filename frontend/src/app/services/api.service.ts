@@ -115,14 +115,14 @@ export class ApiService {
    * Save some validated annotations to be defenitely stored in database.
    */
   saveValidatedAnnotations(validatedAnnotations: any[]): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/validated_annotations/add`, validatedAnnotations)
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotations_validated/add`, validatedAnnotations)
   }
 
   /**
    * Get the validated decs codes for a specific document.
    */
-  getValidatedDecsCodes(obj: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/validated_annotations/get`, obj)
+  getValidatedDecsCodes(validatedAnnotations: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotations_validated/get`, validatedAnnotations)
   }
 
 }

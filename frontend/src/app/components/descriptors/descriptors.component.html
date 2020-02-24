@@ -1,19 +1,19 @@
 <mat-form-field appearance="outline">
   <mat-label>{{ formConfig.label }}</mat-label>
   <mat-chip-list #chipList>
-    <mat-chip *ngFor="let chip of chips" matTooltip="{{ chip.decsCode }}" [selectable]="selectable"
-      [removable]="removable" (removed)="confirmDialogBeforeRemove(chip)">
+    <mat-chip *ngFor="let chip of chips" matTooltip="{{ chip.decsCode }}" [removable]="removable"
+      (removed)="confirmDialogBeforeRemove(chip)">
       {{ chip.termSpanish }}
-      <mat-icon *ngIf="validation && !doc.validated" [color]="chip.iconColor" class="space-left">{{ chip.iconName }}</mat-icon>
+      <mat-icon *ngIf="validation && !doc.validated" [color]="chip.iconColor" class="space-left">{{ chip.iconName }}
+      </mat-icon>
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
-    <input matInput [placeholder]="doc.completed ? '' : 'Busca un descriptor...'" #chipInput
+    <input matInput [placeholder]="removable ? 'Busca un descriptor...' : ''" #chipInput
       [formControl]="autocompleteChipList" [matAutocomplete]="auto" matAutocompletePosition="below"
       [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-      [matChipInputAddOnBlur]="addOnBlur" [readonly]="doc.completed">
+      [matChipInputAddOnBlur]="addOnBlur" [readonly]="!removable">
   </mat-chip-list>
-  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption
-    (optionSelected)="addChip($event, true)">
+  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="addChip($event, true)">
     <mat-option *ngFor="let option of filteredOptions | async | slice : 0 : 15" [value]="option"
       matTooltip="{{ option.definitionSpanish }}" matTooltipPosition="right">
       <span [innerHTML]="option.termSpanish | highlight: autocompleteChipList.value"></span>

@@ -1,14 +1,12 @@
-import { Component, Input, ViewChild, AfterViewInit, ViewChildren } from '@angular/core'
-import { MatSlideToggleChange } from '@angular/material/slide-toggle'
-
+import { Component, Input, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
+import { DescriptorsComponent } from 'src/app/components/descriptors/descriptors.component'
+import { DialogComponent } from 'src/app/components/dialog/dialog.component'
 import { Doc } from 'src/app/models/decs'
-import { DescriptorsComponent } from '../descriptors/descriptors.component'
+import { FormConfig } from 'src/app/models/form'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { FormConfig } from 'src/app/models/form'
-import { MatDialog } from '@angular/material/dialog'
-import { DialogComponent } from '../dialog/dialog.component'
-
+import { MatSlideToggle } from '@angular/material/slide-toggle'
 
 @Component({
   selector: 'app-doc',
@@ -18,7 +16,12 @@ import { DialogComponent } from '../dialog/dialog.component'
 export class DocComponent implements AfterViewInit {
 
   @Input() doc: Doc
+  @ViewChild('completeToggle') completeToggle: MatSlideToggle
+  @ViewChild('validateToggle') validateToggle: MatSlideToggle
   @ViewChild('validations') validations: DescriptorsComponent
+  @Output() decsChange = new EventEmitter<boolean>()
+  @Output() completed = new EventEmitter<boolean>()
+  @Output() validated = new EventEmitter<boolean>()
   formConfigDescriptors: FormConfig = {
     label: 'Descriptores añadidos por ti inicialmente',
     hint: `Se puede buscar un descriptor por su término en español, término en inglés, número de registro (DeCS),
@@ -77,16 +80,27 @@ export class DocComponent implements AfterViewInit {
       }
     })
     dialogRef.afterClosed().subscribe(confirmation => {
+      if (!confirmation) {
+        switch (action) {
+          case 'complete':
+            this.completeToggle.checked = false
+            break
+          case 'validate':
+            this.validateToggle.checked = false
+            break
+        }
+      }
       if (confirmation) {
         switch (action) {
           case 'complete':
             this.doc.completed = true
+            this.completed.emit(true)
             this.api.markAsCompleted({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe()
             break
           case 'validate':
             this.doc.validated = true
+            this.validated.emit(true)
             this.api.markAsValidated({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe()
-            console.log('myChild:', this.validations.chips)
             const validatedAnnotations = []
             this.validations.chips.forEach(chip => {
               validatedAnnotations.push({
@@ -100,6 +114,10 @@ export class DocComponent implements AfterViewInit {
         }
       }
     })
+  }
+
+  emitEvent() {
+    this.decsChange.emit(true)
   }
 
 }

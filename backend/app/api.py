@@ -74,6 +74,11 @@ def login_encrypt():
     return jsonify(result)
 
 
+@app.route('/users', methods=['GET'])
+def get_users():
+    return jsonify([user for user in mongo.db.users.find({}, {'_id': 0})])
+
+
 @app.route('/assignment/add', methods=['POST'])
 def assign_docs_to_users():
     '''Add some documents IDs to the user key in the 'assignments' collection.'''
@@ -114,12 +119,10 @@ def get_assigned_docs():
         user_validations = mongo.db.validations.find_one({'user': user})
         if user_validations:
             validated = doc['_id'] in user_validations.get('docs')
-        # Get the suggestions from other users
+        # Get suggestions from other users ignoring the decs codes added by the current user
         other_users = mongo.db.completions.distinct('user', {'docs': doc['_id'], 'user': {'$ne': user}})
         suggestions = mongo.db.annotations.distinct('decsCode', {'doc': doc['_id'], 'user': {'$in': other_users}})
         suggestions = list(set(suggestions).difference(decsCodes))
-        # # Get the validated decs codes
-        # decsCodesValidated = mongo.db.annotationsValidated.distinct('decsCode', {'doc': doc['_id'], 'user': user})
         # Prepare the relevant info to be returned
         doc_relevant_info = {
             'id': doc['_id'],
@@ -128,7 +131,6 @@ def get_assigned_docs():
             'decsCodes': decsCodes,
             'completed': completed,
             'suggestions': suggestions,
-            # 'decsCodesValidated': decsCodesValidated,
             'validated': validated
         }
         result.append(doc_relevant_info)
@@ -153,17 +155,20 @@ def remove_annotation():
     return jsonify({'deletedCount': result.deleted_count})
 
 
-@app.route('/annotation_validated/<action>', methods=['POST'])
-def add_or_remove_validation(action):
-    '''Add or remove a validated anotation on or from the annotationsValidated collection.'''
-    annotation_validated = request.json
-    if action == 'add':
-        result = mongo.db.annotationsValidated.replace_one(annotation_validated, annotation_validated, upsert=True)
-        return jsonify({'success': result.acknowledged})
-    if action == 'remove':
-        result = mongo.db.annotationsValidated.delete_one(annotation_validated)
-        return jsonify({'deletedCount': result.deleted_count})
-    return None
+@app.route('/annotations_validated/add', methods=['POST'])
+def add_validated_annotations():
+    '''Add some annotations validated by the user after comparing with suggestions from other users.'''
+    validated_annotations = request.json
+    result = mongo.db.annotationsValidated.insert_many(validated_annotations)
+    return jsonify({'success': result.acknowledged})
+
+
+@app.route('/annotations_validated/get', methods=['POST'])
+def get_validated_annotations():
+    '''Get the validated annotations by a given user for a given document.'''
+    obj = request.json
+    validated_decs_codes = mongo.db.annotationsValidated.distinct('decsCode', {'user': obj['user'], 'doc': obj['doc']})
+    return jsonify({'validatedDecsCodes': list(validated_decs_codes)})
 
 
 @app.route('/suggestions', methods=['POST'])
@@ -204,22 +209,6 @@ def mark_doc_as(status):
             {'$pull': {'docs': doc_to_mark['doc']}}
         )
     return jsonify({'success': result.acknowledged})
-
-
-@app.route('/validated_annotations/add', methods=['POST'])
-def add_validated_annotations():
-    '''Add some annotations validated by the user after comparing with suggestions from other users.'''
-    validated_annotations = request.json
-    result = mongo.db.annotationsValidated.insert_many(validated_annotations)
-    return jsonify({'success': result.acknowledged})
-
-
-@app.route('/validated_annotations/get', methods=['POST'])
-def get_validated_annotations():
-    '''Get the validated annotations by a given user for a given document.'''
-    obj = request.json
-    validated_decs_codes = mongo.db.annotationsValidated.distinct('decsCode', {'user': obj['user'], 'doc': obj['doc']})
-    return jsonify({'validatedDecsCodes': list(validated_decs_codes)})
 
 
 @app.route('/results', methods=['GET'])
@@ -346,8 +335,3 @@ def get_results():
         'metrics': metrics
     }
     return jsonify(result)
-
-
-@app.route('/users', methods=['GET'])
-def get_users():
-    return jsonify([user for user in mongo.db.users.find({}, {'_id': 0})])

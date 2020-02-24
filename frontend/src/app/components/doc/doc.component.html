@@ -7,14 +7,14 @@
     </mat-card-header>
     <mat-card-content fxLayout="column" fxLayoutAlign="space-around" fxLayoutGap="2em">
       <p [innerHTML]="doc.abstract"></p>
-      <app-descriptors [doc]="doc" [formConfig]="formConfigDescriptors" [removable]="!doc.completed"></app-descriptors>
-      <mat-slide-toggle [checked]="doc.completed" [disabled]="doc.completed" color="accent"
+      <app-descriptors [doc]="doc" [formConfig]="formConfigDescriptors" [removable]="!doc.completed" (decsChange)="emitEvent()"></app-descriptors>
+      <mat-slide-toggle #completeToggle [checked]="doc.completed" [disabled]="doc.completed" color="accent"
         (change)="confirmDialogBeforeMark('complete')">
         Completado
       </mat-slide-toggle>
-      <app-descriptors *ngIf="doc.completed" #validations [doc]="doc" [formConfig]="formConfigValidations" [removable]="!doc.validated"
-        [validation]="true"></app-descriptors>
-      <mat-slide-toggle *ngIf="doc.completed" [checked]="doc.validated" [disabled]="doc.validated" color="primary"
+      <app-descriptors *ngIf="doc.completed" #validations [doc]="doc" [formConfig]="formConfigValidations"
+        [removable]="!doc.validated" [validation]="true" (decsChange)="emitEvent()"></app-descriptors>
+      <mat-slide-toggle #validateToggle *ngIf="doc.completed" [checked]="doc.validated" [disabled]="doc.validated" color="primary"
         (change)="confirmDialogBeforeMark('validate')">
         Validado
       </mat-slide-toggle>

@@ -24,5 +24,5 @@ export interface Doc {
   completed?: boolean
   validated?: boolean
   suggestions?: Descriptor['decsCode'][]
-  decsCodesValidated?: Descriptor['decsCode'][]
+  validatedDecsCodes?: Descriptor['decsCode'][]
 }

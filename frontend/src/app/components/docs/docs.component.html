@@ -1,7 +1,7 @@
 <div fxLayout="column" fxLayoutGap="1em" class="spacing">
-  <smc-simplemattable [data]="data" [columns]="columns" [filter]="false" [loading]="loading" [paginator]="true"
+  <smc-simplemattable [data]="docs" [columns]="columns" [filter]="false" [loading]="loading" [paginator]="true"
     [sorting]="true" [paginatorPageSize]="5" [paginatorPageSizeOptions]="[5, 10, 20]" [rowClickable]="true"
     (rowClick)="selectDoc($event)">
   </smc-simplemattable>
-  <app-doc [doc]="selectedDoc"></app-doc>
+  <app-doc [doc]="selectedDoc" (decsChange)="refresh()" (completed)="refresh()" (validated)="refresh()"></app-doc>
 </div>
