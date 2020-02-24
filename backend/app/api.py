@@ -119,10 +119,6 @@ def get_assigned_docs():
         user_validations = mongo.db.validations.find_one({'user': user})
         if user_validations:
             validated = doc['_id'] in user_validations.get('docs')
-        # Get suggestions from other users ignoring the decs codes added by the current user
-        other_users = mongo.db.completions.distinct('user', {'docs': doc['_id'], 'user': {'$ne': user}})
-        suggestions = mongo.db.annotations.distinct('decsCode', {'doc': doc['_id'], 'user': {'$in': other_users}})
-        suggestions = list(set(suggestions).difference(decsCodes))
         # Prepare the relevant info to be returned
         doc_relevant_info = {
             'id': doc['_id'],
@@ -130,7 +126,6 @@ def get_assigned_docs():
             'abstract': doc['ab_es'],
             'decsCodes': decsCodes,
             'completed': completed,
-            'suggestions': suggestions,
             'validated': validated
         }
         result.append(doc_relevant_info)

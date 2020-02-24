@@ -32,8 +32,10 @@ export class DocComponent implements AfterViewInit {
   }
   formConfigValidations = {
     label: 'Descriptores añadidos por ti y por otros indizadores',
-    hint: `Acepta las sugerencias de otros indizadores dejando el descriptor en esta lista, o bien recházalas
-    eliminándolas. También puedes añadir descriptores adicionales.`,
+    hint: `El icono rojo indica que solamente tú has añadido este descriptor, el icono lila indica
+    que ese descriptor lo ha añadido uno o más indizadores. Acepta las sugerencias de otros
+    indizadores dejando el descriptor en esta lista, o bien recházalas eliminándolas. También
+    puedes añadir descriptores adicionales.`,
     buttonName: 'Validado',
     color: 'primary',
     action: 'validate'

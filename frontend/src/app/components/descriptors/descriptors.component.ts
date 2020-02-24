@@ -124,18 +124,26 @@ export class DescriptorsComponent implements OnChanges {
   /**
    * Add a chip to chip list and send it to the backend to add it to database.
    */
-  addChip(event: MatAutocompleteSelectedEvent, backend: boolean): void {
+  addChip(event: MatAutocompleteSelectedEvent): void {
     // get the selected chip from the event
     const selectedDescriptor: Descriptor = event.option.value
+    const chip: any = selectedDescriptor
+    // if validation mode, add the icon
+    if (this.validation) {
+      chip.iconColor = 'warn'
+      chip.iconName = 'person'
+    }
     // add the chip to the chips list
-    this.chips.push(selectedDescriptor)
+    this.chips.push(chip)
+    // add the code to the doc associated decsCodes list
+    this.doc.decsCodes.push(chip.decsCode)
     // clear the typed text from the input field
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
     // optionally send new annotation to backend
-    if (backend) {
+    if (!this.validation) {
       const annotation = {
-        decsCode: selectedDescriptor.decsCode,
+        decsCode: chip.decsCode,
         user: this.auth.getCurrentUser().id,
         doc: this.doc.id,
       }
@@ -146,12 +154,15 @@ export class DescriptorsComponent implements OnChanges {
   /**
    * Remove a chip from the chip list and send it to the backend to remove it from database.
    */
-  removeChip(chip: Descriptor, backend: boolean): void {
+  removeChip(chip: Descriptor): void {
     // remove chip from input field
     const index = this.chips.indexOf(chip)
     if (index >= 0) {
       this.chips.splice(index, 1)
     }
+    // remove the code from the doc associated decsCodes list
+    const indexCode = this.doc.decsCodes.indexOf(chip.decsCode)
+    this.doc.decsCodes.splice(indexCode, 1)
     // build annotation object to send to backend
     const annotation: Annotation = {
       decsCode: chip.decsCode,
@@ -159,13 +170,13 @@ export class DescriptorsComponent implements OnChanges {
       doc: this.doc.id,
     }
     // optionally, remove annotation from backend
-    if (backend) { this.api.removeAnnotation(annotation).subscribe(() => this.decsChange.emit(true)) }
+    if (!this.validation) { this.api.removeAnnotation(annotation).subscribe(() => this.decsChange.emit(true)) }
     // give visual feedback to the user
     const snackBarRef = this.snackBar.open(`DeCS borrado: ${chip.termSpanish} (${chip.decsCode})`, 'DESHACER')
     // if the action button is clicked, re-add the recently removed chip (and optionally annotation to backend)
     snackBarRef.onAction().subscribe(() => {
       this.chips.push(chip)
-      if (backend) { this.api.addAnnotation(annotation).subscribe(() => this.decsChange.emit(true)) }
+      if (!this.validation) { this.api.addAnnotation(annotation).subscribe(() => this.decsChange.emit(true)) }
     })
   }
 
@@ -185,8 +196,7 @@ export class DescriptorsComponent implements OnChanges {
     })
     dialogRef.afterClosed().subscribe(confirmation => {
       if (confirmation) {
-        // remove the visual chip and instant backend removal when validation mode is not active
-        this.removeChip(chip, !this.validation)
+        this.removeChip(chip)
       }
     })
   }

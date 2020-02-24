@@ -2,34 +2,42 @@ version: '3.7'
 
 services:
 
+  # angular:
+  #   build: ./frontend
+  #   hostname: angular
+  #   container_name: angular
+  #   restart: always
+  #   environment:
+  #     - REST_API_URL=http://bsccnio01.bsc.es/api
+  #     - BROWSER_SESSION_KEY=loggedUser
+  #   ports:
+  #     - 4200:4200
+  #   command: ng serve --host 0.0.0.0 --disableHostCheck --liveReload=false --prod --aot --sourceMap=false
+
+  # nginx:
+  #   build: ./server
+  #   hostname: nginx
+  #   container_name: nginx
+  #   restart: always
+  #   links:
+  #     - angular
+  #     - flask
+  #   ports:
+  #     - 80:80
+
   angular:
-    build: ./frontend
-    hostname: angular
-    container_name: angular
-    restart: always
-    environment:
-      - REST_API_URL=http://bsccnio01.bsc.es/api
-      - BROWSER_SESSION_KEY=loggedUser
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: angular-prod
     ports:
-      - 4200:4200
-    command: ng serve --host 0.0.0.0 --disableHostCheck --liveReload=false --prod --aot --sourceMap=false
+      - '80:80'
 
   flask:
     build: ./backend
-    hostname: flask
+    hostname: flask-prod
     container_name: flask
     restart: always
     environment:
       - MONGO_URI=mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud
     command: uwsgi app.ini
-  
-  nginx:
-    build: ./server
-    hostname: nginx
-    container_name: nginx
-    restart: always
-    links:
-      - angular
-      - flask
-    ports:
-      - 80:80
