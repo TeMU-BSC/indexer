@@ -18,24 +18,23 @@ export class DocComponent implements AfterViewInit {
   @Input() doc: Doc
   @ViewChild('completeToggle') completeToggle: MatSlideToggle
   @ViewChild('validateToggle') validateToggle: MatSlideToggle
+  // @ViewChild('indexings') indexings: DescriptorsComponent
   @ViewChild('validations') validations: DescriptorsComponent
   @Output() decsChange = new EventEmitter<boolean>()
   @Output() completed = new EventEmitter<boolean>()
   @Output() validated = new EventEmitter<boolean>()
   formConfigDescriptors: FormConfig = {
-    label: 'Descriptores añadidos por ti inicialmente',
-    hint: `Se puede buscar un descriptor por su término en español, término en inglés, número de registro (DeCS),
+    label: 'Inidización',
+    hint: `Puedes buscar un descriptor por su término en español, término en inglés, número de registro (DeCS),
     código MeSH análogo o alguno de sus sinónimos aceptados.`,
     buttonName: 'Completado',
     color: 'accent',
     action: 'complete'
   }
   formConfigValidations = {
-    label: 'Descriptores añadidos por ti y por otros indizadores',
-    hint: `El icono rojo indica que solamente tú has añadido este descriptor, el icono lila indica
-    que ese descriptor lo ha añadido uno o más indizadores. Acepta las sugerencias de otros
-    indizadores dejando el descriptor en esta lista, o bien recházalas eliminándolas. También
-    puedes añadir descriptores adicionales.`,
+    label: 'Validación',
+    hint: `El icono rojo indica que solamente tú has añadido este descriptor; el icono lila indica
+    que ese descriptor lo ha añadido, al menos, otro indizador.`,
     buttonName: 'Validado',
     color: 'primary',
     action: 'validate'

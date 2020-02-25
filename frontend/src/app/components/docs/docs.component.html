@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutGap="1em" class="spacing">
+<div fxLayout="column" fxLayoutGap="1em" style="padding: 2em;">
   <smc-simplemattable [data]="docs" [columns]="columns" [filter]="false" [loading]="loading" [paginator]="true"
     [sorting]="true" [paginatorPageSize]="5" [paginatorPageSizeOptions]="[5, 10, 20]" [rowClickable]="true"
     (rowClick)="selectDoc($event)">
