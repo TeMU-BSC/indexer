@@ -109,13 +109,13 @@ export class DescriptorsComponent implements OnChanges {
         .filter(descriptor => descriptor.decsCode.startsWith(input) && !this.chips.includes(descriptor))
       return customSort(decsFiltered, input, 'decsCode')
     }
-    // normalize the lower-cased input
-    input = removeAccents(input.toLowerCase())
+    // remove the accents from the input
+    input = removeAccents(input)
     // avoid showing the descriptors that are already added to current doc
     const alreadyAdded = (descriptor: Descriptor) => this.chips.some(chip => chip.decsCode === descriptor.decsCode)
     const remainingDescriptors = this.api.allDescriptors.filter(descriptor => !alreadyAdded(descriptor))
-    // filter the descriptors by some properties
-    const matchCondition = (d: Descriptor, key: string) => removeAccents(d[key].toLowerCase()).includes(input)
+    // filter the descriptors by some properties, case-insensitive
+    const matchCondition = (d: Descriptor, key: string) => removeAccents(d[key].toLowerCase()).includes(input.toLowerCase())
     const filtered = remainingDescriptors.filter(descriptor => filterKeys.some(key => matchCondition(descriptor, key)))
     // return the sorted results by custom criteria
     return customSort(filtered, input, sortingKey)

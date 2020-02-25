@@ -25,9 +25,10 @@ export function customSort(items: any[], input: string, key: string) {
   let inner = []
   let others = []
   items.forEach(item => {
-    if (item[key].startsWith(input)) {
+    const value = item[key].toLowerCase()
+    if (value.startsWith(input)) {
       start.push(item)
-    } else if (item[key].includes(input)) {
+    } else if (value.includes(input)) {
       inner.push(item)
     } else {
       others.push(item)

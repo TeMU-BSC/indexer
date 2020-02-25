@@ -2,29 +2,6 @@ version: '3.7'
 
 services:
 
-  # angular:
-  #   build: ./frontend
-  #   hostname: angular
-  #   container_name: angular
-  #   restart: always
-  #   environment:
-  #     - REST_API_URL=http://bsccnio01.bsc.es/api
-  #     - BROWSER_SESSION_KEY=loggedUser
-  #   ports:
-  #     - 4200:4200
-  #   command: ng serve --host 0.0.0.0 --disableHostCheck --liveReload=false --prod --aot --sourceMap=false
-
-  # nginx:
-  #   build: ./server
-  #   hostname: nginx
-  #   container_name: nginx
-  #   restart: always
-  #   links:
-  #     - angular
-  #     - flask
-  #   ports:
-  #     - 80:80
-
   angular:
     build:
       context: ./frontend
