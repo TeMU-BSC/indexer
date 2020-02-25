@@ -22,7 +22,6 @@ export interface Doc {
   abstract?: string
   decsCodes?: Descriptor['decsCode'][]
   completed?: boolean
-  validated?: boolean
-  suggestions?: Descriptor['decsCode'][]
   validatedDecsCodes?: Descriptor['decsCode'][]
+  validated?: boolean
 }

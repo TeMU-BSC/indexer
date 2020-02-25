@@ -108,7 +108,9 @@ def get_assigned_docs():
     result = []
     for doc in docs:
         # Find the decsCodes added by the current user
-        decsCodes = mongo.db.annotations.distinct('decsCode', {'doc': doc['_id'], 'user': user})
+        decs_codes = mongo.db.annotations.distinct('decsCode', {'doc': doc['_id'], 'user': user})
+        # Get the validated decs codes
+        validated_decs_codes = mongo.db.annotationsValidated.distinct('decsCode', {'user': user, 'doc': doc['_id']})
         # Check if this doc has been marked as completed by the current user
         completed = False
         user_completions = mongo.db.completions.find_one({'user': user})
@@ -124,7 +126,8 @@ def get_assigned_docs():
             'id': doc['_id'],
             'title': doc['ti_es'],
             'abstract': doc['ab_es'],
-            'decsCodes': decsCodes,
+            'decsCodes': decs_codes,
+            'validatedDecsCodes': validated_decs_codes,
             'completed': completed,
             'validated': validated
         }

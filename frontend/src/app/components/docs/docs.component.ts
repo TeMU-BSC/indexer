@@ -24,28 +24,29 @@ export class DocsComponent implements AfterViewInit {
     // init the columns of the table
     this.columns = [
       new TableColumn<Doc, 'id'>('ID documento', 'id')
-        .withWidth(Width.pct(10))
         .withColFilter().withColFilterLabel('Filtrar'),
       new TableColumn<Doc, 'title'>('Título', 'title')
         .isHiddenXs(true)
-        .withWidth(Width.pct(80))
+        .withWidth(Width.pct(75))
         .withColFilter().withColFilterLabel('Filtrar'),
-      new TableColumn<Doc, 'decsCodes'>('Núm. descriptores', 'decsCodes')
-        .withWidth(Width.pct(10))
+      new TableColumn<Doc, 'completed'>('Completado', 'completed')
+        .withColFilter().withColFilterLabel('Filtrar')
+        .withTransform(completed => completed ? 'Sí' : 'No')
+        .withNgStyle(completed => ({ color: completed ? 'green' : 'red' })),
+      new TableColumn<Doc, 'decsCodes'>('DeCS iniciales', 'decsCodes')
         .isHiddenXs(true)
         .withColFilter().withColFilterLabel('Filtrar')
         .withTransform(decsCodes => decsCodes.length.toString())
         .withSortTransform(decsCodes => Number(decsCodes.length.toString())),
-      new TableColumn<Doc, 'completed'>('Completado', 'completed')
-        .withWidth(Width.pct(5))
-        .withColFilter().withColFilterLabel('Filtrar')
-        .withTransform(completed => completed ? 'Sí' : 'No')
-        .withNgStyle(completed => ({ color: completed ? 'green' : 'red' })),
       new TableColumn<Doc, 'validated'>('Validado', 'validated')
-        .withWidth(Width.pct(5))
         .withColFilter().withColFilterLabel('Filtrar')
         .withTransform(validated => validated ? 'Sí' : 'No')
-        .withNgStyle(validated => ({ color: validated ? 'green' : 'red' }))
+        .withNgStyle(validated => ({ color: validated ? 'green' : 'red' })),
+      new TableColumn<Doc, 'validatedDecsCodes'>('DeCS validados', 'validatedDecsCodes')
+        .isHiddenXs(true)
+        .withColFilter().withColFilterLabel('Filtrar')
+        .withTransform(validatedDecsCodes => validatedDecsCodes.length.toString())
+        .withSortTransform(validatedDecsCodes => Number(validatedDecsCodes.length.toString())),
     ]
   }
 
