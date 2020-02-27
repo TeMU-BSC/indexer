@@ -229,6 +229,7 @@ def get_results():
     annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
     total_completions = list(mongo.db.completions.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     total_annotations = list(mongo.db.annotations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+    total_validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
 
     # Get the completed docs set
     docs_ids_nested = [completion.get('docs') for completion in total_completions]

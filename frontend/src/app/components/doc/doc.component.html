@@ -1,53 +1,37 @@
-<div *ngIf="doc" fxLayout fxLayoutGap="1em">
-  <!-- <mat-card *ngIf="doc" fxFlex.gt-xs="80">
-    <mat-card-header>
-      <mat-card-title>
-        {{ doc.title }} <span class="text-muted">({{ doc.id }})</span>
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content fxLayout="column" fxLayoutAlign="space-around" fxLayoutGap="2em">
-      <p [innerHTML]="doc.abstract"></p>
-      <app-descriptors [doc]="doc" [formConfig]="formConfigDescriptors" [removable]="!doc.completed" (decsChange)="emitEvent()"></app-descriptors>
-      <button mat-raised-button [disabled]="doc.completed" color="accent" (click)="confirmDialogBeforeMark('complete')">
-        Marcar como completado
-      </button>
-      <app-descriptors *ngIf="doc.completed" #validations [doc]="doc" [formConfig]="formConfigValidations"
-        [removable]="!doc.validated" [validation]="true" (decsChange)="emitEvent()"></app-descriptors>
-      <button mat-raised-button *ngIf="doc.completed" [disabled]="doc.validated" color="primary" (click)="confirmDialogBeforeMark('validate')">
-        Marcar como validado
-      </button>
-    </mat-card-content>
-  </mat-card> -->
-
+<div fxLayout="column" fxLayoutGap="1em">
   <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        {{ doc.title }} <span class="text-muted">({{ doc.id }})</span>
-      </mat-card-title>
+    <mat-card-header class="bg-lightgrey card-padding higher-line">
+      <mat-card-title>{{ doc.title }} <span class="text-muted">({{ doc.id }})</span></mat-card-title>
     </mat-card-header>
-    <mat-card-content fxLayout="column" fxLayoutGap="0.5em" fxLayout.gt-sm="row" fxLayoutGap.gt-sm="2em">
-      <p [innerHTML]="doc.abstract" fxFlex="50" style="line-height: 2em;"></p>
-      <section fxLayout="column" fxLayoutAlign="start" fxLayoutGap="2em" fxFlex="50">
-        <p><b>Indización:</b>
-          Añade tantos descriptores como consideres adecuado para este documento.
-        </p>
-        <app-descriptors #indexings [doc]="doc" [formConfig]="formConfigDescriptors" [removable]="!doc.completed"
-          (decsChange)="emitEvent()"></app-descriptors>
-        <button mat-raised-button *ngIf="!doc.completed" color="accent" (click)="confirmDialogBeforeMark('complete')">
-          Completar indización
-        </button>
-        <button mat-flat-button color="accent" *ngIf="doc.completed">Completado!</button>
-        <p *ngIf="doc.completed"><b>Validación:</b>
-          Acepta las sugerencias de otros indizadores dejando el descriptor en esta lista, o bien recházalas
-          eliminándolas. También puedes añadir descriptores adicionales.
-        </p>
-        <app-descriptors *ngIf="doc.completed" #validations [doc]="doc" [formConfig]="formConfigValidations"
-          [removable]="!doc.validated" [validation]="true" (decsChange)="emitEvent()"></app-descriptors>
-        <button mat-raised-button *ngIf="doc.completed && !doc.validated" color="primary" (click)="confirmDialogBeforeMark('validate')">
-          Validar indización
-        </button>
-        <button mat-flat-button color="primary" *ngIf="doc.validated">Validado!</button>
-      </section>
+    <mat-card-content [innerHTML]="doc.abstract" class="card-padding higher-line">
     </mat-card-content>
   </mat-card>
+  <section fxLayout fxLayoutAlign="start" fxLayoutGap="2em" fxFlex="50">
+    <div fxFlex="50" fxLayout="column">
+      <h2>Fase 1: Indización</h2>
+      <p>
+        Añade tantos descriptores como consideres adecuado para este documento.
+      </p>
+      <app-descriptors #indexings [doc]="doc" [formConfig]="formConfigDescriptors" [removable]="!doc.completed">
+      </app-descriptors>
+      <button mat-raised-button [disabled]="indexings.chips.length === 0 || doc.completed" color="accent"
+        (click)="confirmDialogBeforeMark('complete')" fxFlexAlign="start" style="margin-top: 2em;">
+        Completar indización
+      </button>
+    </div>
+    <div fxFlex="50" fxLayout="column" *ngIf="doc.completed">
+      <h2>Fase 2: Validación</h2>
+      <p>
+        Acepta las sugerencias de otros indizadores dejando el descriptor en esta lista, o bien recházalas
+        eliminándolas. También puedes añadir descriptores adicionales.
+      </p>
+      <app-descriptors #validations [doc]="doc" [formConfig]="formConfigValidations" [removable]="!doc.validated"
+        [validation]="true">
+      </app-descriptors>
+      <button mat-raised-button [disabled]="validations.chips.length === 0 || doc.validated" color="primary"
+        (click)="confirmDialogBeforeMark('validate')" fxFlexAlign="start" style="margin-top: 2em;">
+        Validar indización
+      </button>
+    </div>
+  </section>
 </div>

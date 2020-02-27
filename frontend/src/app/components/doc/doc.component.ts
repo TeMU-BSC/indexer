@@ -6,7 +6,6 @@ import { Doc } from 'src/app/models/decs'
 import { FormConfig } from 'src/app/models/form'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { MatSlideToggle } from '@angular/material/slide-toggle'
 
 @Component({
   selector: 'app-doc',
@@ -16,22 +15,19 @@ import { MatSlideToggle } from '@angular/material/slide-toggle'
 export class DocComponent implements AfterViewInit {
 
   @Input() doc: Doc
-  @ViewChild('completeToggle') completeToggle: MatSlideToggle
-  @ViewChild('validateToggle') validateToggle: MatSlideToggle
-  // @ViewChild('indexings') indexings: DescriptorsComponent
+  @ViewChild('indexings') indexings: DescriptorsComponent
   @ViewChild('validations') validations: DescriptorsComponent
-  @Output() decsChange = new EventEmitter<boolean>()
   @Output() completed = new EventEmitter<boolean>()
   @Output() validated = new EventEmitter<boolean>()
   formConfigDescriptors: FormConfig = {
-    label: 'Inidización',
+    label: 'Indización',
     hint: `Puedes buscar un descriptor por su término en español, término en inglés, número de registro (DeCS),
     código MeSH análogo o alguno de sus sinónimos aceptados.`,
     buttonName: 'Completado',
     color: 'accent',
     action: 'complete'
   }
-  formConfigValidations = {
+  formConfigValidations: FormConfig = {
     label: 'Validación',
     hint: `El icono rojo indica que solamente tú has añadido este descriptor; el icono lila indica
     que ese descriptor lo ha añadido, al menos, otro indizador.`,
@@ -81,16 +77,6 @@ export class DocComponent implements AfterViewInit {
       }
     })
     dialogRef.afterClosed().subscribe(confirmation => {
-      if (!confirmation) {
-        switch (action) {
-          case 'complete':
-            this.completeToggle.checked = false
-            break
-          case 'validate':
-            this.validateToggle.checked = false
-            break
-        }
-      }
       if (confirmation) {
         switch (action) {
           case 'complete':
@@ -115,10 +101,6 @@ export class DocComponent implements AfterViewInit {
         }
       }
     })
-  }
-
-  emitEvent() {
-    this.decsChange.emit(true)
   }
 
 }
