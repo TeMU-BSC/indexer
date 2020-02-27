@@ -102,7 +102,7 @@ export class DescriptorsComponent implements OnChanges {
    */
   customFilter(input: string, sortingKey: string, filterKeys: string[]): Descriptor[] {
     // ignore the starting and ending whitespaces; replace double/multiple whitespaces by single whitespace
-    input = input.trim().replace(/ +(?= )/g, '')
+    input = input.trim().replace(/[ ]+(?= )/g, '')
     // if numeric, find the exact decsCode match (there are no decsCodes with 1 digit)
     if (input.length >= 2 && !isNaN(Number(input))) {
       const decsFiltered = this.api.allDescriptors
