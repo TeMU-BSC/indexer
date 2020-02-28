@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Observable } from 'rxjs'
+import { Observable, of } from 'rxjs'
 
 import { Papa } from 'ngx-papaparse'
 
@@ -9,6 +9,7 @@ import { ApiResponse, Annotation } from 'src/app/models/api'
 import { Doc, Descriptor } from 'src/app/models/decs'
 import { _sortByOrder } from 'src/app/utilities/functions'
 import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
+
 
 @Injectable({
   providedIn: 'root'
@@ -112,10 +113,10 @@ export class ApiService {
   }
 
   /**
-   * Save some validated annotations to be defenitely stored in database.
+   * Add a validated annotation to be defenitely stored in database.
    */
-  saveValidatedAnnotations(validatedAnnotations: any[]): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotations_validated/add`, validatedAnnotations)
+  addValidatedAnnotation(validatedAnnotation: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation_validated/add`, validatedAnnotation)
   }
 
   /**
@@ -123,6 +124,13 @@ export class ApiService {
    */
   getValidatedDecsCodes(validatedAnnotations: any): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${environment.apiUrl}/annotations_validated/get`, validatedAnnotations)
+  }
+
+  /**
+   * Get a document by its id.
+   */
+  getDoc(id: string): Observable<Doc> {
+    return this.http.get<Doc>(`${environment.apiUrl}/doc/${id}`)
   }
 
 }

@@ -37,7 +37,7 @@ export class DocsComponent implements AfterViewInit {
         .isHiddenXs(true)
         .withColFilter().withColFilterLabel('Filtrar')
         .withTransform(decsCodes => decsCodes.length.toString())
-        .withSortTransform(decsCodes => Number(decsCodes.length.toString())),
+        .withSortTransform((_, doc) => doc.decsCodes.length),
       new TableColumn<Doc, 'validated'>('Validado', 'validated')
         .withColFilter().withColFilterLabel('Filtrar')
         .withTransform(validated => validated ? 'Sí' : 'No')
@@ -46,8 +46,28 @@ export class DocsComponent implements AfterViewInit {
         .isHiddenXs(true)
         .withColFilter().withColFilterLabel('Filtrar')
         .withTransform(validatedDecsCodes => validatedDecsCodes.length.toString())
-        .withSortTransform(validatedDecsCodes => Number(validatedDecsCodes.length.toString())),
+        .withSortTransform((_, doc) => doc.validatedDecsCodes.length),
     ]
+
+    // version 2: less columns
+    // this.columns = [
+    //   new TableColumn<Doc, 'id'>('ID documento', 'id')
+    //     .withColFilter().withColFilterLabel('Filtrar'),
+    //   new TableColumn<Doc, 'title'>('Título', 'title')
+    //     .isHiddenXs(true)
+    //     .withWidth(Width.pct(75))
+    //     .withColFilter().withColFilterLabel('Filtrar'),
+    //   new TableColumn<Doc, 'completed'>('Completado (núm. de DeCS)', 'completed')
+    //     .withColFilter().withColFilterLabel('Filtrar')
+    //     .withTransform((completed, doc) => completed ? `Sí (${doc.decsCodes.length})` : `No (${doc.decsCodes.length})`)
+    //     .withSortTransform((_, doc) => doc.decsCodes.length)
+    //     .withNgStyle(completed => ({ color: completed ? 'green' : 'red' })),
+    //   new TableColumn<Doc, 'validated'>('Validado (núm. de DeCS)', 'validated')
+    //     .withColFilter().withColFilterLabel('Filtrar')
+    //     .withTransform((validated, doc) => validated ? `Sí (${doc.validatedDecsCodes.length})` : `No (${doc.validatedDecsCodes.length})`)
+    //     .withSortTransform((_, doc) => doc.validatedDecsCodes.length)
+    //     .withNgStyle(validated => ({ color: validated ? 'green' : 'red' })),
+    // ]
   }
 
   ngAfterViewInit() {

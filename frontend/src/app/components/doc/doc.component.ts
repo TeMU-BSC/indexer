@@ -80,23 +80,30 @@ export class DocComponent implements AfterViewInit {
       if (confirmation) {
         switch (action) {
           case 'complete':
+            if (this.indexings.chips.length === 0) {
+              alert('Atención: no hay ningún código añadido.')
+              return
+            }
             this.doc.completed = true
             this.completed.emit(true)
             this.api.markAsCompleted({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe()
             break
           case 'validate':
+            if (this.validations.chips.length === 0) {
+              alert('Atención: no hay ningún código añadido.')
+              return
+            }
             this.doc.validated = true
             this.validated.emit(true)
             this.api.markAsValidated({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe()
-            const validatedAnnotations = []
             this.validations.chips.forEach(chip => {
-              validatedAnnotations.push({
+              const validatedAnnotation = {
                 decsCode: chip.decsCode,
                 user: this.auth.getCurrentUser().id,
                 doc: this.doc.id,
-              })
+              }
+              this.api.addValidatedAnnotation(validatedAnnotation).subscribe()
             })
-            this.api.saveValidatedAnnotations(validatedAnnotations).subscribe()
             break
         }
       }

@@ -79,6 +79,13 @@ def get_users():
     return jsonify([user for user in mongo.db.users.find({}, {'_id': 0})])
 
 
+@app.route('/doc/<id>', methods=['GET'])
+def get_doc(id):
+    '''Get the document by the given id.'''
+    doc = mongo.db.selected_importants.find_one({'_id': id})
+    return jsonify({'id': doc['_id'], 'title': doc['ti_es'], 'abstract': doc['ab_es']})
+
+
 @app.route('/assignment/add', methods=['POST'])
 def assign_docs_to_users():
     '''Add some documents IDs to the user key in the 'assignments' collection.'''
@@ -145,19 +152,19 @@ def add_annotation():
     return jsonify({'success': result.acknowledged})
 
 
-@app.route('/annotation/remove', methods=['POST'])
-def remove_annotation():
-    '''Remove an existing annotation from the 'annotations' collection.'''
-    annotation = request.json
-    result = mongo.db.annotations.delete_one(annotation)
-    return jsonify({'deletedCount': result.deleted_count})
+# @app.route('/annotation/remove', methods=['POST'])
+# def remove_annotation():
+#     '''Remove an existing annotation from the 'annotations' collection.'''
+#     annotation = request.json
+#     result = mongo.db.annotations.delete_one(annotation)
+#     return jsonify({'deletedCount': result.deleted_count})
 
 
-@app.route('/annotations_validated/add', methods=['POST'])
+@app.route('/annotation_validated/add', methods=['POST'])
 def add_validated_annotations():
     '''Add some annotations validated by the user after comparing with suggestions from other users.'''
-    validated_annotations = request.json
-    result = mongo.db.annotationsValidated.insert_many(validated_annotations)
+    validated_annotation = request.json
+    result = mongo.db.annotationsValidated.replace_one(validated_annotation,validated_annotation, upsert=True)
     return jsonify({'success': result.acknowledged})
 
 
@@ -229,7 +236,6 @@ def get_results():
     annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
     total_completions = list(mongo.db.completions.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     total_annotations = list(mongo.db.annotations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
-    total_validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
 
     # Get the completed docs set
     docs_ids_nested = [completion.get('docs') for completion in total_completions]
@@ -273,6 +279,133 @@ def get_results():
         user = completion.get('user')
         docs = list()
         for completed_doc in completion.get('docs'):
+            decs_codes = [annotation.get('decsCode') for annotation in total_annotations if annotation.get('user') == user and annotation.get('doc') == completed_doc]
+            doc = {'doc': completed_doc, 'decsCodes': decs_codes}
+            docs.append(doc)
+        user_annotations = {'user': user, 'annotations': docs}
+        annotations['perUser'].append(user_annotations)
+
+    # Metrics per user pair
+
+    # Find the common docs annotated by each pair of users
+    for pair in combinations(annotator_ids, 2):
+        first_annotator_id = pair[0]
+        second_annotator_id = pair[1]
+        first_annotations = [annotation for ann in annotations.get('perUser') if ann.get('user') == first_annotator_id for annotation in ann.get('annotations')]
+        second_annotations = [annotation for ann in annotations.get('perUser') if ann.get('user') == second_annotator_id for annotation in ann.get('annotations')]
+        first_docs = [ann.get('doc') for ann in first_annotations]
+        second_docs = [ann.get('doc') for ann in second_annotations]
+        common_docs = set(first_docs).intersection(second_docs)
+
+        # Calculate the correlation of DeCS codes for each common doc between that pair of users
+        docs_metrics = list()
+        for doc in common_docs:
+            for ann in first_annotations:
+                if ann.get('doc') == doc:
+                    first_decs = ann.get('decsCodes')
+            for ann in second_annotations:
+                if ann.get('doc') == doc:
+                    second_decs = ann.get('decsCodes')
+            intersection = set(first_decs).intersection(second_decs)
+            union = set(first_decs).union(second_decs)
+            correlation = len(intersection) / len(union)
+            # print(first_annotator_id, second_annotator_id, doc, f'{len(intersection)} / {len(union)} = {correlation}')
+            docs_metrics.append({'doc': doc, 'correlation': correlation})
+
+        correlations = [metric.get('correlation') for metric in docs_metrics]
+        score = 0
+        if correlations:
+            score = mean(correlations)
+        metrics['perUserPair'].append({'annotatorPair': list(pair), 'metrics': docs_metrics, 'averageScore': score})
+    
+    # Finally, for each annotator, calculate its weighted mean of the correlations with the rest of annotators
+    for id in annotator_ids:
+        scores = list()
+        amounts = list()
+        for pair_metric in metrics.get('perUserPair'):
+            if id in pair_metric.get('annotatorPair'):
+                scores.append(pair_metric.get('averageScore'))
+                amounts.append(len(pair_metric.get('metrics')))
+        try:
+            weighted_average = sum(x * y for x, y in zip(scores, amounts)) / sum(amounts)
+        except ZeroDivisionError:
+            weighted_average = 0
+        metrics['perUser'].append({'user': id, 'annotatorScore': weighted_average})
+
+    result = {
+        '_totalCompletedDocumentCount': len(docs_ids_flatten),
+        '_distinctCompletedDocumentCount': len(completed_docs_ids_set),
+        '_comparedCompletedDocumentCount': len(docs_ids_flatten) - len(completed_docs_ids_set),
+        'annotations': annotations,
+        'metrics': metrics
+    }
+    return jsonify(result)
+
+
+@app.route('/results/validations', methods=['GET'])
+def get_results_validated():
+    '''Return the annotations and its metrics, per doc and per user.
+    Structure of annotations per doc:
+    [
+        {
+            'doc': 'doc1',
+            'annotators': [
+                {
+                    'user': 'user1',
+                    'decsCodes': ['decs1', 'decs2', 'decs3', ...]
+                }, ...
+            ]
+        }, ...
+    ]
+    '''
+    # Get the data from mongo
+    # annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+    annotator_ids = list(mongo.db.users.distinct('id', {'role': 'admin'}))
+    total_validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+    total_annotations = list(mongo.db.annotations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+
+    # Get the completed docs set
+    docs_ids_nested = [validation.get('docs') for validation in total_validations]
+    docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
+    completed_docs_ids_set = set(docs_ids_flatten)
+
+    # Init storing variables
+    annotations = {'perDoc': list(), 'perUser': list()}
+    metrics = {'perDoc': list(), 'perUserPair': list(), 'perUser': list()}
+
+    # Annotations per doc
+    for doc in completed_docs_ids_set:
+        doc_users = [validation.get('user') for validation in total_validations if doc in validation.get('docs')]
+        users = list()
+        for user in doc_users:
+            decs_codes = [annotation.get('decsCode') for annotation in total_annotations if user == annotation.get('user') and doc == annotation.get('doc')]
+            user = {'user': user, 'decsCodes': decs_codes}
+            users.append(user)
+        doc_annotations = {'doc': doc, 'annotations': users}
+        # annotations['perDoc'].append(doc_annotations)
+        if len(users) >= 2:
+            annotations['perDoc'].append(doc_annotations)
+
+    # Metrics per doc
+    for doc in annotations.get('perDoc'):
+        decs_codes_list = [ann.get('decsCodes') for ann in doc.get('annotations')]
+        # Make combinations and the mean of them in case there are more than 2 annotators per document
+        partials = list()
+        for comb in combinations(decs_codes_list, 2):
+            first_decs = comb[0]
+            second_decs = comb[1]
+            intersection = set(first_decs).intersection(second_decs)
+            union = set(first_decs).union(second_decs)
+            partial = len(intersection) / len(union)
+            partials.append(partial)
+        doc_metric = {'doc': doc.get('doc'), 'annotatorCount': len(doc.get('annotations')), 'correlation': mean(partials)}
+        metrics['perDoc'].append(doc_metric)
+
+    # Annotations per user
+    for validation in total_validations:
+        user = validation.get('user')
+        docs = list()
+        for completed_doc in validation.get('docs'):
             decs_codes = [annotation.get('decsCode') for annotation in total_annotations if annotation.get('user') == user and annotation.get('doc') == completed_doc]
             doc = {'doc': completed_doc, 'decsCodes': decs_codes}
             docs.append(doc)

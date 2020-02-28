@@ -24,7 +24,8 @@ import { LoaderInterceptor } from './interceptors/loader.interceptor'
 import { DocsComponent } from './components/docs/docs.component'
 import { DocComponent } from './components/doc/doc.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
-import { HighlightPipe } from './pipes/highlight.pipe'
+import { HighlightPipe } from './pipes/highlight.pipe';
+import { DocDetailComponent } from './components/doc-detail/doc-detail.component'
 
 
 @NgModule({
@@ -40,6 +41,7 @@ import { HighlightPipe } from './pipes/highlight.pipe'
     DocComponent,
     DescriptorsComponent,
     HighlightPipe,
+    DocDetailComponent,
   ],
   imports: [
     BrowserModule,
