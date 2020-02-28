@@ -96,14 +96,15 @@ export class DocComponent implements AfterViewInit {
             this.doc.validated = true
             this.validated.emit(true)
             this.api.markAsValidated({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe()
+            const validatedAnnotations = []
             this.validations.chips.forEach(chip => {
-              const validatedAnnotation = {
+              validatedAnnotations.push({
                 decsCode: chip.decsCode,
                 user: this.auth.getCurrentUser().id,
                 doc: this.doc.id,
-              }
-              this.api.addValidatedAnnotation(validatedAnnotation).subscribe()
+              })
             })
+            this.api.saveValidatedAnnotations(validatedAnnotations).subscribe()
             break
         }
       }

@@ -113,10 +113,10 @@ export class ApiService {
   }
 
   /**
-   * Add a validated annotation to be defenitely stored in database.
+   * Save some validated annotations to be defenitely stored in database.
    */
-  addValidatedAnnotation(validatedAnnotation: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation_validated/add`, validatedAnnotation)
+  saveValidatedAnnotations(validatedAnnotations: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotations_validated/add`, validatedAnnotations)
   }
 
   /**

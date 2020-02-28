@@ -160,11 +160,11 @@ def add_annotation():
 #     return jsonify({'deletedCount': result.deleted_count})
 
 
-@app.route('/annotation_validated/add', methods=['POST'])
+@app.route('/annotations_validated/add', methods=['POST'])
 def add_validated_annotations():
     '''Add some annotations validated by the user after comparing with suggestions from other users.'''
-    validated_annotation = request.json
-    result = mongo.db.annotationsValidated.replace_one(validated_annotation,validated_annotation, upsert=True)
+    validated_annotations = request.json
+    result = mongo.db.annotationsValidated.insert_many(validated_annotations)
     return jsonify({'success': result.acknowledged})
 
 
