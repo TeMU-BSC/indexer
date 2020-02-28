@@ -14,7 +14,7 @@ import { FormConfig } from 'src/app/models/form'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
-import { removeAccents, customSort } from 'src/app/utilities/functions'
+import { customSort, inputIncludedInValue, removeConsecutiveSpaces } from 'src/app/utilities/functions'
 
 @Component({
   selector: 'app-descriptors',
@@ -102,21 +102,18 @@ export class DescriptorsComponent implements OnChanges {
    */
   customFilter(input: string, sortingKey: string, filterKeys: string[]): Descriptor[] {
     // ignore the starting and ending whitespaces; replace double/multiple whitespaces by single whitespace
-    input = input.trim().replace(/[ ]+(?= )/g, '')
+    input = removeConsecutiveSpaces(input)
     // if numeric, find the exact decsCode match (there are no decsCodes with 1 digit)
     if (input.length >= 2 && !isNaN(Number(input))) {
       const decsFiltered = this.api.allDescriptors
         .filter(descriptor => descriptor.decsCode.startsWith(input) && !this.chips.includes(descriptor))
       return customSort(decsFiltered, input, 'decsCode')
     }
-    // remove the accents from the input
-    input = removeAccents(input)
     // avoid showing the descriptors that are already added to current doc
     const alreadyAdded = (descriptor: Descriptor) => this.chips.some(chip => chip.decsCode === descriptor.decsCode)
     const remainingDescriptors = this.api.allDescriptors.filter(descriptor => !alreadyAdded(descriptor))
-    // filter the descriptors by some properties, case-insensitive
-    const matchCondition = (d: Descriptor, key: string) => removeAccents(d[key].toLowerCase()).includes(input.toLowerCase())
-    const filtered = remainingDescriptors.filter(descriptor => filterKeys.some(key => matchCondition(descriptor, key)))
+    // filter the available descriptors by the given keys checking if input is included in value
+    const filtered = remainingDescriptors.filter(descriptor => filterKeys.some(key => inputIncludedInValue(input, descriptor, key)))
     // return the sorted results by custom criteria
     return customSort(filtered, input, sortingKey)
   }
