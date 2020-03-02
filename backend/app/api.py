@@ -79,6 +79,11 @@ def get_users():
     return jsonify([user for user in mongo.db.users.find({}, {'_id': 0})])
 
 
+@app.route('/docs', methods=['GET'])
+def get_docs():
+    return jsonify([doc for doc in mongo.db.selected_importants.find({})])
+
+
 @app.route('/doc/<id>', methods=['GET'])
 def get_doc(id):
     '''Get the document by the given id.'''
