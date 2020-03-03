@@ -4,7 +4,7 @@
     <mat-chip *ngFor="let chip of chips" matTooltip="{{ chip.decsCode }}" [removable]="removable"
       (removed)="confirmDialogBeforeRemove(chip)">
       {{ chip.termSpanish }}
-      <mat-icon *ngIf="validation && !doc.validated" [color]="chip.iconColor" class="space-left">{{ chip.iconName }}
+      <mat-icon *ngIf="chip.iconName" [color]="chip.iconColor" class="space-left">{{ chip.iconName }}
       </mat-icon>
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>

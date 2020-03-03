@@ -14,7 +14,7 @@
       </p>
       <app-descriptors #indexings [doc]="doc" [formConfig]="formConfigDescriptors" [removable]="!doc.completed">
       </app-descriptors>
-      <button mat-raised-button [disabled]="doc.completed" color="accent"
+      <button mat-raised-button [disabled]="doc.completed" color="primary"
         (click)="confirmDialogBeforeMark('complete')" fxFlexAlign="start" style="margin-top: 2em;">
         Completar indización
       </button>
@@ -28,7 +28,7 @@
       <app-descriptors #validations [doc]="doc" [formConfig]="formConfigValidations" [removable]="!doc.validated"
         [validation]="true">
       </app-descriptors>
-      <button mat-raised-button color="primary" [disabled]="doc.validated"
+      <button mat-raised-button [disabled]="doc.validated" color="accent"
         (click)="confirmDialogBeforeMark('validate')" fxFlexAlign="start" style="margin-top: 2em;">
         Validar indización
       </button>

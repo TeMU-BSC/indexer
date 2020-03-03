@@ -5,7 +5,7 @@
     </h1>
     <button *ngIf="!auth.isLoggedIn()" mat-button (click)="auth.openLoginDialog()">Iniciar sesión</button>
     <div *ngIf="auth.isLoggedIn()">
-      <small>Hola, {{ auth.getCurrentUser().fullname }}</small>
+      <small style="font-weight: lighter;">Hola, {{ auth.getCurrentUser().fullname }}</small>
       <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
         <mat-icon>more_vert</mat-icon>
       </button>

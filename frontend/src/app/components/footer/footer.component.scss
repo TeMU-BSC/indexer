@@ -7,13 +7,9 @@ footer {
   color: white;
   background-color: $primary;
   text-align: center;
-  padding: 2em;
+  // font-size: smaller;
+  padding: 1em;
   margin-top: 4em;
-}
-
-.plantl-logo {
-  background-color: #f8f9fa;
-  max-height: 6em
 }
 
 a {
@@ -22,6 +18,11 @@ a {
 
 fa-icon {
   font-size: xx-large;
+}
+
+.plantl-logo {
+  background-color: #f8f9fa;
+  max-height: 6.5em
 }
 
 // bootstrap.css

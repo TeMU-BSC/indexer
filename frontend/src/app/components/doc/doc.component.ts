@@ -29,8 +29,7 @@ export class DocComponent implements AfterViewInit {
   }
   formConfigValidations: FormConfig = {
     label: 'Validación',
-    hint: `El icono rojo indica que solamente tú has añadido este descriptor; el icono lila indica
-    que ese descriptor lo ha añadido, al menos, otro indizador.`,
+    hint: `El icono rojo indica que ese descriptor ha sido añadido por ti en la fase 1 de indización; el resto son sugerencias.`,
     buttonName: 'Validado',
     color: 'primary',
     action: 'validate'

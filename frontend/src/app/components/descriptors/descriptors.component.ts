@@ -24,19 +24,20 @@ import { customSort, inputIncludedInValue, removeConsecutiveSpaces } from 'src/a
 export class DescriptorsComponent implements OnChanges {
 
   @Input() doc: Doc
-  @Input() validation: boolean
   @Input() formConfig: FormConfig
+  @Input() removable: boolean
+  @Input() validation: boolean
+  @Output() decsChange = new EventEmitter<boolean>()
   @ViewChild('chipInput') chipInput: ElementRef<HTMLInputElement>
   @ViewChild('auto') matAutocomplete: MatAutocomplete
   autocompleteChipList = new FormControl()
   addOnBlur = true
-  @Input() removable: boolean
   separatorKeysCodes: number[] = [ENTER]
   options: Descriptor[]
   precodedDescriptors: Descriptor[]
   filteredOptions: Observable<Descriptor[]>
   chips = []
-  @Output() decsChange = new EventEmitter<boolean>()
+  annotation: Annotation
 
   constructor(
     public api: ApiService,
@@ -74,23 +75,19 @@ export class DescriptorsComponent implements OnChanges {
       )
       return
     }
-    // otherwise it's validation mode,  and add them to chips list
+    // otherwise it's validation mode
+    // set icon for chips previously added by the current user
+    this.chips.forEach(chip => {
+      chip.iconColor = 'accent'
+      chip.iconName = 'person'
+    })
+    // add suggestions to chips list
     this.api.getSuggestions({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe(
       response => {
         // get suggestions from other users
-        const suggestions: any = this.options.filter(descriptor => response.suggestions.includes(descriptor.decsCode))
-        // remove common chips with the suggestions to avoid duplicates
+        const suggestions = this.options.filter(descriptor => response.suggestions.includes(descriptor.decsCode))
+        // remove possible duplicated chips
         this.chips = this.chips.filter(chip => !suggestions.includes(chip))
-        // set icon for previuos own chips
-        this.chips.forEach(chip => {
-          chip.iconColor = 'warn'
-          chip.iconName = 'person'
-        })
-        // set icon for suggestion chips
-        suggestions.forEach(chip => {
-          chip.iconColor = 'primary'
-          chip.iconName = 'people'
-        })
         // merge the two lists
         this.chips = this.chips.concat(suggestions)
       }
@@ -139,12 +136,12 @@ export class DescriptorsComponent implements OnChanges {
     this.autocompleteChipList.setValue('')
     // optionally send new annotation to backend
     if (!this.validation) {
-      const annotation = {
+      this.annotation = {
         decsCode: chip.decsCode,
         user: this.auth.getCurrentUser().id,
         doc: this.doc.id,
       }
-      this.api.addAnnotation(annotation).subscribe(() => this.decsChange.emit(true))
+      this.api.addAnnotation(this.annotation).subscribe(() => this.decsChange.emit(true))
     }
   }
 
@@ -161,19 +158,19 @@ export class DescriptorsComponent implements OnChanges {
     const indexCode = this.doc.decsCodes.indexOf(chip.decsCode)
     this.doc.decsCodes.splice(indexCode, 1)
     // build annotation object to send to backend
-    const annotation: Annotation = {
+    this.annotation = {
       decsCode: chip.decsCode,
       user: this.auth.getCurrentUser().id,
       doc: this.doc.id,
     }
     // optionally, remove annotation from backend
-    if (!this.validation) { this.api.removeAnnotation(annotation).subscribe(() => this.decsChange.emit(true)) }
+    if (!this.validation) { this.api.removeAnnotation(this.annotation).subscribe(() => this.decsChange.emit(true)) }
     // give visual feedback to the user
     const snackBarRef = this.snackBar.open(`DeCS borrado: ${chip.termSpanish} (${chip.decsCode})`, 'DESHACER')
     // if the action button is clicked, re-add the recently removed chip (and optionally annotation to backend)
     snackBarRef.onAction().subscribe(() => {
       this.chips.push(chip)
-      if (!this.validation) { this.api.addAnnotation(annotation).subscribe(() => this.decsChange.emit(true)) }
+      if (!this.validation) { this.api.addAnnotation(this.annotation).subscribe(() => this.decsChange.emit(true)) }
     })
   }
 

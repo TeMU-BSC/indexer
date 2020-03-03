@@ -1,22 +1,32 @@
-<section fxLayout="column" fxLayoutAlign="center center" fxLayoutGap.gt-sm="2em" class="attention">
-  <h1>Indizador de Descriptores de Ciencias de la Salud</h1>
-  <p>
-    Esta es una herramienta web para indizar documentos por los Descriptores de Ciencias de la Salud (DeCS).
-    Los documentos son artículos científicos redactados originalmente en inglés y posteriormente traducidos
-    al español por nuestro traductor automático. En esta ocasión, para la indización solamente nos vamos a
-    basar en el título y <i>abstract</i> (resumen) de cada articulo.
-  </p>
-  <div *ngIf="!auth.isLoggedIn()">
-    <button mat-raised-button color="accent" (click)=auth.openLoginDialog()>
-      Iniciar sesión
-    </button>
+<section fxLayout="column" fxLayoutAlign="center">
+  <div class="bg-blue">
+    <h1>Indizador DeCS</h1>
+    <p style="font-size: larger; font-weight: lighter;">
+      Indizador web para Descriptores en Ciencias de la Salud
+    </p>
+    <div *ngIf="!auth.isLoggedIn()" class="buttons">
+      <button mat-raised-button (click)=auth.openLoginDialog()>
+        Iniciar sesión
+      </button>
+    </div>
+    <div *ngIf="auth.isLoggedIn()" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="2em" class="buttons">
+      <button *ngIf="['admin', 'tester', 'annotator'].includes(auth.getCurrentUser().role)" mat-raised-button
+        routerLink="/docs">
+        Ver mis documentos asignados
+      </button>
+      <button *ngIf="['admin'].includes(auth.getCurrentUser().role)" mat-raised-button color="warn" routerLink="/admin">
+        Ir al panel de administración
+      </button>
+    </div>
   </div>
-  <div *ngIf="auth.isLoggedIn()" fxLayout="column" fxLayoutGap="2em">
-    <button *ngIf="['admin', 'tester', 'annotator'].includes(auth.getCurrentUser().role)" mat-raised-button color="primary" routerLink="/docs">
-      Ver mis documentos asignados
-    </button>
-    <button *ngIf="['admin'].includes(auth.getCurrentUser().role)" mat-raised-button color="warn" routerLink="/admin">
-      Ir al panel de administración
-    </button>
+  <div style="padding-top: 5em; padding-bottom: 2em; text-align: center;">
+    <p>
+      Los <a href="http://decses.bvsalud.org/E/homepagee.htm">Descriptores en Ciencias de la Salud (DeCS)</a>
+      son términos con códigos y sinónimos asociados para categorizar documentos científicos.
+    </p>
+    <p>
+      En esta herramienta web, para indizar solamente se tiene en cuenta el título y el <i>abstract</i> (resumen) de
+      cada artículo científico.
+    </p>
   </div>
 </section>
