@@ -24,14 +24,14 @@ export class DocComponent implements AfterViewInit {
     hint: `Puedes buscar un descriptor por su término en español, término en inglés, número de registro (DeCS),
     código MeSH análogo o alguno de sus sinónimos aceptados.`,
     buttonName: 'Completado',
-    color: 'accent',
+    color: 'primary',
     action: 'complete'
   }
   formConfigValidations: FormConfig = {
     label: 'Validación',
     hint: `El icono rojo indica que ese descriptor ha sido añadido por ti en la fase 1 de indización; el resto son sugerencias.`,
     buttonName: 'Validado',
-    color: 'primary',
+    color: 'accent',
     action: 'validate'
   }
 
@@ -56,13 +56,13 @@ export class DocComponent implements AfterViewInit {
         title = 'Esta acción no se puede revertir.'
         content = '¿Quieres marcar este documento como completado?'
         buttonName = 'Completar'
-        color = 'accent'
+        color = 'primary'
         break
       case 'validate':
         title = 'Esta acción no se puede revertir.'
         content = '¿Quieres marcar este documento como validado?'
         buttonName = 'Validar'
-        color = 'primary'
+        color = 'accent'
         break
     }
     const dialogRef = this.dialog.open(DialogComponent, {

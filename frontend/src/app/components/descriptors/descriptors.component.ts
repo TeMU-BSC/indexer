@@ -65,9 +65,8 @@ export class DescriptorsComponent implements OnChanges {
   ngOnChanges() {
     // get the current annotations from the user
     this.chips = this.options.filter(descriptor => this.doc.decsCodes.includes(descriptor.decsCode))
-    // if normal view, exit
-    const normalView = !this.validation
-    if (normalView) { return }
+    // if initial view (not validation phase), exit
+    if (!this.validation) { return }
     // if doc is validated, get the finished validated annotations and exit
     if (this.doc.validated) {
       this.api.getValidatedDecsCodes({ user: this.auth.getCurrentUser().id, doc: this.doc.id }).subscribe(
@@ -75,17 +74,16 @@ export class DescriptorsComponent implements OnChanges {
       )
       return
     }
-    // otherwise it's validation mode
-    // set icon for chips previously added by the current user
-    this.chips.forEach(chip => {
-      chip.iconColor = 'accent'
-      chip.iconName = 'person'
-    })
-    // add suggestions to chips list
+    // otherwise it's validation mode, add suggestions to chips list
     this.api.getSuggestions({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe(
       response => {
         // get suggestions from other users
         const suggestions = this.options.filter(descriptor => response.suggestions.includes(descriptor.decsCode))
+        // set icon for chips previously added by the current user
+        this.chips.forEach(chip => {
+          chip.iconColor = 'accent'
+          chip.iconName = 'person'
+        })
         // remove possible duplicated chips
         this.chips = this.chips.filter(chip => !suggestions.includes(chip))
         // merge the two lists
