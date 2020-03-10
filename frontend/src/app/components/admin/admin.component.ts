@@ -15,7 +15,7 @@ import * as EXAMPLE_DESCRIPTOR from 'src/assets/examples/descriptor.json'
   styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent {
-
+zz
   dataFromFile: any[]
   selectedFile: File
   response: ApiResponse

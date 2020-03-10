@@ -1,11 +1,11 @@
-<div class="p-5">
-  <h4 class="mb-3">Panel de Administrador</h4>
+<div style="padding: 3em;">
+  <h1 style="margin-bottom: 2em;">Panel de Administrador</h1>
   <mat-tab-group>
     <mat-tab *ngFor="let panel of panels" label="{{ panel.title }}">
-      <section class="mt-4">
+      <section fxLayout="column" fxLayoutAlign="center start" style="margin-top: 3em;">
         <p>Elige un fichero JSON que contenga una lista de <b>{{ panel.keywords }}</b> con el siguiente formato:</p>
-        <pre class="p-3" style="background-color: lightgray">[{{ panel.exampleJson | json }}, ...]</pre>
-        <form fxLayout="column">
+        <pre style="padding: 2em; background-color: lightgray">[{{ panel.exampleJson | json }}, ...]</pre>
+        <form fxLayout="column" fxLayoutAlign="center start">
           <mat-form-field>
             <ngx-mat-file-input #removableInput placeholder="Seleccionar fichero JSON" [accept]="'.json'"
               (change)="onFileSelected($event)">

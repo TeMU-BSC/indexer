@@ -8,7 +8,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
 // npm third-party libraries
 import { FlexLayoutModule } from '@angular/flex-layout'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
-import { MaterialFileInputModule } from 'ngx-material-file-input'
 import { MaterialModule } from './styling/material.module'
 import { SimplemattableModule } from 'simplemattable'
 
@@ -50,7 +49,6 @@ import { DocDetailComponent } from './components/doc-detail/doc-detail.component
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    MaterialFileInputModule,
     FontAwesomeModule,
     FlexLayoutModule,
     SimplemattableModule,
