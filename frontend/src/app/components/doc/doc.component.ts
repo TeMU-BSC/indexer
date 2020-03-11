@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core'
+import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { DescriptorsComponent } from 'src/app/components/descriptors/descriptors.component'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core'
 import { AuthService } from 'src/app/services/auth.service'
-import { ApiService } from 'src/app/services/api.service'
 
 
 @Component({

@@ -1,20 +1,19 @@
 import { ENTER } from '@angular/cdk/keycodes'
-import { Component, ElementRef, ViewChild, Input, OnChanges, Output, EventEmitter } from '@angular/core'
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core'
 import { FormControl } from '@angular/forms'
-import { Observable } from 'rxjs'
-import { map, startWith, debounceTime } from 'rxjs/operators'
-
-import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete'
+import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete'
 import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
-
+import { Observable } from 'rxjs'
+import { debounceTime, map, startWith } from 'rxjs/operators'
+import { DialogComponent } from 'src/app/components/dialog/dialog.component'
 import { Annotation } from 'src/app/models/api'
-import { Doc, Descriptor } from 'src/app/models/decs'
+import { Descriptor, Doc } from 'src/app/models/decs'
 import { FormConfig } from 'src/app/models/form'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { DialogComponent } from 'src/app/components/dialog/dialog.component'
 import { customSort, inputIncludedInValue, removeConsecutiveSpaces } from 'src/app/utilities/functions'
+
 
 @Component({
   selector: 'app-descriptors',

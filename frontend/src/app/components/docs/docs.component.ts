@@ -1,8 +1,8 @@
-import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core'
+import { AfterViewInit, Component } from '@angular/core'
+import { TableColumn, Width } from 'simplemattable'
 import { Doc } from 'src/app/models/decs'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { TableColumn, Width } from 'simplemattable'
 
 
 @Component({

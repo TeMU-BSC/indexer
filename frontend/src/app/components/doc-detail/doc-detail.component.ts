@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core'
-import { Router, ActivatedRoute, ParamMap } from '@angular/router'
-import { switchMap } from 'rxjs/operators'
-import { ApiService } from 'src/app/services/api.service'
+import { ActivatedRoute, ParamMap, Router } from '@angular/router'
 import { Observable } from 'rxjs'
+import { switchMap } from 'rxjs/operators'
 import { Doc } from 'src/app/models/decs'
-import { FormConfig } from 'src/app/models/form'
+import { ApiService } from 'src/app/services/api.service'
 
 @Component({
   selector: 'app-doc-detail',
@@ -17,7 +16,6 @@ export class DocDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private api: ApiService
   ) { }
 

@@ -1,12 +1,11 @@
 import { Component } from '@angular/core'
-import { ApiResponse } from 'src/app/models/api'
-import { AuthService } from 'src/app/services/auth.service'
 import { MatSnackBar } from '@angular/material/snack-bar'
-
+import { ApiResponse } from 'src/app/models/api'
 import { ApiService } from 'src/app/services/api.service'
-import * as EXAMPLE_USER from 'src/assets/examples/user.json'
+import { AuthService } from 'src/app/services/auth.service'
 import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'
-import * as EXAMPLE_DESCRIPTOR from 'src/assets/examples/descriptor.json'
+// import * as EXAMPLE_DESCRIPTOR from 'src/assets/examples/descriptor.json'
+import * as EXAMPLE_USER from 'src/assets/examples/user.json'
 
 
 @Component({
