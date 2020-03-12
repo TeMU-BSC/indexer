@@ -1,8 +1,6 @@
-<mat-toolbar [color]="auth.getCurrentUser()?.role === 'superannotator' ? 'warn' : 'primary'">
+<mat-toolbar color="primary" class="mat-elevation-z4" style="position: relative">
   <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="1em">
-    <h1 routerLink="/">
-      <button mat-button>PlanTL Indizador DeCS</button>
-    </h1>
+    <button mat-button routerLink="/"><img src="favicon.ico" style="margin-right: 0.5em;">Indizador DeCS</button>
     <button *ngIf="!auth.isLoggedIn()" mat-button (click)="auth.openLoginDialog()">Iniciar sesión</button>
     <div *ngIf="auth.isLoggedIn()">
       <small style="font-weight: lighter;">Hola, {{ auth.getCurrentUser().fullname }}</small>

@@ -7,14 +7,10 @@ services:
     image: mongo
     container_name: mongo
     hostname: mongo
-    # environment:
-    #   - MONGO_INITDB_ROOT_USERNAME: root
-    #   - MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
-      # - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - /var/lib/mongodb:/data/db
     ports:
-      - 27017:27017  # 27017-27019:27017-27019
+      - 27017:27017
     entrypoint: mongod --bind_ip_all
 
   flask:
