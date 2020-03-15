@@ -391,22 +391,21 @@ def get_results_validated():
     ]
     '''
     # Get the data from mongo
-    # annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
-    annotator_ids = list(mongo.db.users.distinct('id', {'role': 'admin'}))
+    annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
     total_validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
-    total_annotations = list(mongo.db.annotations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+    total_annotations = list(mongo.db.annotationsValidated.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
 
     # Get the completed docs set
     docs_ids_nested = [validation.get('docs') for validation in total_validations]
     docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
-    completed_docs_ids_set = set(docs_ids_flatten)
+    validated_docs_ids_set = set(docs_ids_flatten)
 
     # Init storing variables
     annotations = {'perDoc': list(), 'perUser': list()}
     metrics = {'perDoc': list(), 'perUserPair': list(), 'perUser': list()}
 
     # Annotations per doc
-    for doc in completed_docs_ids_set:
+    for doc in validated_docs_ids_set:
         doc_users = [validation.get('user') for validation in total_validations if doc in validation.get('docs')]
         users = list()
         for user in doc_users:
@@ -493,8 +492,8 @@ def get_results_validated():
 
     result = {
         '_totalCompletedDocumentCount': len(docs_ids_flatten),
-        '_distinctCompletedDocumentCount': len(completed_docs_ids_set),
-        '_comparedCompletedDocumentCount': len(docs_ids_flatten) - len(completed_docs_ids_set),
+        '_distinctCompletedDocumentCount': len(validated_docs_ids_set),
+        '_comparedCompletedDocumentCount': len(docs_ids_flatten) - len(validated_docs_ids_set),
         'annotations': annotations,
         'metrics': metrics
     }
