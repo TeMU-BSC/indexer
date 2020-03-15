@@ -491,9 +491,9 @@ def get_results_validated():
         metrics['perUser'].append({'user': id, 'annotatorScore': weighted_average})
 
     result = {
-        '_totalCompletedDocumentCount': len(docs_ids_flatten),
-        '_distinctCompletedDocumentCount': len(validated_docs_ids_set),
-        '_comparedCompletedDocumentCount': len(docs_ids_flatten) - len(validated_docs_ids_set),
+        '_totalValidatedDocumentCount': len(docs_ids_flatten),
+        '_distinctValidatedDocumentCount': len(validated_docs_ids_set),
+        '_comparedValidatedDocumentCount': len(docs_ids_flatten) - len(validated_docs_ids_set),
         'annotations': annotations,
         'metrics': metrics
     }
