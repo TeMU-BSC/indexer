@@ -95,9 +95,19 @@ def get_doc(id):
 @app.route('/assignment/add', methods=['POST'])
 def assign_docs_to_users():
     '''Add some documents IDs to the user key in the 'assignments' collection.'''
-    users = request.json
-    result = mongo.db.assignments.insert_many(users)
-    return jsonify({'success': result.acknowledged})
+    assignments = request.json
+    results = list()
+    for assignment in assignments:
+        for doc in assignment['docs']:
+            result = mongo.db.assignments.update_one(
+                {'user': assignment['user']},
+                {'$push': {'docs': doc}},
+                upsert=True
+            )
+            results.append(result.acknowledged)
+    success = all(results)
+    return jsonify({'success': success})
+
 
 
 @app.route('/assignment/get', methods=['POST'])
@@ -110,13 +120,12 @@ def get_assigned_docs():
     if found_user:
         assigned_doc_ids = found_user.get('docs')
 
-    # only selected important pubmed articles
-    docs = mongo.db.selected_importants.find({'_id': {'$in': assigned_doc_ids}})
-
-    # add extra clinical cases
-    # selected_importants = [doc for doc in mongo.db.selected_importants.find({'_id': {'$in': assigned_doc_ids}})]
-    # reec_clinical_cases = [doc for doc in mongo.db.reecClinicalCases.find({'_id': {'$in': assigned_doc_ids}})]
-    # docs = selected_importants.extend(reec_clinical_cases)
+    selected_importants = [doc for doc in mongo.db.selected_importants.find({'_id': {'$in': assigned_doc_ids}})]
+    reec_clinical_cases = [doc for doc in mongo.db.reecClinicalCases.find({'_id': {'$in': assigned_doc_ids}})]
+    print(len(reec_clinical_cases))
+    isciii_projects = [doc for doc in mongo.db.isciiiProjects.find({'_id': {'$in': assigned_doc_ids}})]
+    print(len(isciii_projects))
+    docs = selected_importants + reec_clinical_cases + isciii_projects
 
     result = []
     for doc in docs:

@@ -17,7 +17,6 @@
       <button *ngIf="['admin'].includes(auth.getCurrentUser().role)" mat-raised-button color="warn" routerLink="/admin">
         Ir al panel de administración
       </button>
-      <a *ngIf="['admin'].includes(auth.getCurrentUser().role)" href="http://bsccnio01.bsc.es/api/results" mat-raised-button>Resultados anotación</a>
     </div>
   </div>
   <div style="padding-top: 5em; padding-bottom: 2em; text-align: center;">

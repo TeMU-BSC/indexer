@@ -1,5 +1,8 @@
 <div style="padding: 3em;">
   <h1 style="margin-bottom: 2em;">Panel de Administrador</h1>
+  <div fxLayout fxLayoutGap="1em">
+    <a href="http://bsccnio01.bsc.es/api/results" mat-raised-button color="primary">Resultados anotación</a>
+  </div>
   <mat-tab-group>
     <mat-tab *ngFor="let panel of panels" label="{{ panel.title }}">
       <section fxLayout="column" fxLayoutAlign="center start" style="margin-top: 3em;">
