@@ -264,19 +264,23 @@ def get_results():
         }, ...
     ]
     '''
+    # PHASE 1: ANNOTATION
+
     # Get the data from mongo
     annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
     total_completions = list(mongo.db.completions.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     total_annotations = list(mongo.db.annotations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+    completed_codes_count_avg_per_document = len(total_annotations) / len(total_completions)
+    completed_total_codes = mongo.db.annotations.count_documents({})
 
     # Get the completed docs set
     docs_ids_nested = [completion.get('docs') for completion in total_completions]
-    docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
-    completed_docs_ids_set = set(docs_ids_flatten)
+    completed_docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
+    completed_docs_ids_set = set(completed_docs_ids_flatten)
 
     # Init storing variables
-    annotations = {'perDoc': list(), 'perUser': list()}
-    metrics = {'perDoc': list(), 'perUserPair': list(), 'perUser': list()}
+    completed_annotations = {'perDoc': list(), 'perUser': list()}
+    completed_metrics = {'perDoc': list(), 'perUserPair': list(), 'perUser': list()}
 
     # Annotations per doc
     for doc in completed_docs_ids_set:
@@ -289,10 +293,10 @@ def get_results():
         doc_annotations = {'doc': doc, 'annotations': users}
         # annotations['perDoc'].append(doc_annotations)
         if len(users) >= 2:
-            annotations['perDoc'].append(doc_annotations)
+            completed_annotations['perDoc'].append(doc_annotations)
 
     # Metrics per doc
-    for doc in annotations.get('perDoc'):
+    for doc in completed_annotations.get('perDoc'):
         decs_codes_list = [ann.get('decsCodes') for ann in doc.get('annotations')]
         # Make combinations and the mean of them in case there are more than 2 annotators per document
         partials = list()
@@ -304,7 +308,7 @@ def get_results():
             partial = len(intersection) / len(union)
             partials.append(partial)
         doc_metric = {'doc': doc.get('doc'), 'annotatorCount': len(doc.get('annotations')), 'correlation': mean(partials)}
-        metrics['perDoc'].append(doc_metric)
+        completed_metrics['perDoc'].append(doc_metric)
 
     # Annotations per user
     for completion in total_completions:
@@ -315,7 +319,7 @@ def get_results():
             doc = {'doc': completed_doc, 'decsCodes': decs_codes}
             docs.append(doc)
         user_annotations = {'user': user, 'annotations': docs}
-        annotations['perUser'].append(user_annotations)
+        completed_annotations['perUser'].append(user_annotations)
 
     # Metrics per user pair
 
@@ -323,8 +327,8 @@ def get_results():
     for pair in combinations(annotator_ids, 2):
         first_annotator_id = pair[0]
         second_annotator_id = pair[1]
-        first_annotations = [annotation for ann in annotations.get('perUser') if ann.get('user') == first_annotator_id for annotation in ann.get('annotations')]
-        second_annotations = [annotation for ann in annotations.get('perUser') if ann.get('user') == second_annotator_id for annotation in ann.get('annotations')]
+        first_annotations = [annotation for ann in completed_annotations.get('perUser') if ann.get('user') == first_annotator_id for annotation in ann.get('annotations')]
+        second_annotations = [annotation for ann in completed_annotations.get('perUser') if ann.get('user') == second_annotator_id for annotation in ann.get('annotations')]
         first_docs = [ann.get('doc') for ann in first_annotations]
         second_docs = [ann.get('doc') for ann in second_annotations]
         common_docs = set(first_docs).intersection(second_docs)
@@ -348,13 +352,13 @@ def get_results():
         score = 0
         if correlations:
             score = mean(correlations)
-        metrics['perUserPair'].append({'annotatorPair': list(pair), 'metrics': docs_metrics, 'averageScore': score})
+        completed_metrics['perUserPair'].append({'annotatorPair': list(pair), 'metrics': docs_metrics, 'averageScore': score})
     
     # Finally, for each annotator, calculate its weighted mean of the correlations with the rest of annotators
     for id in annotator_ids:
         scores = list()
         amounts = list()
-        for pair_metric in metrics.get('perUserPair'):
+        for pair_metric in completed_metrics.get('perUserPair'):
             if id in pair_metric.get('annotatorPair'):
                 scores.append(pair_metric.get('averageScore'))
                 amounts.append(len(pair_metric.get('metrics')))
@@ -362,47 +366,25 @@ def get_results():
             weighted_average = sum(x * y for x, y in zip(scores, amounts)) / sum(amounts)
         except ZeroDivisionError:
             weighted_average = 0
-        metrics['perUser'].append({'user': id, 'annotatorScore': weighted_average})
+        completed_metrics['perUser'].append({'user': id, 'annotatorScore': weighted_average})
+    
+    # PHASE 2: VALIDATION
 
-    result = {
-        '_totalCompletedDocumentCount': len(docs_ids_flatten),
-        '_distinctCompletedDocumentCount': len(completed_docs_ids_set),
-        '_comparedCompletedDocumentCount': len(docs_ids_flatten) - len(completed_docs_ids_set),
-        'annotations': annotations,
-        'metrics': metrics
-    }
-    return jsonify(result)
-
-
-@app.route('/results/validations', methods=['GET'])
-def get_results_validated():
-    '''Return the annotations and its metrics, per doc and per user.
-    Structure of annotations per doc:
-    [
-        {
-            'doc': 'doc1',
-            'annotators': [
-                {
-                    'user': 'user1',
-                    'decsCodes': ['decs1', 'decs2', 'decs3', ...]
-                }, ...
-            ]
-        }, ...
-    ]
-    '''
     # Get the data from mongo
     annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
     total_validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     total_annotations = list(mongo.db.annotationsValidated.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+    validated_codes_count_avg_per_document = len(total_annotations) / len(total_validations)
+    validated_total_codes = mongo.db.annotationsValidated.count_documents({})
 
     # Get the completed docs set
     docs_ids_nested = [validation.get('docs') for validation in total_validations]
-    docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
-    validated_docs_ids_set = set(docs_ids_flatten)
+    validated_docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
+    validated_docs_ids_set = set(validated_docs_ids_flatten)
 
     # Init storing variables
-    annotations = {'perDoc': list(), 'perUser': list()}
-    metrics = {'perDoc': list(), 'perUserPair': list(), 'perUser': list()}
+    validated_annotations = {'perDoc': list(), 'perUser': list()}
+    validated_metrics = {'perDoc': list(), 'perUserPair': list(), 'perUser': list()}
 
     # Annotations per doc
     for doc in validated_docs_ids_set:
@@ -415,10 +397,10 @@ def get_results_validated():
         doc_annotations = {'doc': doc, 'annotations': users}
         # annotations['perDoc'].append(doc_annotations)
         if len(users) >= 2:
-            annotations['perDoc'].append(doc_annotations)
+            validated_annotations['perDoc'].append(doc_annotations)
 
     # Metrics per doc
-    for doc in annotations.get('perDoc'):
+    for doc in validated_annotations.get('perDoc'):
         decs_codes_list = [ann.get('decsCodes') for ann in doc.get('annotations')]
         # Make combinations and the mean of them in case there are more than 2 annotators per document
         partials = list()
@@ -430,7 +412,7 @@ def get_results_validated():
             partial = len(intersection) / len(union)
             partials.append(partial)
         doc_metric = {'doc': doc.get('doc'), 'annotatorCount': len(doc.get('annotations')), 'correlation': mean(partials)}
-        metrics['perDoc'].append(doc_metric)
+        validated_metrics['perDoc'].append(doc_metric)
 
     # Annotations per user
     for validation in total_validations:
@@ -441,7 +423,7 @@ def get_results_validated():
             doc = {'doc': completed_doc, 'decsCodes': decs_codes}
             docs.append(doc)
         user_annotations = {'user': user, 'annotations': docs}
-        annotations['perUser'].append(user_annotations)
+        validated_annotations['perUser'].append(user_annotations)
 
     # Metrics per user pair
 
@@ -449,8 +431,8 @@ def get_results_validated():
     for pair in combinations(annotator_ids, 2):
         first_annotator_id = pair[0]
         second_annotator_id = pair[1]
-        first_annotations = [annotation for ann in annotations.get('perUser') if ann.get('user') == first_annotator_id for annotation in ann.get('annotations')]
-        second_annotations = [annotation for ann in annotations.get('perUser') if ann.get('user') == second_annotator_id for annotation in ann.get('annotations')]
+        first_annotations = [annotation for ann in validated_annotations.get('perUser') if ann.get('user') == first_annotator_id for annotation in ann.get('annotations')]
+        second_annotations = [annotation for ann in validated_annotations.get('perUser') if ann.get('user') == second_annotator_id for annotation in ann.get('annotations')]
         first_docs = [ann.get('doc') for ann in first_annotations]
         second_docs = [ann.get('doc') for ann in second_annotations]
         common_docs = set(first_docs).intersection(second_docs)
@@ -474,13 +456,13 @@ def get_results_validated():
         score = 0
         if correlations:
             score = mean(correlations)
-        metrics['perUserPair'].append({'annotatorPair': list(pair), 'metrics': docs_metrics, 'averageScore': score})
+        validated_metrics['perUserPair'].append({'annotatorPair': list(pair), 'metrics': docs_metrics, 'averageScore': score})
     
     # Finally, for each annotator, calculate its weighted mean of the correlations with the rest of annotators
     for id in annotator_ids:
         scores = list()
         amounts = list()
-        for pair_metric in metrics.get('perUserPair'):
+        for pair_metric in validated_metrics.get('perUserPair'):
             if id in pair_metric.get('annotatorPair'):
                 scores.append(pair_metric.get('averageScore'))
                 amounts.append(len(pair_metric.get('metrics')))
@@ -488,13 +470,43 @@ def get_results_validated():
             weighted_average = sum(x * y for x, y in zip(scores, amounts)) / sum(amounts)
         except ZeroDivisionError:
             weighted_average = 0
-        metrics['perUser'].append({'user': id, 'annotatorScore': weighted_average})
+        validated_metrics['perUser'].append({'user': id, 'annotatorScore': weighted_average})
 
-    result = {
-        '_totalValidatedDocumentCount': len(docs_ids_flatten),
-        '_distinctValidatedDocumentCount': len(validated_docs_ids_set),
-        '_comparedValidatedDocumentCount': len(docs_ids_flatten) - len(validated_docs_ids_set),
-        'annotations': annotations,
-        'metrics': metrics
+    # RESULTS OBJECT
+    results = {
+        'codesCount': {
+            'total': {
+                'annotated': completed_total_codes,
+                'validated': validated_total_codes,
+            },
+            'averagePerDocument': {
+                'annotated': completed_codes_count_avg_per_document,
+                'validated': validated_codes_count_avg_per_document,
+            }
+        },
+        'documentCount': {
+            'annotated': {
+                'total': len(completed_docs_ids_flatten),
+                'unique': len(completed_docs_ids_set),
+                'once': len(completed_docs_ids_flatten) - len(completed_annotations['perDoc']),
+                'twice': len(completed_annotations['perDoc']),
+            },
+            'validated': {
+                'total': len(validated_docs_ids_flatten),
+                'unique': len(validated_docs_ids_set),
+                'once': len(validated_docs_ids_flatten) - len(validated_annotations['perDoc']),
+                'twice': len(validated_annotations['perDoc']),
+            },
+        },
+        'data': {
+            'annotated': {
+                'annotations': completed_annotations,
+                'metrics': completed_metrics
+            },
+            'validated': {
+                'annotations': validated_annotations,
+                'metrics': validated_metrics
+            }
+        }
     }
-    return jsonify(result)
+    return jsonify(results)
