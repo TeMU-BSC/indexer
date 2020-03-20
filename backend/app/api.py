@@ -5,6 +5,7 @@ Author: alejandro.asensio@bsc.es
 '''
 
 from bson.objectid import ObjectId
+from collections import Counter
 import csv
 from datetime import datetime
 from itertools import combinations
@@ -257,19 +258,8 @@ def mark_doc_as(status):
 
 @app.route('/results', methods=['GET'])
 def get_results():
-    '''Return the annotations and its metrics, per doc and per user.
-    Structure of annotations per doc:
-    [
-        {
-            'doc': 'doc1',
-            'annotators': [
-                {
-                    'user': 'user1',
-                    'decsCodes': ['decs1', 'decs2', 'decs3', ...]
-                }, ...
-            ]
-        }, ...
-    ]
+    '''Calculate many metrics about annotators, annotations, validations,
+    average DeCS codes per document and average elapsed times.
     '''
     # # PHASE 1: ANNOTATION
 
@@ -482,6 +472,7 @@ def get_results():
 
     anns = list(mongo.db.annotationsValidated.find({}))
     docs = mongo.db.annotationsValidated.distinct('doc')
+    users_with_higher_iaa = list()
     for doc in docs:
         doc_anns = [ann for ann in anns if ann['doc'] == doc]
 
@@ -500,10 +491,16 @@ def get_results():
                 u1_iaa = element['annotatorScore']
             if element['user'] == u2:
                 u2_iaa = element['annotatorScore']
-        chosen_codes = u1_codes if u1_iaa >= u2_iaa else u2_codes
+        if u1_iaa >= u2_iaa:
+            users_with_higher_iaa.append(u1)
+            chosen_codes = u1_codes
+        else:
+            users_with_higher_iaa.append(u2)
+            chosen_codes = u2_codes
         codes_by_higher_iaa.append(len(chosen_codes))
         codes_by_intersection.append(len(set(u1_codes).intersection(u2_codes)))
         codes_by_union.append(len(set(u1_codes).union(u2_codes)))
+    user_representativeness = {k: v / len(users_with_higher_iaa) for k, v in Counter(users_with_higher_iaa).items()}
 
     # AVERAGE ELAPSED TIMES
     human_annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator', 'id': {'$ne': 'A0'}}))
@@ -547,6 +544,7 @@ def get_results():
                 'annotated': None,
                 'validated': {
                     'byUserWithHigherIAA': mean(codes_by_higher_iaa),
+                    'UserRepresentativenessByHigherIAA': user_representativeness,
                     'byIntersection': mean(codes_by_intersection),
                     'byUnion': mean(codes_by_union),
                 }
