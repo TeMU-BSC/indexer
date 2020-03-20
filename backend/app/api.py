@@ -271,107 +271,107 @@ def get_results():
         }, ...
     ]
     '''
-    # PHASE 1: ANNOTATION
+    # # PHASE 1: ANNOTATION
 
-    # Get the data from mongo
-    annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
-    total_completions = list(mongo.db.completions.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
-    total_annotations = list(mongo.db.annotations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
-    completed_total_codes = mongo.db.annotations.count_documents({})
+    # # Get the data from mongo
+    # annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+    # total_completions = list(mongo.db.completions.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+    # total_annotations = list(mongo.db.annotations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+    # completed_total_codes = mongo.db.annotations.count_documents({})
 
-    # Get the completed docs set
-    docs_ids_nested = [completion.get('docs') for completion in total_completions]
-    completed_docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
-    completed_docs_ids_set = set(completed_docs_ids_flatten)
+    # # Get the completed docs set
+    # docs_ids_nested = [completion.get('docs') for completion in total_completions]
+    # completed_docs_ids_flatten = [doc for user_docs in docs_ids_nested for doc in user_docs]
+    # completed_docs_ids_set = set(completed_docs_ids_flatten)
 
-    # Init storing variables
-    completed_annotations = {'perDoc': list(), 'perUser': list()}
-    completed_metrics = {'perDoc': list(), 'perUserPair': list(), 'perUser': list()}
+    # # Init storing variables
+    # completed_annotations = {'perDoc': list(), 'perUser': list()}
+    # completed_metrics = {'perDoc': list(), 'perUserPair': list(), 'perUser': list()}
 
-    # Annotations per doc
-    for doc in completed_docs_ids_set:
-        doc_users = [completion.get('user') for completion in total_completions if doc in completion.get('docs')]
-        users = list()
-        for user in doc_users:
-            decs_codes = [annotation.get('decsCode') for annotation in total_annotations if user == annotation.get('user') and doc == annotation.get('doc')]
-            user = {'user': user, 'decsCodes': decs_codes}
-            users.append(user)
-        doc_annotations = {'doc': doc, 'annotations': users}
-        # annotations['perDoc'].append(doc_annotations)
-        if len(users) >= 2:
-            completed_annotations['perDoc'].append(doc_annotations)
+    # # Annotations per doc
+    # for doc in completed_docs_ids_set:
+    #     doc_users = [completion.get('user') for completion in total_completions if doc in completion.get('docs')]
+    #     users = list()
+    #     for user in doc_users:
+    #         decs_codes = [annotation.get('decsCode') for annotation in total_annotations if user == annotation.get('user') and doc == annotation.get('doc')]
+    #         user = {'user': user, 'decsCodes': decs_codes}
+    #         users.append(user)
+    #     doc_annotations = {'doc': doc, 'annotations': users}
+    #     # annotations['perDoc'].append(doc_annotations)
+    #     if len(users) >= 2:
+    #         completed_annotations['perDoc'].append(doc_annotations)
 
-    # Metrics per doc
-    for doc in completed_annotations.get('perDoc'):
-        decs_codes_list = [ann.get('decsCodes') for ann in doc.get('annotations')]
-        # Make combinations and the mean of them in case there are more than 2 annotators per document
-        partials = list()
-        for comb in combinations(decs_codes_list, 2):
-            first_decs = comb[0]
-            second_decs = comb[1]
-            intersection = set(first_decs).intersection(second_decs)
-            union = set(first_decs).union(second_decs)
-            partial = len(intersection) / len(union)
-            partials.append(partial)
-        doc_metric = {'doc': doc.get('doc'), 'annotatorCount': len(doc.get('annotations')), 'correlation': mean(partials)}
-        completed_metrics['perDoc'].append(doc_metric)
+    # # Metrics per doc
+    # for doc in completed_annotations.get('perDoc'):
+    #     decs_codes_list = [ann.get('decsCodes') for ann in doc.get('annotations')]
+    #     # Make combinations and the mean of them in case there are more than 2 annotators per document
+    #     partials = list()
+    #     for comb in combinations(decs_codes_list, 2):
+    #         first_decs = comb[0]
+    #         second_decs = comb[1]
+    #         intersection = set(first_decs).intersection(second_decs)
+    #         union = set(first_decs).union(second_decs)
+    #         partial = len(intersection) / len(union)
+    #         partials.append(partial)
+    #     doc_metric = {'doc': doc.get('doc'), 'annotatorCount': len(doc.get('annotations')), 'correlation': mean(partials)}
+    #     completed_metrics['perDoc'].append(doc_metric)
 
-    # Annotations per user
-    for completion in total_completions:
-        user = completion.get('user')
-        docs = list()
-        for completed_doc in completion.get('docs'):
-            decs_codes = [annotation.get('decsCode') for annotation in total_annotations if annotation.get('user') == user and annotation.get('doc') == completed_doc]
-            doc = {'doc': completed_doc, 'decsCodes': decs_codes}
-            docs.append(doc)
-        user_annotations = {'user': user, 'annotations': docs}
-        completed_annotations['perUser'].append(user_annotations)
+    # # Annotations per user
+    # for completion in total_completions:
+    #     user = completion.get('user')
+    #     docs = list()
+    #     for completed_doc in completion.get('docs'):
+    #         decs_codes = [annotation.get('decsCode') for annotation in total_annotations if annotation.get('user') == user and annotation.get('doc') == completed_doc]
+    #         doc = {'doc': completed_doc, 'decsCodes': decs_codes}
+    #         docs.append(doc)
+    #     user_annotations = {'user': user, 'annotations': docs}
+    #     completed_annotations['perUser'].append(user_annotations)
 
-    # Metrics per user pair
+    # # Metrics per user pair
 
-    # Find the common docs annotated by each pair of users
-    for pair in combinations(annotator_ids, 2):
-        first_annotator_id = pair[0]
-        second_annotator_id = pair[1]
-        first_annotations = [annotation for ann in completed_annotations.get('perUser') if ann.get('user') == first_annotator_id for annotation in ann.get('annotations')]
-        second_annotations = [annotation for ann in completed_annotations.get('perUser') if ann.get('user') == second_annotator_id for annotation in ann.get('annotations')]
-        first_docs = [ann.get('doc') for ann in first_annotations]
-        second_docs = [ann.get('doc') for ann in second_annotations]
-        common_docs = set(first_docs).intersection(second_docs)
+    # # Find the common docs annotated by each pair of users
+    # for pair in combinations(annotator_ids, 2):
+    #     first_annotator_id = pair[0]
+    #     second_annotator_id = pair[1]
+    #     first_annotations = [annotation for ann in completed_annotations.get('perUser') if ann.get('user') == first_annotator_id for annotation in ann.get('annotations')]
+    #     second_annotations = [annotation for ann in completed_annotations.get('perUser') if ann.get('user') == second_annotator_id for annotation in ann.get('annotations')]
+    #     first_docs = [ann.get('doc') for ann in first_annotations]
+    #     second_docs = [ann.get('doc') for ann in second_annotations]
+    #     common_docs = set(first_docs).intersection(second_docs)
 
-        # Calculate the correlation of DeCS codes for each common doc between that pair of users
-        docs_metrics = list()
-        for doc in common_docs:
-            for ann in first_annotations:
-                if ann.get('doc') == doc:
-                    first_decs = ann.get('decsCodes')
-            for ann in second_annotations:
-                if ann.get('doc') == doc:
-                    second_decs = ann.get('decsCodes')
-            intersection = set(first_decs).intersection(second_decs)
-            union = set(first_decs).union(second_decs)
-            correlation = len(intersection) / len(union)
-            docs_metrics.append({'doc': doc, 'correlation': correlation})
+    #     # Calculate the correlation of DeCS codes for each common doc between that pair of users
+    #     docs_metrics = list()
+    #     for doc in common_docs:
+    #         for ann in first_annotations:
+    #             if ann.get('doc') == doc:
+    #                 first_decs = ann.get('decsCodes')
+    #         for ann in second_annotations:
+    #             if ann.get('doc') == doc:
+    #                 second_decs = ann.get('decsCodes')
+    #         intersection = set(first_decs).intersection(second_decs)
+    #         union = set(first_decs).union(second_decs)
+    #         correlation = len(intersection) / len(union)
+    #         docs_metrics.append({'doc': doc, 'correlation': correlation})
 
-        correlations = [metric.get('correlation') for metric in docs_metrics]
-        score = 0
-        if correlations:
-            score = mean(correlations)
-        completed_metrics['perUserPair'].append({'annotatorPair': list(pair), 'metrics': docs_metrics, 'averageScore': score})
+    #     correlations = [metric.get('correlation') for metric in docs_metrics]
+    #     score = 0
+    #     if correlations:
+    #         score = mean(correlations)
+    #     completed_metrics['perUserPair'].append({'annotatorPair': list(pair), 'metrics': docs_metrics, 'averageScore': score})
     
-    # Finally, for each annotator, calculate its weighted mean of the correlations with the rest of annotators
-    for id in annotator_ids:
-        scores = list()
-        amounts = list()
-        for pair_metric in completed_metrics.get('perUserPair'):
-            if id in pair_metric.get('annotatorPair'):
-                scores.append(pair_metric.get('averageScore'))
-                amounts.append(len(pair_metric.get('metrics')))
-        try:
-            weighted_average = sum(x * y for x, y in zip(scores, amounts)) / sum(amounts)
-        except ZeroDivisionError:
-            weighted_average = 0
-        completed_metrics['perUser'].append({'user': id, 'annotatorScore': weighted_average})
+    # # Finally, for each annotator, calculate its weighted mean of the correlations with the rest of annotators
+    # for id in annotator_ids:
+    #     scores = list()
+    #     amounts = list()
+    #     for pair_metric in completed_metrics.get('perUserPair'):
+    #         if id in pair_metric.get('annotatorPair'):
+    #             scores.append(pair_metric.get('averageScore'))
+    #             amounts.append(len(pair_metric.get('metrics')))
+    #     try:
+    #         weighted_average = sum(x * y for x, y in zip(scores, amounts)) / sum(amounts)
+    #     except ZeroDivisionError:
+    #         weighted_average = 0
+    #     completed_metrics['perUser'].append({'user': id, 'annotatorScore': weighted_average})
     
     # PHASE 2: VALIDATION
 
@@ -540,7 +540,7 @@ def get_results():
     results = {
         'codesCount': {
             'total': {
-                'annotated': completed_total_codes,
+                # 'annotated': completed_total_codes,
                 'validated': validated_total_codes,
             },
             'averagePerDocument': {
@@ -553,12 +553,12 @@ def get_results():
             }
         },
         'documentCount': {
-            'annotated': {
-                'total': len(completed_docs_ids_flatten),
-                'unique': len(completed_docs_ids_set),
-                'once': len(completed_docs_ids_flatten) - len(completed_annotations['perDoc']),
-                'twice': len(completed_annotations['perDoc']),
-            },
+            # 'annotated': {
+            #     'total': len(completed_docs_ids_flatten),
+            #     'unique': len(completed_docs_ids_set),
+            #     'once': len(completed_docs_ids_flatten) - len(completed_annotations['perDoc']),
+            #     'twice': len(completed_annotations['perDoc']),
+            # },
             'validated': {
                 'total': len(validated_docs_ids_flatten),
                 'unique': len(validated_docs_ids_set),
@@ -567,10 +567,10 @@ def get_results():
             },
         },
         'data': {
-            'annotated': {
-                'annotations': completed_annotations,
-                'metrics': completed_metrics
-            },
+            # 'annotated': {
+            #     'annotations': completed_annotations,
+            #     'metrics': completed_metrics
+            # },
             'validated': {
                 'annotations': validated_annotations,
                 'metrics': validated_metrics
