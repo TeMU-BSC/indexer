@@ -122,9 +122,7 @@ def get_assigned_docs():
 
     selected_importants = [doc for doc in mongo.db.selected_importants.find({'_id': {'$in': assigned_doc_ids}})]
     reec_clinical_cases = [doc for doc in mongo.db.reecClinicalCases.find({'_id': {'$in': assigned_doc_ids}})]
-    print(len(reec_clinical_cases))
     isciii_projects = [doc for doc in mongo.db.isciiiProjects.find({'_id': {'$in': assigned_doc_ids}})]
-    print(len(isciii_projects))
     docs = selected_importants + reec_clinical_cases + isciii_projects
 
     result = []
@@ -279,7 +277,6 @@ def get_results():
     annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
     total_completions = list(mongo.db.completions.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     total_annotations = list(mongo.db.annotations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
-    completed_codes_count_avg_per_document = len(total_annotations) / len(total_completions)
     completed_total_codes = mongo.db.annotations.count_documents({})
 
     # Get the completed docs set
@@ -354,7 +351,6 @@ def get_results():
             intersection = set(first_decs).intersection(second_decs)
             union = set(first_decs).union(second_decs)
             correlation = len(intersection) / len(union)
-            # print(first_annotator_id, second_annotator_id, doc, f'{len(intersection)} / {len(union)} = {correlation}')
             docs_metrics.append({'doc': doc, 'correlation': correlation})
 
         correlations = [metric.get('correlation') for metric in docs_metrics]
@@ -383,7 +379,6 @@ def get_results():
     annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
     total_validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     total_annotations = list(mongo.db.annotationsValidated.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
-    validated_codes_count_avg_per_document = len(total_annotations) / len(total_validations)
     validated_total_codes = mongo.db.annotationsValidated.count_documents({})
 
     # Get the completed docs set
@@ -458,7 +453,6 @@ def get_results():
             intersection = set(first_decs).intersection(second_decs)
             union = set(first_decs).union(second_decs)
             correlation = len(intersection) / len(union)
-            # print(first_annotator_id, second_annotator_id, doc, f'{len(intersection)} / {len(union)} = {correlation}')
             docs_metrics.append({'doc': doc, 'correlation': correlation})
 
         correlations = [metric.get('correlation') for metric in docs_metrics]
@@ -480,7 +474,68 @@ def get_results():
         except ZeroDivisionError:
             weighted_average = 0
         validated_metrics['perUser'].append({'user': id, 'annotatorScore': weighted_average})
+    
+    # Average number of codes per document
+    codes_by_higher_iaa = list()
+    codes_by_intersection = list()
+    codes_by_union = list()
 
+    anns = list(mongo.db.annotationsValidated.find({}))
+    docs = mongo.db.annotationsValidated.distinct('doc')
+    for doc in docs:
+        doc_anns = [ann for ann in anns if ann['doc'] == doc]
+
+        # separate by user
+        users = list(set([doc_ann['user'] for doc_ann in doc_anns]))
+        if len(users) == 1:
+            continue
+        u1 = users[0]
+        u2 = users[1]
+        u1_codes = list()
+        u2_codes = list()
+        for doc_ann in doc_anns:
+            (u1_codes if doc_ann['user'] == u1 else u2_codes).append(doc_ann['decsCode'])
+        for element in validated_metrics['perUser']:
+            if element['user'] == u1:
+                u1_iaa = element['annotatorScore']
+            if element['user'] == u2:
+                u2_iaa = element['annotatorScore']
+        chosen_codes = u1_codes if u1_iaa >= u2_iaa else u2_codes
+        codes_by_higher_iaa.append(len(chosen_codes))
+        codes_by_intersection.append(len(set(u1_codes).intersection(u2_codes)))
+        codes_by_union.append(len(set(u1_codes).union(u2_codes)))
+
+    # AVERAGE ELAPSED TIMES
+    human_annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator', 'id': {'$ne': 'A0'}}))
+    sorted_annotations = list(mongo.db.annotations.find({}).sort([('_id', 1)]))
+    times_stats = list()
+    MINUTES_LIMIT = 60
+    for user_id in human_annotator_ids:
+        user_times = list()
+        completed_docs = list(mongo.db.completions.find_one({'user': user_id})['docs'])
+        user_annotations = [ann for ann in sorted_annotations if ann['user'] == user_id]
+        first_time = user_annotations[0]['_id'].generation_time
+        last_time = user_annotations[-1]['_id'].generation_time
+        elapsed_days = (last_time - first_time).days
+        for doc in completed_docs:
+            doc_annotations = [ann for ann in sorted_annotations if ann['user'] == user_id and ann['doc'] == doc]
+            first_ann_time = doc_annotations[0]['_id'].generation_time
+            last_ann_time = doc_annotations[-1]['_id'].generation_time
+            elapsed_ann_time = last_ann_time - first_ann_time
+            elapsed_minutes = elapsed_ann_time.total_seconds() // 60  # datetime.timedelta instance
+            if elapsed_minutes < MINUTES_LIMIT:
+                user_times.append(int(elapsed_minutes))
+        # print(user_id, user_times)
+        avg_minutes_per_doc = mean(user_times)
+        times_stats.append({
+            'annotator': user_id,
+            'numberOfCompletedDocs': len(completed_docs),
+            'firstAnnotationOn': first_time,
+            'lastAnnotationOn': last_time,
+            'elapsedDays': elapsed_days,
+            f'avgMinutesPerDocIgnoringPausesOfMoreThan{MINUTES_LIMIT}Minutes': avg_minutes_per_doc,
+        })
+    
     # RESULTS OBJECT
     results = {
         'codesCount': {
@@ -489,8 +544,12 @@ def get_results():
                 'validated': validated_total_codes,
             },
             'averagePerDocument': {
-                'annotated': completed_codes_count_avg_per_document,
-                'validated': validated_codes_count_avg_per_document,
+                'annotated': None,
+                'validated': {
+                    'byUserWithHigherIAA': mean(codes_by_higher_iaa),
+                    'byIntersection': mean(codes_by_intersection),
+                    'byUnion': mean(codes_by_union),
+                }
             }
         },
         'documentCount': {
@@ -516,6 +575,7 @@ def get_results():
                 'annotations': validated_annotations,
                 'metrics': validated_metrics
             }
-        }
+        },
+        'times': times_stats
     }
     return jsonify(results)
