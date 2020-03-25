@@ -5,11 +5,12 @@ Author: alejandro.asensio@bsc.es
 '''
 
 from bson.objectid import ObjectId
-from collections import Counter
+from collections import Counter, defaultdict
 import csv
 from datetime import datetime
 from itertools import combinations
 from os import environ
+import random
 import re
 from statistics import mean
 
@@ -26,7 +27,8 @@ app.config['MONGO_URI'] = environ.get('MONGO_URI')
 bcrypt = Bcrypt(app)
 mongo = PyMongo(app)
 CORS(app)
-
+SEED_INITIAL_VALUE = 777
+DEVELOPMENT_SET_LENGTH = 750
 
 @app.route('/hello')
 def hello():
@@ -577,3 +579,42 @@ def get_results():
         'times': times_stats
     }
     return jsonify(results)
+
+
+@app.route('/extract_development_set', methods=['GET'])
+def extract_development_set():
+    '''Extract randomly 750 docuemnts and its validated DeCS codes.'''
+    # select the doc ids for development set
+    annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+    validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+    validated_docs = [doc for validation in validations for doc in validation.get('docs')]
+    double_validated_docs = [doc_id for doc_id, count in Counter(validated_docs).items() if count == 2]
+    random.seed(SEED_INITIAL_VALUE)
+    selected_docs = random.sample(double_validated_docs, DEVELOPMENT_SET_LENGTH)
+
+    # get the decs codes (with union approach, this is the same as set)
+    selected_annotations = list(mongo.db.annotationsValidated.find({'doc': {'$in': selected_docs}}, {'_id': 0}))
+    all_selected_codes = defaultdict(list)
+    for annotation in selected_annotations:
+        all_selected_codes[annotation.get('doc')].append(annotation.get('decsCode'))
+    selected_codes = [{'doc': doc, 'codes': list(set(codes))} for doc, codes in all_selected_codes.items()]
+
+    # get the texts and anonymize the doc_ids
+    selected_importants = list(mongo.db.selected_importants.find({}))
+    reec_clinical_cases = list(mongo.db.reecClinicalCases.find({}))
+    isciii_projects = list(mongo.db.isciiiProjects.find({}))
+    all_docs = selected_importants + reec_clinical_cases + isciii_projects
+    development_set = list()
+    for index, item in enumerate(selected_codes, start=1):
+        for doc in all_docs:
+            if doc.get('_id') == item.get('doc'):
+                ti_es = doc.get('ti_es')
+                ab_es = doc.get('ab_es')
+        development_set.append({
+            '_id': index,
+            'ti_es': ti_es,
+            'ab_es': ab_es,
+            'decs_codes': item.get('codes')
+        })
+
+    return jsonify(development_set)
