@@ -581,9 +581,10 @@ def get_results():
     return jsonify(results)
 
 
-@app.route('/extract_development_set', methods=['GET'])
-def extract_development_set():
-    '''Extract randomly 750 docuemnts and its validated DeCS codes.'''
+@app.route('/extract_development_set/<strategy>', methods=['GET'])
+def extract_development_set(strategy):
+    '''Extract randomly 750 docuemnts and its validated DeCS codes, regarding
+    the strategy (union or intersection).'''
     # select the doc ids for development set
     annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
     validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
@@ -594,10 +595,21 @@ def extract_development_set():
 
     # get the decs codes (with union approach, this is the same as set)
     selected_annotations = list(mongo.db.annotationsValidated.find({'doc': {'$in': selected_docs}}, {'_id': 0}))
-    all_selected_codes = defaultdict(list)
+    annotations = defaultdict(list)
     for annotation in selected_annotations:
-        all_selected_codes[annotation.get('doc')].append(annotation.get('decsCode'))
-    selected_codes = [{'doc': doc, 'codes': list(set(codes))} for doc, codes in all_selected_codes.items()]
+        annotations[annotation.get('doc')].append(annotation.get('decsCode'))
+
+    # prepare the codes depending on the strategy
+    final_selection = list()
+    for doc, codes in annotations.items():
+        selected_codes = list()
+        if strategy == 'all':
+            selected_codes = codes
+        if strategy == 'union':
+            selected_codes = list(set(codes))
+        if strategy == 'intersection':
+            selected_codes = [code for code, count in Counter(codes).items() if count == 2]
+        final_selection.append({'doc': doc, 'codes': selected_codes})
 
     # get the texts and anonymize the doc_ids
     selected_importants = list(mongo.db.selected_importants.find({}))
@@ -605,16 +617,22 @@ def extract_development_set():
     isciii_projects = list(mongo.db.isciiiProjects.find({}))
     all_docs = selected_importants + reec_clinical_cases + isciii_projects
     development_set = list()
-    for index, item in enumerate(selected_codes, start=1):
+    for index, item in enumerate(final_selection, start=1):
         for doc in all_docs:
             if doc.get('_id') == item.get('doc'):
-                ti_es = doc.get('ti_es')
-                ab_es = doc.get('ab_es')
+                title = doc.get('ti_es')
+                abstract = doc.get('ab_es')
+                journal = doc.get('ta')[0] if doc.get('ta') else None
+                db = doc.get('db')
+                year = doc.get('entry_date').year if doc.get('entry_date') else None
         development_set.append({
-            '_id': index,
-            'ti_es': ti_es,
-            'ab_es': ab_es,
-            'decs_codes': item.get('codes')
+            'id': f'mesinesp-dev-{index:0{len(str(DEVELOPMENT_SET_LENGTH))}}',
+            'title': title,
+            'abstractText': abstract,
+            'journal': journal,
+            'db': db,
+            'year': year,
+            'decsCodes': item.get('codes')
         })
 
     return jsonify(development_set)

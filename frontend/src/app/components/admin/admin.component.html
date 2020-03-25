@@ -1,8 +1,10 @@
 <div style="padding: 3em;">
   <h1 style="margin-bottom: 2em;">Panel de Administrador</h1>
   <div fxLayout fxLayoutGap="1em">
-    <a href="http://bsccnio01.bsc.es/api/results" mat-raised-button color="primary">Resultados anotación</a>
-    <a href="http://bsccnio01.bsc.es/api/extract_development_set" mat-raised-button color="accent">Extraer development set</a>
+    <a href="http://bsccnio01.bsc.es/api/results" mat-raised-button>Resultados anotación</a>
+    <a href="http://bsccnio01.bsc.es/api/extract_development_set/all" mat-raised-button color="primary">Development set (all)</a>
+    <a href="http://bsccnio01.bsc.es/api/extract_development_set/union" mat-raised-button color="accent">Development set (union)</a>
+    <a href="http://bsccnio01.bsc.es/api/extract_development_set/intersection" mat-raised-button color="accent">Development set (intersection)</a>
   </div>
   <mat-tab-group>
     <mat-tab *ngFor="let panel of panels" label="{{ panel.title }}">
