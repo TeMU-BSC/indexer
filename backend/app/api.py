@@ -601,15 +601,33 @@ def extract_development_set(strategy):
 
     # prepare the codes depending on the strategy
     final_selection = list()
+    macro_common = 0
+    macro_unique = 0
+    micro_accumulate = list()
     for doc, codes in annotations.items():
+        unique = set(codes)
         selected_codes = list()
         if strategy == 'all':
             selected_codes = codes
         if strategy == 'union':
-            selected_codes = list(set(codes))
+            selected_codes = list(unique)
         if strategy == 'intersection':
             selected_codes = [code for code, count in Counter(codes).items() if count == 2]
         final_selection.append({'doc': doc, 'codes': selected_codes})
+        # calculate the agreement
+        common = 0
+        for count in Counter(codes).values():
+            if count == 2:
+                common += 1
+                macro_common += 1
+        micro_accumulate.append(common / len(unique))
+        macro_unique += len(unique)
+
+    # show the agreement
+    macro = macro_common / macro_unique
+    micro = mean(micro_accumulate)
+    print('macro:', macro)
+    print('micro:', micro)
 
     # get the texts and anonymize the doc_ids
     selected_importants = list(mongo.db.selected_importants.find({}))
