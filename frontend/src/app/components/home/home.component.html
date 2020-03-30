@@ -9,7 +9,7 @@
         Iniciar sesión
       </button>
     </div>
-    <div *ngIf="auth.isLoggedIn()" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="2em" class="buttons">
+    <div *ngIf="auth.isLoggedIn()" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="1em" class="buttons">
       <button *ngIf="['admin', 'tester', 'annotator'].includes(auth.getCurrentUser().role)" mat-raised-button
         routerLink="/docs">
         Ver mis documentos asignados
@@ -22,11 +22,11 @@
   <div style="padding-top: 5em; padding-bottom: 2em; text-align: center;">
     <p>
       Los <a href="http://decses.bvsalud.org/E/homepagee.htm">Descriptores en Ciencias de la Salud (DeCS)</a>
-      son términos con códigos y sinónimos asociados para categorizar documentos científicos.
+      son términos que tienen asociados códigos y sinónimos para categorizar documentos científicos.
     </p>
     <p>
-      En esta herramienta web, para indizar solamente se tiene en cuenta el título y el <i>abstract</i> (resumen) de
-      cada artículo científico.
+      Esta herramienta web facilita el proceso de adjudicar códigos (que actúan como etiquetas) a diferentes documentos,
+      de los cuales se muestra su título y su <i>abstract</i> (resumen).
     </p>
   </div>
 </section>
