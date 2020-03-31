@@ -9,6 +9,7 @@ from collections import Counter, defaultdict
 import csv
 from datetime import datetime
 from itertools import combinations
+import json
 from os import environ
 import random
 import re
@@ -623,7 +624,7 @@ def extract_development_set(strategy):
         micro_accumulate.append(common / len(unique))
         macro_unique += len(unique)
 
-    # show the agreement
+    # show the agreement on the flask console output
     macro = macro_common / macro_unique
     micro = mean(micro_accumulate)
     print('macro:', macro)
@@ -658,5 +659,8 @@ def extract_development_set(strategy):
             'year': year,
             'decsCodes': choice.get('codes')
         })
+        if n == 1:
+            print(title)
+            # json.dumps(development_set, ensure_ascii=False).encode('utf8').decode()
 
     return jsonify(development_set)
