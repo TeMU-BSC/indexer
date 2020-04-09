@@ -23,7 +23,7 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from app import app
 
-
+app.config['JSON_AS_ASCII'] = False
 app.config['MONGO_URI'] = environ.get('MONGO_URI')
 bcrypt = Bcrypt(app)
 mongo = PyMongo(app)
@@ -659,8 +659,5 @@ def extract_development_set(strategy):
             'year': year,
             'decsCodes': choice.get('codes')
         })
-        if n == 1:
-            print(title)
-            # json.dumps(development_set, ensure_ascii=False).encode('utf8').decode()
 
-    return jsonify(development_set)
+    return jsonify({'articles': development_set})
