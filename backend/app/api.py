@@ -661,3 +661,104 @@ def extract_development_set(strategy):
         })
 
     return jsonify({'articles': development_set})
+
+@app.route('/count_sources/<dataset>', methods=['GET'])
+def count_sources(dataset):
+    '''Count the number of documents from each source database.'''
+    if dataset == 'development':
+        filepath = 'data/mesinesp-development-set-official-union.json'
+    with open(filepath) as f:
+        docs = json.load(f).get('articles')
+    collections = ['selected_importants', 'reecClinicalCases', 'isciiiProjects']
+    sources = defaultdict(int)
+    for doc in docs:
+        for collection in collections:
+            if mongo.db[collection].find_one({'ab_es': doc.get('abstractText')}):
+                break
+        sources[collection] += 1
+
+    return jsonify(sources)
+
+
+@app.route('/calculate_jaccard/<dataset>', methods=['GET'])
+def calculate_jaccard(dataset):
+    '''Calculate the Jaccard index (intersection/union) of the given dataset.'''
+    # get the documents from dataset
+    if dataset == 'development':
+        union_path = 'data/mesinesp-development-set-official-union.json'
+        intersection_path = 'data/mesinesp-development-set-core-descriptors-intersection.json'
+    with open(union_path) as f:
+        union_set = json.load(f).get('articles')
+    with open(intersection_path) as f:
+        intersection_set = json.load(f).get('articles')
+    docs = list()
+    for u, i in zip(union_set, intersection_set):
+        fusion_codes = u.get('decsCodes') + i.get('decsCodes')
+        u['decsCodes'] = fusion_codes
+        docs.append(u)
+    
+    # find the sources of documents
+    collections = ['selected_importants', 'reecClinicalCases', 'isciiiProjects']
+    sources = defaultdict(int)
+    for doc in docs:
+        for collection in collections:
+            if mongo.db[collection].find_one({'ab_es': doc.get('abstractText')}):
+                break
+        sources[collection] += 1
+
+    # get annotations before validation
+    annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+    indexings = list(mongo.db.completions.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+    indexed_docs = [doc for validation in indexings for doc in validation.get('docs')]
+    double_indexed_docs = [doc_id for doc_id, count in Counter(indexed_docs).items() if count == 2]
+    double_indexed_annotations = list(mongo.db.annotations.find({'doc': {'$in': double_indexed_docs}}, {'_id': 0}))
+    annotations_before = defaultdict(list)
+    for annotation in double_indexed_annotations:
+        annotations_before[annotation.get('doc')].append(annotation.get('decsCode'))
+    macro_common = 0
+    macro_unique = 0
+    micro_accumulate = list()
+    for doc, codes in annotations_before.items():
+        unique = set(codes)
+        common = 0
+        for count in Counter(codes).values():
+            if count == 2:
+                common += 1
+                macro_common += 1
+        micro_accumulate.append(common / len(unique))
+        macro_unique += len(unique)
+    macro = macro_common / macro_unique
+    micro = mean(micro_accumulate)
+    double_indexed = {
+        'macro': macro,
+        'micro': micro
+    }
+
+    # calculate the agreement after the phase 2 of validation
+    macro_common = 0
+    macro_unique = 0
+    micro_accumulate = list()
+    for doc in docs:
+        codes = doc.get('decsCodes')
+        unique = set(codes)
+        common = 0
+        for count in Counter(codes).values():
+            if count == 2:
+                common += 1
+                macro_common += 1
+        micro_accumulate.append(common / len(unique))
+        macro_unique += len(unique)
+    macro = macro_common / macro_unique
+    micro = mean(micro_accumulate)
+    double_indexed_and_double_validated = {
+        'macro': macro,
+        'micro': micro
+    }
+
+    return jsonify({
+        'sources': sources,
+        'iaa': {
+            'double_indexed': double_indexed,
+            'double_indexed_and_double_validated': double_indexed_and_double_validated
+        }
+    })
