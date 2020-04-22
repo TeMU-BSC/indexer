@@ -662,11 +662,62 @@ def extract_development_set(strategy):
 
     return jsonify({'articles': development_set})
 
+
+@app.route('/extract_test_set', methods=['GET'])
+def extract_test_set():
+    '''Extract the double validated documents without its DeCS codes, that are
+    not present in the previuosly extracted development set.'''
+    # get the full content of all docs in database
+    selected_importants = list(mongo.db.selected_importants.find({}))
+    reec_clinical_cases = list(mongo.db.reecClinicalCases.find({}))
+    isciii_projects = list(mongo.db.isciiiProjects.find({}))
+    all_docs = selected_importants + reec_clinical_cases + isciii_projects
+
+    # get the previously extracted docs for development set
+    with open('data/mesinesp-development-set-official-union.json') as f:
+        development_set = json.load(f).get('articles')
+    
+    # get the double validated docs ids
+    annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+    validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+    validated_ids = [doc_id for validation in validations for doc_id in validation.get('docs')]
+    double_validated_ids = [doc_id for doc_id, count in Counter(validated_ids).items() if count == 2]
+
+    # get the ids of development set to filter them out for the test set
+    development_abstracts = [doc.get('abstractText') for doc in development_set]
+    development_real_ids = [doc.get('_id') for doc in all_docs if doc.get('ab_es') in development_abstracts]
+    test_ids = [doc_id for doc_id in double_validated_ids if doc_id not in development_real_ids]
+
+    # build the test set
+    test_set = list()
+    index = 0
+    for test_id in test_ids:
+        for doc in all_docs:
+            if doc.get('_id') == test_id and len(doc.get('ab_es')) >= ABSTRACT_MINIMUM_LENGTH:
+                index += 1
+                test_set.append({
+                    'id': f'mesinesp-test-{index:03}',
+                    'title': doc.get('ti_es'),
+                    'abstractText': doc.get('ab_es'),
+                    'journal': doc.get('ta')[0] if doc.get('ta') else None,
+                    'db': doc.get('db'),
+                    'year': doc.get('entry_date').year if doc.get('entry_date') else None,
+                    'decsCodes': None  # the test set provided to participants cannot contain the DeCS codes
+                })
+            # debug: list in output flask console the excluded docs with short abstracts
+            elif doc.get('_id') == test_id and len(doc.get('ab_es')) < ABSTRACT_MINIMUM_LENGTH:
+                print(f'doc excluded from test set because its abstract length is less than {ABSTRACT_MINIMUM_LENGTH}:', doc.get('_id'))
+
+    return jsonify({'articles': test_set})
+
+
 @app.route('/count_sources/<dataset>', methods=['GET'])
 def count_sources(dataset):
     '''Count the number of documents from each source database.'''
     if dataset == 'development':
         filepath = 'data/mesinesp-development-set-official-union.json'
+    if dataset == 'test':
+        filepath = 'data/mesinesp-test-set.json'
     with open(filepath) as f:
         docs = json.load(f).get('articles')
     collections = ['selected_importants', 'reecClinicalCases', 'isciiiProjects']
