@@ -684,17 +684,22 @@ def extract_development_set(strategy):
     return jsonify({'articles': development_set})
 
 
-@app.route('/extract_test_set', methods=['GET'])
-def extract_test_set():
-    '''Extract the double validated documents without its DeCS codes, that are
-    not present in the previuosly extracted development set.'''
-    # get the full content of all docs in database
-    all_docs = get_documents(COLLECTIONS)
-
-    # get the previously extracted docs for development set
-    with open(FILE_PATHS.get('dev-union')) as f:
-        development_set = json.load(f).get('articles')
+@app.route('/extract_test_set_with_codes', methods=['GET'])
+def extract_test_set_with_codes():
+    '''Test set including its DeCS codes for evaluation purposes.'''
     
+
+
+@app.route('/extract_test_set/<version>', methods=['GET'])
+def extract_test_set(version):
+    '''Extract the double validated documents that are not present in the
+    previuosly extracted development set in two possible versions:
+    - without DeCS codes to deliver the set to participants, or
+    - with DeCS codes (may include duplicates) for evaluation purposes.
+    '''
+    all_docs = get_documents(COLLECTIONS)
+    development_set = list(mongo.db.developmentSetUnion.find({}))
+
     # get the double validated docs ids
     annotator_ids = get_annotators()
     validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
@@ -705,6 +710,12 @@ def extract_test_set():
     development_abstracts = [doc.get('abstractText') for doc in development_set]
     development_real_ids = [doc.get('_id') for doc in all_docs if doc.get('ab_es') in development_abstracts]
     test_ids = [doc_id for doc_id in double_validated_ids if doc_id not in development_real_ids]
+
+    # [for the option with decs codes] get the decs codes for each document
+    test_annotations = list(mongo.db.annotationsValidated.find({'doc': {'$in': test_ids}}, {'_id': 0}))
+    annotations = defaultdict(list)
+    for annotation in test_annotations:
+        annotations[annotation.get('doc')].append(annotation.get('decsCode'))
 
     # build the test set
     test_set = list()
@@ -720,7 +731,8 @@ def extract_test_set():
                     'journal': doc.get('ta')[0] if doc.get('ta') else None,
                     'db': doc.get('db'),
                     'year': doc.get('entry_date').year if doc.get('entry_date') else None,
-                    'decsCodes': None  # the test set provided to participants cannot contain the DeCS codes
+                    # the test set provided to participants cannot contain the DeCS codes
+                    'decsCodes': annotations.get(doc.get('_id')) if version == 'with_codes' else [],
                 })
             # debug: list in output flask console the excluded docs with short abstracts
             # elif doc.get('_id') == test_id and len(doc.get('ab_es')) < ABSTRACT_MINIMUM_LENGTH:
