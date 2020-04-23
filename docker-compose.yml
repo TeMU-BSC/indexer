@@ -18,7 +18,8 @@ services:
     container_name: flask
     environment:
       - FLASK_ENV=development
-      - MONGO_URI=mongodb://mongo:27017/BvSalud
+      - MONGO_URI=mongodb://mongo/BvSalud
+      - MONGO_DATASETS_URI=mongodb://mongo/datasets
       # - MONGO_URI=mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud  # When testing prod database with hot reload
     command: flask run --host 0.0.0.0
     ports:

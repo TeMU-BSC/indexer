@@ -1,9 +1,13 @@
 '''
-Backend REST API to handle connections to MongoDB for the MESINESP task.
+This is a REST API for the MESINESP task.
+
+This backend is built with Flask and connects to the MongoDB hosted by
+bsccnio01.bsc.es.
 
 Author: alejandro.asensio@bsc.es
 '''
 
+# Standard library
 from bson.objectid import ObjectId
 from collections import Counter, defaultdict
 import csv
@@ -15,24 +19,35 @@ import random
 import re
 from statistics import mean
 
+# Third party
 from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
+# Local
 from app import app
 
-app.config['JSON_AS_ASCII'] = False
+# Flask config
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
-bcrypt = Bcrypt(app)
 mongo = PyMongo(app)
+mongo_datasets = PyMongo(app, uri=os.environ.get('MONGO_DATASETS_URI'))
 CORS(app)
+bcrypt = Bcrypt(app)
+app.config['JSON_AS_ASCII'] = False
 
-COLLECTIONS = ['selected_importants', 'isciiiProjects', 'reecClinicalCases']
+# CONSTANTS
+COLLECTIONS = [
+    mongo.db.selected_importants,
+    mongo_datasets.db.isciii,
+    mongo_datasets.db.reec,
+]
 SEED_INITIAL_VALUE = 777
 DEVELOPMENT_SET_LENGTH = 750
 ABSTRACT_MINIMUM_LENGTH = 200
+
+# TODO mongoimpor the Fri.gz to localhost mongo and replace this local files access by: mongo.db.{developmentSetIntersection,developmentSetUnion,testSet, testSetWithCodes}
 FILE_PATHS = {
     'dev-union': 'data/mesinesp-development-set-official-union.json',
     'dev-intersection': 'data/mesinesp-development-set-core-descriptors-intersection.json',
@@ -48,10 +63,11 @@ def get_annotators() -> list:
 
 
 def get_documents(collections: list) -> list:
-    '''List of all documents with their data from the available source collections.'''
+    '''List of all documents with their data from the given collections (list
+    of flask_pymongo Database objects).'''
     documents = list()
     for collection in collections:
-        documents.extend(mongo.db[collection].find({}))
+        documents.extend(collection.find({}))
     return documents
 
 
@@ -60,23 +76,48 @@ def get_documents(collections: list) -> list:
 #     mongo.db.completions.find({})
 
 
-# def get_indexed_and_validated_documents() -> list:
+# def get_double_indexed_documents() -> list:
+#     '''Documents present at least in two users in "completions" collection.'''
+#     mongo.db.completions.find({})
+
+
+# def get_validated_documents() -> list:
 #     '''Documents present in both "completions" and in "validated" collections.'''
 #     mongo.db.completions.find({})
 #     mongo.db.validations.find({})
 
+
+# def get_double_validated_documents() -> list:
+#     '''Documents present at least in two users in both "completions" and in "validated" collections.'''
+#     mongo.db.completions.find({})
+#     mongo.db.validations.find({})
 
 
 # Flask routes
 
 @app.route('/')
 def index():
-    return 'Welcome to the DeCS Indexer API! To check the connection to MongoDB you can list the "/users".'
+    return f'''Welcome to the DeCS Indexer API! To check the connection to
+    MongoDB you can list the /docs route.
+    
+    Environment variables defined in docker-compose file:
+    FLASK_ENV={os.environ.get('FLASK_ENV')}
+    MONGO_URI={os.environ.get('MONGO_URI')}
+    MONGO_DATASETS_URI={os.environ.get('MONGO_DATASETS_URI')}
+    '''
 
 
-@app.route('/hello')
-def hello():
-    return f"Hello from Flask by Alejandro. ENV={os.environ.get('ENV')} FLASK_ENV={os.environ.get('FLASK_ENV')} MONGO_URI={os.environ.get('MONGO_URI')}"
+@app.route('/docs', methods=['GET'])
+def get_docs():
+    '''Get all documents potentially used in this app.'''
+    return jsonify(get_documents(COLLECTIONS))
+
+
+@app.route('/doc/<id>', methods=['GET'])
+def get_doc(id):
+    '''Get a document by its id.'''
+    doc = mongo.db.selected_importants.find_one({'_id': id})
+    return jsonify({'id': doc['_id'], 'title': doc['ti_es'], 'abstract': doc['ab_es']})
 
 
 @app.route('/user/register', methods=['POST'])
@@ -107,7 +148,7 @@ def login():
     return jsonify(result)
 
 
-# [Encrypt approach]
+# Encrypt approach (not used to accelerate the final user support regarding passwords)
 @app.route('/user/login_encrypt', methods=['POST'])
 def login_encrypt():
     '''Check if the given email and password match that user and its encrypted password in database.'''
@@ -127,18 +168,6 @@ def get_users():
     return jsonify([user for user in mongo.db.users.find({}, {'_id': 0})])
 
 
-@app.route('/docs', methods=['GET'])
-def get_docs():
-    return jsonify([doc for doc in mongo.db.selected_importants.find({})])
-
-
-@app.route('/doc/<id>', methods=['GET'])
-def get_doc(id):
-    '''Get the document by the given id.'''
-    doc = mongo.db.selected_importants.find_one({'_id': id})
-    return jsonify({'id': doc['_id'], 'title': doc['ti_es'], 'abstract': doc['ab_es']})
-
-
 @app.route('/assignment/add', methods=['POST'])
 def assign_docs_to_users():
     '''Add some documents IDs to the user key in the 'assignments' collection.'''
@@ -156,7 +185,6 @@ def assign_docs_to_users():
     return jsonify({'success': success})
 
 
-
 @app.route('/assignment/get', methods=['POST'])
 def get_assigned_docs():
     '''Find the assigned docs IDs to the current user, and then retrieving
@@ -167,12 +195,11 @@ def get_assigned_docs():
     if found_user:
         assigned_doc_ids = found_user.get('docs')
 
-    selected_importants = [doc for doc in mongo.db.selected_importants.find({'_id': {'$in': assigned_doc_ids}})]
-    reec_clinical_cases = [doc for doc in mongo.db.reecClinicalCases.find({'_id': {'$in': assigned_doc_ids}})]
-    isciii_projects = [doc for doc in mongo.db.isciiiProjects.find({'_id': {'$in': assigned_doc_ids}})]
-    docs = selected_importants + reec_clinical_cases + isciii_projects
+    docs = list()
+    for collection in COLLECTIONS:
+        docs.extend(collection.find({'_id': {'$in': assigned_doc_ids}}))    
 
-    result = []
+    assigned_docs = []
     for doc in docs:
         # Find the decsCodes added by the current user
         decs_codes = mongo.db.annotations.distinct('decsCode', {'doc': doc['_id'], 'user': user})
@@ -198,8 +225,8 @@ def get_assigned_docs():
             'completed': completed,
             'validated': validated
         }
-        result.append(doc_relevant_info)
-    return jsonify(result)
+        assigned_docs.append(doc_relevant_info)
+    return jsonify(assigned_docs)
 
 
 @app.route('/annotation/add', methods=['POST'])
@@ -246,7 +273,7 @@ def get_suggestions():
     suggestions = mongo.db.annotations.distinct('decsCode', {'doc': post['doc'], 'user': {'$in': other_users}})
     return jsonify({'suggestions': suggestions})
 
-    # search machine suggestions on the fly
+    # # TODO Search machine suggestions on the fly (to replace the load_machine_suggestions() by Antonio)
     # decs = [d for d in mongo.db.decs.find({}, {'_id': 0})]
     # doc = mongo.db.seleced_importants.find_one({'_id': post['doc']})
     # for d in decs:
@@ -262,7 +289,8 @@ def get_suggestions():
 
 @app.route('/load_machine_suggestions', methods=['POST'])
 def load_machine_suggestions():
-    '''Load suggestions generated by a script.'''
+    '''Load suggestions generated by a script written by `antonio.miranda@bsc.es`.
+    NOTE: This route has been used only once.'''
     post = request.json
     with open('data/suggestions_mesinesp.tsv') as csvfile:
         reader = csv.DictReader(csvfile, dialect=csv.excel_tab)
@@ -304,10 +332,11 @@ def mark_doc_as(status):
 
 @app.route('/results', methods=['GET'])
 def get_results():
-    '''Calculate many metrics about annotators, annotations, validations,
-    average DeCS codes per document and average elapsed times.
+    '''Calculate metrics about annotators, annotations, validations, average
+    DeCS codes per document and average document-annotation-per-user elapsed
+    times.
     '''
-    # # PHASE 1: ANNOTATION
+    # # PHASE 1: ANNOTATION (commented because it's not needed anymore)
 
     # # Get the data from mongo
     # annotator_ids = get_annotators()
@@ -622,6 +651,7 @@ def get_results():
         },
         'times': times_stats
     }
+
     return jsonify(results)
 
 
@@ -682,12 +712,6 @@ def extract_development_set(strategy):
         })
 
     return jsonify({'articles': development_set})
-
-
-@app.route('/extract_test_set_with_codes', methods=['GET'])
-def extract_test_set_with_codes():
-    '''Test set including its DeCS codes for evaluation purposes.'''
-    
 
 
 @app.route('/extract_test_set/<version>', methods=['GET'])
@@ -753,12 +777,13 @@ def count_sources(dataset):
         filepath = FILE_PATHS.get('test')
     with open(filepath) as f:
         docs = json.load(f).get('articles')
+
     sources = defaultdict(int)
     for doc in docs:
         for collection in COLLECTIONS:
-            if mongo.db[collection].find_one({'ab_es': doc.get('abstractText')}):
+            if collection.find_one({'ab_es': doc.get('abstractText')}):
                 break
-        sources[collection] += 1
+        sources[collection.name] += 1
 
     return jsonify(sources)
 
@@ -781,14 +806,6 @@ def calculate_jaccard(dataset):
         with open('data/import-test-with-codes.json') as f:
             test_set_with_codes = json.load(f)
         docs = test_set_with_codes
-
-    # find the sources of documents
-    sources = defaultdict(int)
-    for doc in docs:
-        for collection in COLLECTIONS:
-            if mongo.db[collection].find_one({'ab_es': doc.get('abstractText')}):
-                break
-        sources[collection] += 1
 
     # get annotations before validation
     annotator_ids = get_annotators()
@@ -840,7 +857,6 @@ def calculate_jaccard(dataset):
     }
 
     return jsonify({
-        'sources': sources,
         'iaa': {
             'double_indexed': double_indexed,
             'double_indexed_and_double_validated': double_indexed_and_double_validated
