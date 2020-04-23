@@ -698,7 +698,10 @@ def extract_test_set(version):
     - with DeCS codes (may include duplicates) for evaluation purposes.
     '''
     all_docs = get_documents(COLLECTIONS)
-    development_set = list(mongo.db.developmentSetUnion.find({}))
+    
+    # development_set = list(mongo.db.developmentSetUnion.find({}))
+    with open(FILE_PATHS.get('dev-union')) as f:
+        development_set = json.load(f).get('articles')
 
     # get the double validated docs ids
     annotator_ids = get_annotators()
