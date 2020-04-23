@@ -10,7 +10,7 @@ import csv
 from datetime import datetime
 from itertools import combinations
 import json
-from os import environ
+import os
 import random
 import re
 from statistics import mean
@@ -24,18 +24,60 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from app import app
 
 app.config['JSON_AS_ASCII'] = False
-app.config['MONGO_URI'] = environ.get('MONGO_URI')
+app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
 bcrypt = Bcrypt(app)
 mongo = PyMongo(app)
 CORS(app)
 
+COLLECTIONS = ['selected_importants', 'isciiiProjects', 'reecClinicalCases']
 SEED_INITIAL_VALUE = 777
 DEVELOPMENT_SET_LENGTH = 750
 ABSTRACT_MINIMUM_LENGTH = 200
+DATA_DIR = 'data'
+FILE_PATHS = {
+    'development-official': os.path.join(DATA_DIR, 'mesinesp-development-set-official-union.json'),
+    'development-core-descriptors': os.path.join(DATA_DIR, 'mesinesp-development-set-core-descriptors-intersection.json'),
+    'test': os.path.join(DATA_DIR, 'mesinesp-test-set.json'),
+}
+
+
+# Handy functions
+
+def get_annotators() -> list:
+    '''List of user id's that have the `annotator` role.'''
+    return list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+
+
+def get_documents_data(collections: list) -> list:
+    '''List of all documents from the available source collections.'''
+    all_documents = list()
+    for collection in collections:
+        all_documents.extend(mongo.db[collection].find({}))
+    return all_documents
+
+
+# def get_indexed_documents() -> list:
+#     '''Documents present in "completions" collection.'''
+#     mongo.db.completions.find({})
+
+
+# def get_indexed_and_validated_documents() -> list:
+#     '''Documents present in both "completions" and in "validated" collections.'''
+#     mongo.db.completions.find({})
+#     mongo.db.validations.find({})
+
+
+
+# Flask routes
+
+@app.route('/')
+def index():
+    return 'Welcome to the DeCS Indexer API! To check the connection to MongoDB you can list the "/users".'
+
 
 @app.route('/hello')
 def hello():
-    return f"Hello from Flask by Alejandro. ENV={environ.get('ENV')} FLASK_ENV={environ.get('FLASK_ENV')} MONGO_URI={environ.get('MONGO_URI')}"
+    return f"Hello from Flask by Alejandro. ENV={os.environ.get('ENV')} FLASK_ENV={os.environ.get('FLASK_ENV')} MONGO_URI={os.environ.get('MONGO_URI')}"
 
 
 @app.route('/user/register', methods=['POST'])
@@ -589,7 +631,7 @@ def extract_development_set(strategy):
     '''Extract randomly 750 docuemnts and its validated DeCS codes, regarding
     the strategy (union or intersection).'''
     # select the doc ids for development set
-    annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+    annotator_ids = get_annotators()
     validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     validated_docs = [doc for validation in validations for doc in validation.get('docs')]
     double_validated_docs = [doc_id for doc_id, count in Counter(validated_docs).items() if count == 2]
@@ -631,10 +673,7 @@ def extract_development_set(strategy):
     print('micro:', micro)
 
     # get the texts ignoring the ones with short abstracts and anonymize the doc_ids 
-    selected_importants = list(mongo.db.selected_importants.find({}))
-    reec_clinical_cases = list(mongo.db.reecClinicalCases.find({}))
-    isciii_projects = list(mongo.db.isciiiProjects.find({}))
-    all_docs = selected_importants + reec_clinical_cases + isciii_projects
+    all_docs = get_documents_data(COLLECTIONS)
     random.seed(SEED_INITIAL_VALUE)
     development_set = list()
     for n in range(1, DEVELOPMENT_SET_LENGTH + 1):
@@ -668,17 +707,14 @@ def extract_test_set():
     '''Extract the double validated documents without its DeCS codes, that are
     not present in the previuosly extracted development set.'''
     # get the full content of all docs in database
-    selected_importants = list(mongo.db.selected_importants.find({}))
-    reec_clinical_cases = list(mongo.db.reecClinicalCases.find({}))
-    isciii_projects = list(mongo.db.isciiiProjects.find({}))
-    all_docs = selected_importants + reec_clinical_cases + isciii_projects
+    all_docs = get_documents_data(COLLECTIONS)
 
     # get the previously extracted docs for development set
-    with open('data/mesinesp-development-set-official-union.json') as f:
+    with open(FILE_PATHS.get('development-official')) as f:
         development_set = json.load(f).get('articles')
     
     # get the double validated docs ids
-    annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+    annotator_ids = get_annotators()
     validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     validated_ids = [doc_id for validation in validations for doc_id in validation.get('docs')]
     double_validated_ids = [doc_id for doc_id, count in Counter(validated_ids).items() if count == 2]
@@ -715,15 +751,14 @@ def extract_test_set():
 def count_sources(dataset):
     '''Count the number of documents from each source database.'''
     if dataset == 'development':
-        filepath = 'data/mesinesp-development-set-official-union.json'
+        filepath = FILE_PATHS.get('development-official')
     if dataset == 'test':
-        filepath = 'data/mesinesp-test-set.json'
+        filepath = FILE_PATHS.get('test')
     with open(filepath) as f:
         docs = json.load(f).get('articles')
-    collections = ['selected_importants', 'reecClinicalCases', 'isciiiProjects']
     sources = defaultdict(int)
     for doc in docs:
-        for collection in collections:
+        for collection in COLLECTIONS:
             if mongo.db[collection].find_one({'ab_es': doc.get('abstractText')}):
                 break
         sources[collection] += 1
@@ -734,25 +769,27 @@ def count_sources(dataset):
 @app.route('/calculate_jaccard/<dataset>', methods=['GET'])
 def calculate_jaccard(dataset):
     '''Calculate the Jaccard index (intersection/union) of the given dataset.'''
+    docs = list()
+
     # get the documents from dataset
     if dataset == 'development':
-        union_path = 'data/mesinesp-development-set-official-union.json'
-        intersection_path = 'data/mesinesp-development-set-core-descriptors-intersection.json'
-    with open(union_path) as f:
-        union_set = json.load(f).get('articles')
-    with open(intersection_path) as f:
-        intersection_set = json.load(f).get('articles')
-    docs = list()
-    for u, i in zip(union_set, intersection_set):
-        fusion_codes = u.get('decsCodes') + i.get('decsCodes')
-        u['decsCodes'] = fusion_codes
-        docs.append(u)
+        with open(FILE_PATHS.get('development-official')) as f:
+            union_set = json.load(f).get('articles')
+        with open(FILE_PATHS.get('development-core-descriptors')) as f:
+            intersection_set = json.load(f).get('articles')
+        for u, i in zip(union_set, intersection_set):
+            fusion_codes = u.get('decsCodes') + i.get('decsCodes')
+            u['decsCodes'] = fusion_codes
+            docs.append(u)
+    elif dataset == 'test':
+        with open(FILE_PATHS.get('test')) as f:
+            test_set = json.load(f).get('articles')
+        docs = [doc for doc in test_set]
     
     # find the sources of documents
-    collections = ['selected_importants', 'reecClinicalCases', 'isciiiProjects']
     sources = defaultdict(int)
     for doc in docs:
-        for collection in collections:
+        for collection in COLLECTIONS:
             if mongo.db[collection].find_one({'ab_es': doc.get('abstractText')}):
                 break
         sources[collection] += 1
