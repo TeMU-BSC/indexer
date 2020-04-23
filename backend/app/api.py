@@ -698,7 +698,7 @@ def extract_test_set(version):
     - with DeCS codes (may include duplicates) for evaluation purposes.
     '''
     all_docs = get_documents(COLLECTIONS)
-    
+
     # development_set = list(mongo.db.developmentSetUnion.find({}))
     with open(FILE_PATHS.get('dev-union')) as f:
         development_set = json.load(f).get('articles')
@@ -778,13 +778,10 @@ def calculate_jaccard(dataset):
             u['decsCodes'] = fusion_codes
             docs.append(u)
     elif dataset == 'test':
-        with open(FILE_PATHS.get('test')) as f:
-            test_set = json.load(f).get('articles')
-        # TODO: get the decs codes of the test set
-        test_set_with_codes = list()
-
+        with open('data/import-test-with-codes.json') as f:
+            test_set_with_codes = json.load(f)
         docs = test_set_with_codes
-    
+
     # find the sources of documents
     sources = defaultdict(int)
     for doc in docs:
