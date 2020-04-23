@@ -33,27 +33,26 @@ COLLECTIONS = ['selected_importants', 'isciiiProjects', 'reecClinicalCases']
 SEED_INITIAL_VALUE = 777
 DEVELOPMENT_SET_LENGTH = 750
 ABSTRACT_MINIMUM_LENGTH = 200
-DATA_DIR = 'data'
 FILE_PATHS = {
-    'development-official': os.path.join(DATA_DIR, 'mesinesp-development-set-official-union.json'),
-    'development-core-descriptors': os.path.join(DATA_DIR, 'mesinesp-development-set-core-descriptors-intersection.json'),
-    'test': os.path.join(DATA_DIR, 'mesinesp-test-set.json'),
+    'dev-union': 'data/mesinesp-development-set-official-union.json',
+    'dev-intersection': 'data/mesinesp-development-set-core-descriptors-intersection.json',
+    'test': 'data/mesinesp-test-set.json',
 }
 
 
-# Handy functions
+# Helper functions
 
 def get_annotators() -> list:
-    '''List of user id's that have the `annotator` role.'''
-    return list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+    '''List of id's from users that have the `annotator` role.'''
+    return mongo.db.users.distinct('id', {'role': 'annotator'})
 
 
-def get_documents_data(collections: list) -> list:
-    '''List of all documents from the available source collections.'''
-    all_documents = list()
+def get_documents(collections: list) -> list:
+    '''List of all documents with their data from the available source collections.'''
+    documents = list()
     for collection in collections:
-        all_documents.extend(mongo.db[collection].find({}))
-    return all_documents
+        documents.extend(mongo.db[collection].find({}))
+    return documents
 
 
 # def get_indexed_documents() -> list:
@@ -311,7 +310,7 @@ def get_results():
     # # PHASE 1: ANNOTATION
 
     # # Get the data from mongo
-    # annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+    # annotator_ids = get_annotators()
     # total_completions = list(mongo.db.completions.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     # total_annotations = list(mongo.db.annotations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     # completed_total_codes = mongo.db.annotations.count_documents({})
@@ -413,7 +412,7 @@ def get_results():
     # PHASE 2: VALIDATION
 
     # Get the data from mongo
-    annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+    annotator_ids = get_annotators()
     total_validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     total_annotations = list(mongo.db.annotationsValidated.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     validated_total_codes = mongo.db.annotationsValidated.count_documents({})
@@ -550,7 +549,7 @@ def get_results():
     user_representativeness = {k: v / len(users_with_higher_iaa) for k, v in Counter(users_with_higher_iaa).items()}
 
     # AVERAGE ELAPSED TIMES
-    human_annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator', 'id': {'$ne': 'A0'}}))
+    human_annotator_ids = mongo.db.users.distinct('id', {'role': 'annotator', 'id': {'$ne': 'A0'}})
     sorted_annotations = list(mongo.db.annotations.find({}).sort([('_id', 1)]))
     times_stats = list()
     MINUTES_LIMIT = 60
@@ -644,9 +643,6 @@ def extract_development_set(strategy):
 
     # prepare the codes depending on the strategy
     chosen_annotations = list()
-    macro_common = 0
-    macro_unique = 0
-    micro_accumulate = list()
     for doc, codes in annotations.items():
         unique = set(codes)
         selected_codes = list()
@@ -657,23 +653,9 @@ def extract_development_set(strategy):
         if strategy == 'intersection':
             selected_codes = [code for code, count in Counter(codes).items() if count == 2]
         chosen_annotations.append({'doc': doc, 'codes': selected_codes})
-        # calculate the agreement
-        common = 0
-        for count in Counter(codes).values():
-            if count == 2:
-                common += 1
-                macro_common += 1
-        micro_accumulate.append(common / len(unique))
-        macro_unique += len(unique)
-
-    # show the agreement on the flask console output
-    macro = macro_common / macro_unique
-    micro = mean(micro_accumulate)
-    print('macro:', macro)
-    print('micro:', micro)
 
     # get the texts ignoring the ones with short abstracts and anonymize the doc_ids 
-    all_docs = get_documents_data(COLLECTIONS)
+    all_docs = get_documents(COLLECTIONS)
     random.seed(SEED_INITIAL_VALUE)
     development_set = list()
     for n in range(1, DEVELOPMENT_SET_LENGTH + 1):
@@ -707,10 +689,10 @@ def extract_test_set():
     '''Extract the double validated documents without its DeCS codes, that are
     not present in the previuosly extracted development set.'''
     # get the full content of all docs in database
-    all_docs = get_documents_data(COLLECTIONS)
+    all_docs = get_documents(COLLECTIONS)
 
     # get the previously extracted docs for development set
-    with open(FILE_PATHS.get('development-official')) as f:
+    with open(FILE_PATHS.get('dev-union')) as f:
         development_set = json.load(f).get('articles')
     
     # get the double validated docs ids
@@ -741,8 +723,8 @@ def extract_test_set():
                     'decsCodes': None  # the test set provided to participants cannot contain the DeCS codes
                 })
             # debug: list in output flask console the excluded docs with short abstracts
-            elif doc.get('_id') == test_id and len(doc.get('ab_es')) < ABSTRACT_MINIMUM_LENGTH:
-                print(f'doc excluded from test set because its abstract length is less than {ABSTRACT_MINIMUM_LENGTH}:', doc.get('_id'))
+            # elif doc.get('_id') == test_id and len(doc.get('ab_es')) < ABSTRACT_MINIMUM_LENGTH:
+            #     print(f'doc excluded from test set because its abstract length is less than {ABSTRACT_MINIMUM_LENGTH}:', doc.get('_id'))
 
     return jsonify({'articles': test_set})
 
@@ -751,7 +733,7 @@ def extract_test_set():
 def count_sources(dataset):
     '''Count the number of documents from each source database.'''
     if dataset == 'development':
-        filepath = FILE_PATHS.get('development-official')
+        filepath = FILE_PATHS.get('dev-union')
     if dataset == 'test':
         filepath = FILE_PATHS.get('test')
     with open(filepath) as f:
@@ -769,13 +751,12 @@ def count_sources(dataset):
 @app.route('/calculate_jaccard/<dataset>', methods=['GET'])
 def calculate_jaccard(dataset):
     '''Calculate the Jaccard index (intersection/union) of the given dataset.'''
-    docs = list()
-
     # get the documents from dataset
+    docs = list()
     if dataset == 'development':
-        with open(FILE_PATHS.get('development-official')) as f:
+        with open(FILE_PATHS.get('dev-union')) as f:
             union_set = json.load(f).get('articles')
-        with open(FILE_PATHS.get('development-core-descriptors')) as f:
+        with open(FILE_PATHS.get('dev-intersection')) as f:
             intersection_set = json.load(f).get('articles')
         for u, i in zip(union_set, intersection_set):
             fusion_codes = u.get('decsCodes') + i.get('decsCodes')
@@ -784,7 +765,10 @@ def calculate_jaccard(dataset):
     elif dataset == 'test':
         with open(FILE_PATHS.get('test')) as f:
             test_set = json.load(f).get('articles')
-        docs = [doc for doc in test_set]
+        # TODO: get the decs codes of the test set
+        test_set_with_codes = list()
+
+        docs = test_set_with_codes
     
     # find the sources of documents
     sources = defaultdict(int)
@@ -795,7 +779,7 @@ def calculate_jaccard(dataset):
         sources[collection] += 1
 
     # get annotations before validation
-    annotator_ids = list(mongo.db.users.distinct('id', {'role': 'annotator'}))
+    annotator_ids = get_annotators()
     indexings = list(mongo.db.completions.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     indexed_docs = [doc for validation in indexings for doc in validation.get('docs')]
     double_indexed_docs = [doc_id for doc_id, count in Counter(indexed_docs).items() if count == 2]
