@@ -16,7 +16,7 @@ import { ApiService } from './api.service'
 })
 export class AuthService implements CanActivate {
 
-  BROWSER_STORAGE_KEY = 'mesinesp'
+  browserStorageKey = environment.process.env.APP_BROWSER_STORAGE_KEY
   user: User
 
   constructor(
@@ -54,7 +54,7 @@ export class AuthService implements CanActivate {
           alert(response.message)
         } else if (response.user) {
           this.user = response.user
-          localStorage.setItem(this.BROWSER_STORAGE_KEY, JSON.stringify(this.user))
+          localStorage.setItem(this.browserStorageKey, JSON.stringify(this.user))
         }
       }
     )
@@ -64,7 +64,7 @@ export class AuthService implements CanActivate {
    * Log out the current user.
    */
   public logout(): void {
-    localStorage.removeItem(this.BROWSER_STORAGE_KEY)
+    localStorage.removeItem(this.browserStorageKey)
     this.router.navigateByUrl('/')
   }
 
@@ -72,7 +72,7 @@ export class AuthService implements CanActivate {
    * Check if any user is logged in.
    */
   public isLoggedIn(): boolean {
-    return localStorage.getItem(this.BROWSER_STORAGE_KEY) !== null
+    return localStorage.getItem(this.browserStorageKey) !== null
   }
 
   /**
@@ -80,7 +80,7 @@ export class AuthService implements CanActivate {
    */
   public getCurrentUser(): User {
     if (this.isLoggedIn()) {
-      return JSON.parse(localStorage.getItem(this.BROWSER_STORAGE_KEY))
+      return JSON.parse(localStorage.getItem(this.browserStorageKey))
     }
   }
 

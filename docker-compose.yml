@@ -14,25 +14,41 @@ services:
   flask:
     build: ./backend
     container_name: flask
-    env_file:
-      - .env
+    links:
+      - mongo
+    environment:
+
+      # Enables the debug mode
+      - FLASK_ENV=development
+
+      # [Option A] Absolute development mode without risks of damaging the real MongoDB
+      # First, you should run mongorestore --gzip (from the latest backup to your localhost),
+      # so you have available the databases and collections used by the API.
+      # - MONGO_URI=mongodb://mongo/BvSalud
+      # - MONGO_DATASETS_URI=mongodb://mongo/datasets
+
+      # [Option A] Development against the real remote database
+      # First, you should have a VPN connection tunnel stablished to reach the mongod service remotely.
+      # $ sudo apt update && sudo apt install -y openfortivpn && sudo openfortivpn gw.bsc.es:443 -u USERNAME
+      - MONGO_URI=mongodb://bsccnio01.bsc.es/BvSalud
+      - MONGO_DATASETS_URI=mongodb://bsccnio01.bsc.es/datasets
     command: flask run --host 0.0.0.0
     ports:
       - 5000:5000
     volumes:
       - ./backend:/app
-    links:
-      - mongo
+    
 
   angular:
     build: ./frontend
     container_name: angular
-    env_file:
-      - .env
+    links:
+      - flask
+    environment:
+      - APP_API_URL=http://localhost:5000
+      - APP_BROWSER_STORAGE_KEY=devMesinesp
     command: ng serve --host 0.0.0.0
     ports:
       - 4200:4200
     volumes:
       - ./frontend:/app
-    links:
-      - flask

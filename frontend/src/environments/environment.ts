@@ -2,7 +2,6 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-declare const APP_ENV: any;
 declare const PROCESS_ENV: any;
 
 export const environment = {

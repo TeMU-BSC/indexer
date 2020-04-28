@@ -16,8 +16,7 @@ import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.
 })
 export class ApiService {
 
-  // public url = environment.apiUrl
-  public url = 'http://bsccnio01.bsc.es/api'
+  public url = environment.process.env.APP_API_URL
   options = {
     headers: new HttpHeaders('Access-Control-Allow-Credentials'),
     withCredentials: true

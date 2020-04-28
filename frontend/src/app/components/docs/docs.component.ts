@@ -3,10 +3,7 @@ import { TableColumn, Width } from 'simplemattable'
 import { Doc } from 'src/app/models/decs'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { environment } from 'src/environments/environment'
 
-declare const APP_ENV: any;
-declare const PROCESS_ENV: any;
 
 @Component({
   selector: 'app-docs',
@@ -52,7 +49,7 @@ export class DocsComponent implements AfterViewInit {
         .withSortTransform((_, doc) => doc.validatedDecsCodes.length),
     ]
 
-    // version 2: less columns
+    // version 2: without decsCodes counts per document and phase (completed, validated)
     // this.columns = [
     //   new TableColumn<Doc, 'id'>('ID documento', 'id')
     //     .withColFilter().withColFilterLabel('Filtrar'),
@@ -75,11 +72,6 @@ export class DocsComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.refresh()
-
-    console.log(environment.process.env.APP_API_URL);
-    // console.log(APP_ENV['APP_API_URL']);
-    // console.log(PROCESS_ENV['APP_API_URL']);
-
   }
 
   refresh() {

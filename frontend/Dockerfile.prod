@@ -11,8 +11,12 @@ RUN npm ci && mkdir /app && mv ./node_modules ./app
 WORKDIR /app
 COPY . .
 
+# Variables available for the build stage
+ARG APP_API_URL
+ARG APP_BROWSER_STORAGE_KEY
+
 # Build the angular app in production mode and store the artifacts in dist folder
-RUN npm run ng build -- --prod --output-path=dist
+RUN npm run build -- --prod --output-path=dist
 
 
 ### STAGE 2: Setup ###
