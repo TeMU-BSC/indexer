@@ -1,8 +1,6 @@
-version: '3.7'
+version: "3.7"
 
 services:
-
-  # https://medium.com/faun/managing-mongodb-on-docker-with-docker-compose-26bf8a0bbae3
   mongo:
     image: mongo
     container_name: mongo
@@ -16,11 +14,8 @@ services:
   flask:
     build: ./backend
     container_name: flask
-    environment:
-      - FLASK_ENV=development
-      - MONGO_URI=mongodb://mongo/BvSalud
-      - MONGO_DATASETS_URI=mongodb://mongo/datasets
-      # - MONGO_URI=mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud  # When testing prod database with hot reload
+    env_file:
+      - .env
     command: flask run --host 0.0.0.0
     ports:
       - 5000:5000
@@ -32,10 +27,8 @@ services:
   angular:
     build: ./frontend
     container_name: angular
-    # https://codinglatte.com/posts/angular/using-os-environment-variables-in-angular-with-docker/
-    # environment:
-    #   - REST_API_URL=http://localhost:5000
-    #   - BROWSER_SESSION_KEY=user
+    env_file:
+      - .env
     command: ng serve --host 0.0.0.0
     ports:
       - 4200:4200

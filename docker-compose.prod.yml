@@ -7,6 +7,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
     container_name: angular-prod
+    env_file:
+      - .env.prod
     ports:
       - '80:80'
 
@@ -14,6 +16,6 @@ services:
     build: ./backend
     container_name: flask-prod
     restart: always
-    environment:
-      - MONGO_URI=mongodb://mesinesp:mesinesp@bsccnio01.bsc.es:27017/BvSalud
+    env_file:
+      - .env.prod
     command: uwsgi app.ini

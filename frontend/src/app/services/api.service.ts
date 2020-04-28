@@ -16,6 +16,8 @@ import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.
 })
 export class ApiService {
 
+  // public url = environment.apiUrl
+  public url = 'http://bsccnio01.bsc.es/api'
   options = {
     headers: new HttpHeaders('Access-Control-Allow-Credentials'),
     withCredentials: true
@@ -56,81 +58,81 @@ export class ApiService {
    * Get the assigned docs to the current user.
    */
   getAssignedDocs(assignment: any): Observable<Doc[]> {
-    return this.http.post<Doc[]>(`${environment.apiUrl}/assignment/get`, assignment)
+    return this.http.post<Doc[]>(`${this.url}/assignment/get`, assignment)
   }
 
   assignDocsToUsers(assignments: any[]): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/assignment/add`, assignments)
+    return this.http.post<any>(`${this.url}/assignment/add`, assignments)
   }
 
   /**
    * Send a new annotation to add to the backend.
    */
   addAnnotation(annotation: Annotation): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation/add`, annotation)
+    return this.http.post<ApiResponse>(`${this.url}/annotation/add`, annotation)
   }
 
   /**
    * Send an existing annotation to remove to the backend.
    */
   removeAnnotation(annotation: Annotation): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotation/remove`, annotation)
+    return this.http.post<ApiResponse>(`${this.url}/annotation/remove`, annotation)
   }
 
   /**
    * Mark an doc as completed by the current user in database.
    */
   markAsCompleted(docToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/mark_doc_as/completed`, docToMark)
+    return this.http.post<Doc>(`${this.url}/mark_doc_as/completed`, docToMark)
   }
 
   /**
    * Mark an doc as uncompleted by the current user in database.
    */
   markAsUncompleted(docToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/mark_doc_as/uncompleted`, docToMark)
+    return this.http.post<Doc>(`${this.url}/mark_doc_as/uncompleted`, docToMark)
   }
 
   /**
    * Mark an doc as validated by the current user in database.
    */
   markAsValidated(docToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/mark_doc_as/validated`, docToMark)
+    return this.http.post<Doc>(`${this.url}/mark_doc_as/validated`, docToMark)
   }
 
   /**
    * Mark an doc as unvalidated by the current user in database.
    */
   markAsUnvalidated(dockToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${environment.apiUrl}/mark_doc_as/unvalidated`, dockToMark)
+    return this.http.post<Doc>(`${this.url}/mark_doc_as/unvalidated`, dockToMark)
   }
 
   /**
    * Get the decs codes for a specific document from other annotators that have marked as completed that same document.
    */
   getSuggestions(docToCheck: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/suggestions`, docToCheck)
+    return this.http.post<ApiResponse>(`${this.url}/suggestions`, docToCheck)
   }
 
   /**
    * Save some validated annotations to be defenitely stored in database.
    */
   saveValidatedAnnotations(validatedAnnotations: any[]): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotations_validated/add`, validatedAnnotations)
+    return this.http.post<ApiResponse>(`${this.url}/annotations_validated/add`, validatedAnnotations)
   }
 
   /**
    * Get the validated decs codes for a specific document.
    */
   getValidatedDecsCodes(validatedAnnotations: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${environment.apiUrl}/annotations_validated/get`, validatedAnnotations)
+    return this.http.post<ApiResponse>(`${this.url}/annotations_validated/get`, validatedAnnotations)
   }
 
   /**
    * Get a document by its id.
    */
   getDoc(id: string): Observable<Doc> {
-    return this.http.get<Doc>(`${environment.apiUrl}/doc/${id}`)
+    return this.http.get<Doc>(`${this.url}/doc/${id}`)
   }
 
 }

@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment'
 import { User } from 'src/app/models/user'
 import { ApiResponse } from 'src/app/models/api'
 import { LoginComponent } from 'src/app/components/login/login.component'
+import { ApiService } from './api.service'
 
 
 @Injectable({
@@ -15,11 +16,12 @@ import { LoginComponent } from 'src/app/components/login/login.component'
 })
 export class AuthService implements CanActivate {
 
-  USER_KEY = 'user'
+  BROWSER_STORAGE_KEY = 'mesinesp'
   user: User
 
   constructor(
     private http: HttpClient,
+    private api: ApiService,
     private router: Router,
     public dialog: MatDialog,
   ) { }
@@ -39,20 +41,20 @@ export class AuthService implements CanActivate {
    * Register new users.
    */
   public registerMany(users: User[]): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/user/register`, users)
+    return this.http.post<any>(`${this.api.url}/user/register`, users)
   }
 
   /**
    * Log in an existing user.
    */
   public login(user: User): void {
-    this.http.post(`${environment.apiUrl}/user/login`, user).subscribe(
+    this.http.post(`${this.api.url}/user/login`, user).subscribe(
       (response: ApiResponse) => {
         if (response.message) {
           alert(response.message)
         } else if (response.user) {
           this.user = response.user
-          localStorage.setItem(this.USER_KEY, JSON.stringify(this.user))
+          localStorage.setItem(this.BROWSER_STORAGE_KEY, JSON.stringify(this.user))
         }
       }
     )
@@ -62,7 +64,7 @@ export class AuthService implements CanActivate {
    * Log out the current user.
    */
   public logout(): void {
-    localStorage.removeItem(this.USER_KEY)
+    localStorage.removeItem(this.BROWSER_STORAGE_KEY)
     this.router.navigateByUrl('/')
   }
 
@@ -70,7 +72,7 @@ export class AuthService implements CanActivate {
    * Check if any user is logged in.
    */
   public isLoggedIn(): boolean {
-    return localStorage.getItem(this.USER_KEY) !== null
+    return localStorage.getItem(this.BROWSER_STORAGE_KEY) !== null
   }
 
   /**
@@ -78,7 +80,7 @@ export class AuthService implements CanActivate {
    */
   public getCurrentUser(): User {
     if (this.isLoggedIn()) {
-      return JSON.parse(localStorage.getItem(this.USER_KEY))
+      return JSON.parse(localStorage.getItem(this.BROWSER_STORAGE_KEY))
     }
   }
 

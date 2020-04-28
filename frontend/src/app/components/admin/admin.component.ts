@@ -1,10 +1,11 @@
 import { Component } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { ApiResponse } from 'src/app/models/api'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'
-// import * as EXAMPLE_DESCRIPTOR from 'src/assets/examples/descriptor.json'
+import * as EXAMPLE_DESCRIPTOR from 'src/assets/examples/descriptor.json'
 import * as EXAMPLE_USER from 'src/assets/examples/user.json'
 
 
@@ -31,18 +32,18 @@ export class AdminComponent {
       exampleJson: (EXAMPLE_ASSIGNMENT as any).default,
       action: 'assignDocsToUsers()'
     },
-    {
-      title: 'Cargar DeCS indizados [#to_do]',
-      keywords: 'DeCS indizados',
-      // exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
-      action: 'functionToBeImplemented()'
-    },
-    {
-      title: 'Cargar sugerencias DeCS [#to_do]',
-      keywords: 'DeCS sugeridos',
-      // exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
-      action: 'functionToBeImplemented()'
-    }
+    // {
+    //   title: 'Cargar DeCS indizados [#to_do]',
+    //   keywords: 'DeCS indizados',
+    //   exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
+    //   action: 'functionToBeImplemented()'
+    // },
+    // {
+    //   title: 'Cargar sugerencias DeCS [#to_do]',
+    //   keywords: 'DeCS sugeridos',
+    //   exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
+    //   action: 'functionToBeImplemented()'
+    // }
   ]
 
   constructor(
