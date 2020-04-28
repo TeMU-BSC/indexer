@@ -2,8 +2,14 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+declare const APP_ENV: any;
+declare const PROCESS_ENV: any;
+
 export const environment = {
-  production: false
+  production: false,
+  process: {
+    env: PROCESS_ENV
+  }
 }
 
 /*
@@ -14,3 +20,6 @@ export const environment = {
  * on performance if an error is thrown.
  */
 // import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+
+// declare const ENV_VARS: string;
+// export const envVars = JSON.parse(ENV_VARS)

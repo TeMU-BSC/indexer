@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "indexer": {
+    "decs-indexer": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -15,9 +15,12 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
-            "outputPath": "dist/indexer",
+            "customWebpackConfig": {
+              "path": "./custom-webpack.config.ts"
+            },
+            "outputPath": "dist/decs-indexer",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -65,20 +68,20 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "indexer:build"
+            "browserTarget": "decs-indexer:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "indexer:build:production"
+              "browserTarget": "decs-indexer:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "indexer:build"
+            "browserTarget": "decs-indexer:build"
           }
         },
         "test": {
@@ -116,16 +119,16 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "indexer:serve"
+            "devServerTarget": "decs-indexer:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "indexer:serve:production"
+              "devServerTarget": "decs-indexer:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "indexer"
+  "defaultProject": "decs-indexer"
 }

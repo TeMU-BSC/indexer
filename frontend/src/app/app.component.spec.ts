@@ -20,16 +20,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'indexer'`, () => {
+  it(`should have as title 'decs-indexer'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('indexer');
+    expect(app.title).toEqual('decs-indexer');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('indexer app is running!');
+    expect(compiled.querySelector('.content span').textContent).toContain('decs-indexer app is running!');
   });
 });
