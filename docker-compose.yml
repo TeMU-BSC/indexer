@@ -1,21 +1,18 @@
 version: "3.7"
-
 services:
   mongo:
-    image: mongo
     container_name: mongo
-    hostname: mongo
+    image: mongo:4.2
     volumes:
       - /var/lib/mongodb:/data/db
     ports:
       - 27017:27017
     entrypoint: mongod --bind_ip_all
-
   flask:
-    build: ./backend
     container_name: flask
     links:
       - mongo
+    build: ./backend
     environment:
 
       # Enables the debug mode
@@ -35,23 +32,22 @@ services:
       # $ sudo apt update && sudo apt install -y openfortivpn && sudo openfortivpn gw.bsc.es:443 -u USERNAME
       # - MONGO_URI=mongodb://bsccnio01.bsc.es/BvSalud
       # - MONGO_DATASETS_URI=mongodb://bsccnio01.bsc.es/datasets
-    command: flask run --host 0.0.0.0
     ports:
       - 5000:5000
     volumes:
       - ./backend:/app
-    
-
+    command: flask run --host 0.0.0.0
   angular:
-    build: ./frontend
     container_name: angular
     links:
       - flask
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
     environment:
       - APP_API_URL=http://localhost:5000
       - APP_BROWSER_STORAGE_KEY=devMesinesp
-    command: ng serve --host 0.0.0.0
     ports:
       - 4200:4200
-    volumes:
-      - ./frontend:/app
+    
+    command: ng serve --host 0.0.0.0
