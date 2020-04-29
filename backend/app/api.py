@@ -10,6 +10,7 @@ Author: alejandro.asensio@bsc.es
 # Standard library
 from bson.objectid import ObjectId
 from collections import Counter, defaultdict
+import copy
 import csv
 from datetime import datetime
 from itertools import combinations
@@ -231,7 +232,7 @@ def get_assigned_docs():
 
 @app.route('/annotation/add', methods=['POST'])
 def add_annotation():
-    '''Add a newannotation to the 'annotations' collection. Use 'replace_one'
+    '''Add a new annotation to the 'annotations' collection. Use 'replace_one'
     instead of 'insert_one' to avoid repeated annotations by the same user
     logged at the same time in different browsers.'''
     annotation = request.json
@@ -655,7 +656,7 @@ def get_results():
     return jsonify(results)
 
 
-@app.route('/extract_development_set/<strategy>', methods=['GET'])
+@app.route('/development_set/<strategy>', methods=['GET'])
 def extract_development_set(strategy):
     '''Extract randomly 750 docuemnts and its validated DeCS codes, regarding
     the strategy (union or intersection).'''
@@ -711,15 +712,15 @@ def extract_development_set(strategy):
             'decsCodes': choice.get('codes')
         })
 
-    return jsonify({'articles': development_set})
+    return jsonify(development_set)
 
 
-@app.route('/extract_test_set/<version>', methods=['GET'])
+@app.route('/test_set/<version>', methods=['GET'])
 def extract_test_set(version):
     '''Extract the double validated documents that are not present in the
     previuosly extracted development set in two possible versions:
-    - without DeCS codes to deliver the set to participants, or
-    - with DeCS codes (may include duplicates) for evaluation purposes.
+    - `without_decs_codes` to deliver the set to participants, or
+    - `with_decs_codes` (may include duplicates) for evaluation purposes.
     '''
     all_docs = get_documents(COLLECTIONS)
 
@@ -765,7 +766,11 @@ def extract_test_set(version):
             # elif doc.get('_id') == test_id and len(doc.get('ab_es')) < ABSTRACT_MINIMUM_LENGTH:
             #     print(f'doc excluded from test set because its abstract length is less than {ABSTRACT_MINIMUM_LENGTH}:', doc.get('_id'))
 
-    return jsonify({'articles': test_set})
+    # override the collection in mongodb
+    mongo.db.testSet.delete_many({})
+    mongo.db.testSet.insert_many(copy.deepcopy(test_set))
+
+    return jsonify(test_set)
 
 
 @app.route('/count_sources/<dataset>', methods=['GET'])

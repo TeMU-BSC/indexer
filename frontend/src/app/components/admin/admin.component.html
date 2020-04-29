@@ -1,10 +1,22 @@
-<div style="padding: 3em;">
+<div fxLayout="column" fxLayoutGap="1em" style="padding: 3em;">
   <h1 style="margin-bottom: 2em;">Panel de Administrador</h1>
   <div fxLayout fxLayoutGap="1em">
-    <a href="{{ api.url }}/results" mat-raised-button>Resultados anotación</a>
-    <a href="{{ api.url }}/extract_development_set/all" mat-raised-button color="primary">Development set (all)</a>
-    <a href="{{ api.url }}/extract_development_set/union" mat-raised-button color="accent">Development set (union)</a>
-    <a href="{{ api.url }}/extract_development_set/intersection" mat-raised-button color="accent">Development set (intersection)</a>
+    <a href="{{ api.url }}/results" mat-stroked-button>Resultados anotación</a>
+  </div>
+  <div fxLayout fxLayoutGap="1em">
+    <a href="{{ api.url }}/train_set" mat-stroked-button>Train set</a>
+  </div>
+  <div fxLayout fxLayoutGap="1em">
+    <a href="{{ api.url }}/development_set/all" mat-stroked-button color="accent">Development set (all)</a>
+    <a href="{{ api.url }}/development_set/union" mat-stroked-button color="accent">Development set (union)</a>
+    <a href="{{ api.url }}/development_set/intersection" mat-stroked-button color="accent">Development set (intersection)</a>
+  </div>
+  <div fxLayout fxLayoutGap="1em">
+    <a href="{{ api.url }}/test_set/with_codes" mat-stroked-button color="primary">Test set with codes (for evaluation)</a>
+    <a href="{{ api.url }}/test_set/without_codes" mat-stroked-button color="primary">Test set without codes (for participants)</a>
+  </div>
+  <div fxLayout fxLayoutGap="1em">
+    <a href="{{ api.url }}/background_set" mat-stroked-button>Backgound set</a>
   </div>
   <mat-tab-group>
     <mat-tab *ngFor="let panel of panels" label="{{ panel.title }}">
@@ -25,7 +37,7 @@
             </button>
             <mat-icon matSuffix>attach_file</mat-icon>
           </mat-form-field>
-          <button mat-raised-button color="primary" [disabled]="removableInput.empty" (click)="onClickEvent(panel)">
+          <button mat-raised-button color="accent" [disabled]="removableInput.empty" (click)="onClickEvent(panel)">
             {{ panel.title }}
           </button>
         </form>
