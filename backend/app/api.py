@@ -205,7 +205,7 @@ def get_assigned_docs():
         # Find the decsCodes added by the current user
         decs_codes = mongo.db.annotations.distinct('decsCode', {'doc': doc['_id'], 'user': user})
         # Get the validated decs codes
-        validated_decs_codes = mongo.db.annotationsValidated.distinct('decsCode', {'user': user, 'doc': doc['_id']})
+        validated_decs_codes = mongo.db.annotations_validated.distinct('decsCode', {'user': user, 'doc': doc['_id']})
         # Check if this doc has been marked as completed by the current user
         completed = False
         user_completions = mongo.db.completions.find_one({'user': user})
@@ -252,7 +252,7 @@ def remove_annotation():
 def add_validated_annotations():
     '''Add some annotations validated by the user after comparing with suggestions from other users.'''
     validated_annotations = request.json
-    result = mongo.db.annotationsValidated.insert_many(validated_annotations)
+    result = mongo.db.annotations_validated.insert_many(validated_annotations)
     return jsonify({'success': result.acknowledged})
 
 
@@ -260,7 +260,7 @@ def add_validated_annotations():
 def get_validated_annotations():
     '''Get the validated annotations by a given user for a given document.'''
     obj = request.json
-    validated_decs_codes = mongo.db.annotationsValidated.distinct('decsCode', {'user': obj['user'], 'doc': obj['doc']})
+    validated_decs_codes = mongo.db.annotations_validated.distinct('decsCode', {'user': obj['user'], 'doc': obj['doc']})
     return jsonify({'validatedDecsCodes': list(validated_decs_codes)})
 
 
@@ -444,8 +444,8 @@ def get_results():
     # Get the data from mongo
     annotator_ids = get_annotators()
     total_validations = list(mongo.db.validations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
-    total_annotations = list(mongo.db.annotationsValidated.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
-    validated_total_codes = mongo.db.annotationsValidated.count_documents({})
+    total_annotations = list(mongo.db.annotations_validated.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
+    validated_total_codes = mongo.db.annotations_validated.count_documents({})
 
     # Get the completed docs set
     docs_ids_nested = [validation.get('docs') for validation in total_validations]
@@ -546,8 +546,8 @@ def get_results():
     codes_by_intersection = list()
     codes_by_union = list()
 
-    anns = list(mongo.db.annotationsValidated.find({}))
-    docs = mongo.db.annotationsValidated.distinct('doc')
+    anns = list(mongo.db.annotations_validated.find({}))
+    docs = mongo.db.annotations_validated.distinct('doc')
     users_with_higher_iaa = list()
     for doc in docs:
         doc_anns = [ann for ann in anns if ann['doc'] == doc]
@@ -667,7 +667,7 @@ def extract_development_set(strategy):
     double_validated_docs = [doc_id for doc_id, count in Counter(validated_docs).items() if count == 2]
 
     # get the decs codes for each document
-    double_validated_annotations = list(mongo.db.annotationsValidated.find({'doc': {'$in': double_validated_docs}}, {'_id': 0}))
+    double_validated_annotations = list(mongo.db.annotations_validated.find({'doc': {'$in': double_validated_docs}}, {'_id': 0}))
     annotations = defaultdict(list)
     for annotation in double_validated_annotations:
         annotations[annotation.get('doc')].append(annotation.get('decsCode'))
@@ -741,7 +741,7 @@ def extract_test_set(version):
 
     # if version is with decs codes, get the decs codes for each document
     if version == 'with_codes':
-        test_annotations = list(mongo.db.annotationsValidated.find({'doc': {'$in': test_ids}}, {'_id': 0}))
+        test_annotations = list(mongo.db.annotations_validated.find({'doc': {'$in': test_ids}}, {'_id': 0}))
         annotations = defaultdict(list)
         for annotation in test_annotations:
             annotations[annotation.get('doc')].append(annotation.get('decsCode'))
