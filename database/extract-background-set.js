@@ -19,6 +19,9 @@
 var bvsalud = db.getSiblingDB('BvSalud')
 var datasets = db.getSiblingDB('datasets')
 
+// create a temporary database
+var tmp = db.getSiblingDB('tmp')
+
 // articles with its abstract in spanish (es)
 var es_ids = bvsalud.abstract_es.distinct('_id')
 bvsalud.all_articles.aggregate([
@@ -28,28 +31,28 @@ bvsalud.all_articles.aggregate([
 
 // candidates for the background set
 bvsalud.articles_es.aggregate([
-    { $merge: { into: { db: "test", coll: "candidates" } } }
+    { $merge: { into: { db: 'tmp', coll: 'candidates' } } }
 ])
 datasets.isciii.aggregate([
-    { $merge: { into: { db: "test", coll: "candidates" } } }
+    { $merge: { into: { db: 'tmp', coll: 'candidates' } } }
 ])
 datasets.reec.aggregate([
-    { $merge: { into: { db: "test", coll: "candidates" } } }
+    { $merge: { into: { db: 'tmp', coll: 'candidates' } } }
 ])
 
 // previous development and test sets excluded from the background set
-bvsalud.developmentSetUnion.aggregate([
-    { $merge: { into: { db: "test", coll: "excluded" } } }
+bvsalud.development_set_union.aggregate([
+    { $merge: { into: { db: 'tmp', coll: 'excluded' } } }
 ])
-bvsalud.testSet.aggregate([
-    { $merge: { into: { db: "test", coll: "excluded" } } }
+bvsalud.test_set_without_codes.aggregate([
+    { $merge: { into: { db: 'tmp', coll: 'excluded' } } }
 ])
 
 // background set (with heterogeneous fields)
-var excluded_abstracts = bvsalud.excluded.distinct('abstractText')
-bvsalud.candidates.aggregate([
+var excluded_abstracts = tmp.excluded.distinct('abstractText')
+tmp.candidates.aggregate([
     { $match: { 'ab_es': { $nin: excluded_abstracts } } },
-    { $out: 'background_set' }
+    { $merge: { into: { db: 'BvSalud', coll: 'background_set' } } }
 ])
 
 // background set (with well defined and homogeneous fields)
@@ -85,6 +88,5 @@ bvsalud.background_set.aggregate([
     { $out: 'background_subset_2019' }
 ])
 
-// remove temporary collections
-bvsalud.candidates.drop()
-bvsalud.excluded.drop()
+// remove the temporary database
+tmp.dropDatabase()

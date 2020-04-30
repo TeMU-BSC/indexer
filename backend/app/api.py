@@ -48,7 +48,7 @@ SEED_INITIAL_VALUE = 777
 DEVELOPMENT_SET_LENGTH = 750
 ABSTRACT_MINIMUM_LENGTH = 200
 
-# TODO mongoimpor the Fri.gz to localhost mongo and replace this local files access by: mongo.db.{developmentSetIntersection,developmentSetUnion,testSet, testSetWithCodes}
+# TODO mongoimpor the Fri.gz to localhost mongo and replace this local files access by: mongo.db.{development_set_intersection,development_set_union,test_set_without_codes, test_set_with_codes}
 FILE_PATHS = {
     'dev-union': 'data/mesinesp-development-set-official-union.json',
     'dev-intersection': 'data/mesinesp-development-set-core-descriptors-intersection.json',
@@ -724,7 +724,7 @@ def extract_test_set(version):
     '''
     all_docs = get_documents(COLLECTIONS)
 
-    # development_set = list(mongo.db.developmentSetUnion.find({}))
+    # development_set = list(mongo.db.development_set_union.find({}))
     with open(FILE_PATHS.get('dev-union')) as f:
         development_set = json.load(f).get('articles')
 
@@ -768,8 +768,8 @@ def extract_test_set(version):
             #     print(f'doc excluded from test set because its abstract length is less than {ABSTRACT_MINIMUM_LENGTH}:', doc.get('_id'))
 
     # override the collection in mongodb
-    # mongo.db.testSet.delete_many({})
-    # mongo.db.testSet.insert_many(copy.deepcopy(test_set))
+    # mongo.db.test_set_without_codes.delete_many({})
+    # mongo.db.test_set_without_codes.insert_many(copy.deepcopy(test_set))
 
     return jsonify(test_set)
 

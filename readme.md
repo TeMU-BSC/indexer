@@ -26,7 +26,7 @@ $ docker-compose up
 
 To extract a specific dataset from MongoDB previously stored as a collection, run the following command:
 
-> In the next commands, replace `DATASET` by one of these values: `developmentSetIntersection`, `developmentSetUnion`, `testSet`, `testSetWithCodes`.
+> In the next commands, replace `DATASET` by one of these values: `development_set_intersection`, `development_set_union`, `test_set_without_codes`, `test_set_with_codes`.
 
 
 ### Option A: the long and explanatory way
