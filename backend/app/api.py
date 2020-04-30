@@ -739,11 +739,12 @@ def extract_test_set(version):
     development_real_ids = [doc.get('_id') for doc in all_docs if doc.get('ab_es') in development_abstracts]
     test_ids = [doc_id for doc_id in double_validated_ids if doc_id not in development_real_ids]
 
-    # [for the option with decs codes] get the decs codes for each document
-    test_annotations = list(mongo.db.annotationsValidated.find({'doc': {'$in': test_ids}}, {'_id': 0}))
-    annotations = defaultdict(list)
-    for annotation in test_annotations:
-        annotations[annotation.get('doc')].append(annotation.get('decsCode'))
+    # if version is with decs codes, get the decs codes for each document
+    if version == 'with_codes':
+        test_annotations = list(mongo.db.annotationsValidated.find({'doc': {'$in': test_ids}}, {'_id': 0}))
+        annotations = defaultdict(list)
+        for annotation in test_annotations:
+            annotations[annotation.get('doc')].append(annotation.get('decsCode'))
 
     # build the test set
     test_set = list()
@@ -767,10 +768,24 @@ def extract_test_set(version):
             #     print(f'doc excluded from test set because its abstract length is less than {ABSTRACT_MINIMUM_LENGTH}:', doc.get('_id'))
 
     # override the collection in mongodb
-    mongo.db.testSet.delete_many({})
-    mongo.db.testSet.insert_many(copy.deepcopy(test_set))
+    # mongo.db.testSet.delete_many({})
+    # mongo.db.testSet.insert_many(copy.deepcopy(test_set))
 
     return jsonify(test_set)
+
+
+@app.route('/background_set/<version>', methods=['GET'])
+def extract_background_set(version):
+    '''Extract all documents from ibecs/lilacs Spanish abstracts, isciii
+    and reec, that are not present in the previuosly extracted development and test sets.
+    There are two possible versions:
+    - `all` for all possible documents that match the described criteria, or
+    - `from_2019` for the filtered ibecs/lilacs articles published from year 2019 onwards.
+
+    NOTE: This extraction is preferred to be done with the mongo shell.
+    See `database/extract-background-set.js` file in this project.
+    '''
+    pass
 
 
 @app.route('/count_sources/<dataset>', methods=['GET'])
