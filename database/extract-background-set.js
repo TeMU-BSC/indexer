@@ -12,6 +12,15 @@
  * 
  * Then, execute the JavaScript file with the mongo shell:
  * $ mongo <thisfilename>.js
+ * 
+ * GOTCHA: This script contains some syntax compatible with mongo version 4.2 onwards, such as $merge.
+ * This script was run in localhost mongo version 4.2 like so:
+ * $ mongo extract-background-set.js
+ * 
+ * And then uploaded to production mongo version 4.0 like so:
+ * $ mongodump --archive --db=BvSalud --collection=articles_es | mongorestore --host bsccnio01.bsc.es --archive --db=BvSalud --collection=articles_es
+ * $ mongodump --archive --db=BvSalud --collection=background_set | mongorestore --host bsccnio01.bsc.es --archive --db=BvSalud --collection=background_set
+ * $ mongodump --archive --db=BvSalud --collection=background_subset_2019 | mongorestore --host bsccnio01.bsc.es --archive --db=BvSalud --collection=background_subset_2019
  */
 
 

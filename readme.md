@@ -22,14 +22,27 @@ $ docker-compose up
 ```
 
 
-## Dataset extraction
+## Dataset extraction ready for publishing
 
-To extract a specific dataset from MongoDB previously stored as a collection, run the following command:
+Due to the first release of the train sets in a specific JSON format like `{"articles": [ ... ]}`, we have to transform the JSON array data extracted from MongoDB to match that "articles" key format.
 
-> In the next commands, replace `DATASET` by one of these values: `development_set_intersection`, `development_set_union`, `test_set_without_codes`, `test_set_with_codes`.
+> In the next commands, replace `DATASET` by one of these values:
+
+```
+train_set_original
+train_set_preprocessed
+development_set_intersection
+development_set_union
+test_set_without_codes
+test_set_with_codes
+background_set
+background_subset_2019
+```
 
 
 ### Option A: the long and explanatory way
+
+To extract a specific dataset from MongoDB previously stored as a collection, run the following command:
 
 ```bash
 $ mongoexport --host=bsccnio01.bsc.es --db=BvSalud --collection=DATASET --out=DATASET.json --jsonArray
