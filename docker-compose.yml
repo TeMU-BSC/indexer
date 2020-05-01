@@ -1,53 +1,69 @@
 version: "3.7"
 services:
-  mongo:
-    container_name: mongo
+  database:
     image: mongo:4.2
+    container_name: mongo-container
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=BvSalud
     volumes:
       - /var/lib/mongodb:/data/db
+      - ./database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      # - ./database/mongo-volume:/data/db
     ports:
-      - 27017:27017
-    entrypoint: mongod --bind_ip_all
-  flask:
-    container_name: flask
+      - 27017-27019:27017-27019
+    entrypoint: mongod --auth --bind_ip_all
+
+  backend:
+    container_name: flask-container
     links:
-      - mongo
+      - database
     build: ./backend
     environment:
 
-      # Enables the debug mode
+      # Debug mode
       - FLASK_ENV=development
 
-      # [Option A] Absolute development mode without risks of damaging the real MongoDB
+      # [Option A] Absolute development mode without risks of damaging the production MongoDB
       # Restoring the real data from tha latest backup into your localhost will make available the databases used by the API.
+
       # $ scp mongo_admin@bsccnio01.bsc.es:/data/Mongo_backup/mongodb_backups/daily/Wed.gz /home/alejandro/Downloads/
       # $ mongorestore --gzip --archive=/home/alejandro/Downloads/Wed.gz --nsInclude="BvSalud.*"
       # $ mongorestore --gzip --archive=/home/alejandro/Downloads/Wed.gz --nsInclude="datasets.*"
       # $ sudo systemctl stop mongod.service
-      - MONGO_URI=mongodb://mongo/BvSalud
-      - MONGO_DATASETS_URI=mongodb://mongo/datasets
 
-      # [Option A] Development against the real remote database
+      # If we create a dedicated user with the init-mongo.js
+      # - MONGO_URI=mongodb://dummy:dummyPassword@mongo-container/BvSalud
+      # - MONGO_DATASETS_URI=mongodb://dummy:dummyPassword@mongo-container/datasets
+      
+      # We also can access without authentication
+      - MONGO_URI=mongodb://mongo-container/BvSalud
+      - MONGO_DATASETS_URI=mongodb://mongo-container/datasets
+      
+      # [Option B] Development against the real production database
       # First, you should have a VPN connection tunnel stablished to reach the mongod service remotely.
       # $ sudo apt update && sudo apt install -y openfortivpn && sudo openfortivpn gw.bsc.es:443 -u USERNAME
+
       # - MONGO_URI=mongodb://bsccnio01.bsc.es/BvSalud
       # - MONGO_DATASETS_URI=mongodb://bsccnio01.bsc.es/datasets
-    ports:
-      - 5000:5000
     volumes:
       - ./backend:/app
+    ports:
+      - 5000:5000
     command: flask run --host 0.0.0.0
-  angular:
-    container_name: angular
+
+  frontend:
+    container_name: angular-container
     links:
-      - flask
+      - backend
     build: ./frontend
-    volumes:
-      - ./frontend:/app
     environment:
       - APP_API_URL=http://localhost:5000
-      - APP_BROWSER_STORAGE_KEY=devMesinesp
+      - APP_BROWSER_STORAGE_KEY=BvSalud
+    volumes:
+      - ./frontend:/app
     ports:
       - 4200:4200
-    
     command: ng serve --host 0.0.0.0

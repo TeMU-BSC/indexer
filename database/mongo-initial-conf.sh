@@ -17,7 +17,7 @@ sudo iptables -A INPUT -s $PUBLIC_IP -p tcp --destination-port $PORT -m state --
 sudo iptables -A OUTPUT -d $PUBLIC_IP -p tcp --source-port $PORT -m state --state ESTABLISHED -j ACCEPT
 
 # Execute the JavaScript file
-mongo localhost:$PORT/$DATABASE create-users.js
+mongo localhost:$PORT/$DATABASE init-mongo.js
 
 # Login with the created user
 mongo --username $USERNAME --password $PASSWORD --authenticationDatabase $DATABASE
