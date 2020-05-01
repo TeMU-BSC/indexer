@@ -1,20 +1,20 @@
 version: '3.7'
 services:
-  flask:
-    container_name: flask-prod
+  backend:
+    container_name: flask-container-production
     build: ./backend
     environment:
       - MONGO_URI=mongodb://bsccnio01.bsc.es/BvSalud
       - MONGO_DATASETS_URI=mongodb://bsccnio01.bsc.es/datasets
     command: uwsgi app.ini
-  angular:
-    container_name: angular-prod
+  frontend:
+    container_name: angular-container-production
     build:
       context: ./frontend
       # https://docs.docker.com/compose/compose-file/#args
       args:
         - APP_API_URL=http://bsccnio01.bsc.es/api
-        - APP_BROWSER_STORAGE_KEY=mesinesp
+        - APP_BROWSER_STORAGE_KEY=BvSalud
       dockerfile: Dockerfile.prod
     ports:
       - '80:80'

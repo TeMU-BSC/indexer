@@ -14,7 +14,8 @@ services:
       # - ./database/mongo-volume:/data/db
     ports:
       - 27017-27019:27017-27019
-    entrypoint: mongod --auth --bind_ip_all
+    # entrypoint: mongod --auth --bind_ip_all
+    entrypoint: mongod --bind_ip_all
 
   backend:
     container_name: flask-container
