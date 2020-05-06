@@ -18,9 +18,9 @@
  * $ mongo extract-background-set.js
  * 
  * And then uploaded to production mongo version 4.0 like so:
- * $ mongodump --archive --db=BvSalud --collection=articles_es | mongorestore --host bsccnio01.bsc.es --archive --db=BvSalud --collection=articles_es
- * $ mongodump --archive --db=BvSalud --collection=background_set | mongorestore --host bsccnio01.bsc.es --archive --db=BvSalud --collection=background_set
- * $ mongodump --archive --db=BvSalud --collection=background_subset_2019 | mongorestore --host bsccnio01.bsc.es --archive --db=BvSalud --collection=background_subset_2019
+ * $ mongodump --archive --db=BvSalud --collection=literature_es | mongorestore --host=bsccnio01.bsc.es --archive --db=BvSalud --collection=literature_es
+ * $ mongodump --archive --db=BvSalud --collection=background_set | mongorestore --host=bsccnio01.bsc.es --archive --db=BvSalud --collection=background_set
+ * $ mongodump --archive --db=BvSalud --collection=background_subset_2019 | mongorestore --host=bsccnio01.bsc.es --archive --db=BvSalud --collection=background_subset_2019
  */
 
 
@@ -31,41 +31,81 @@ var datasets = db.getSiblingDB('datasets')
 // create a temporary database
 var tmp = db.getSiblingDB('tmp')
 
-// articles with its abstract in spanish (es)
+// gather previous development and test sets to be later excluded from background set
+var excluded_collections = [
+    bvsalud.development_set_union,
+    bvsalud.test_set_without_annotations
+]
+excluded_collections.forEach(function (collection) {
+    collection.aggregate([
+        { $merge: { into: { db: 'tmp', coll: 'excluded' } } }
+    ])
+})
+var excluded_abstracts = tmp.excluded.distinct('abstractText')
+
+// literature background: articles with its abstract in spanish (es),
+// `abstract_es` collection was previously crafted by ankush.rana@bsc.es
 var es_ids = bvsalud.abstract_es.distinct('_id')
 bvsalud.all_articles.aggregate([
-    { $match: { '_id': { $in: es_ids } } },
-    { $out: 'articles_es' }
+    {
+        $match: {
+            '_id': { $in: es_ids },
+            'ab_es': { $nin: excluded_abstracts }
+        }
+    },
+    { $out: 'background_literature_es' }
 ])
 
-// candidates for the background set
-bvsalud.articles_es.aggregate([
-    { $merge: { into: { db: 'tmp', coll: 'candidates' } } }
-])
+// isciii fis background
 datasets.isciii.aggregate([
-    { $merge: { into: { db: 'tmp', coll: 'candidates' } } }
-])
-datasets.reec.aggregate([
-    { $merge: { into: { db: 'tmp', coll: 'candidates' } } }
-])
-
-// previous development and test sets excluded from the background set
-bvsalud.development_set_union.aggregate([
-    { $merge: { into: { db: 'tmp', coll: 'excluded' } } }
-])
-bvsalud.test_set_without_codes.aggregate([
-    { $merge: { into: { db: 'tmp', coll: 'excluded' } } }
-])
-
-// background set (with heterogeneous fields)
-var excluded_abstracts = tmp.excluded.distinct('abstractText')
-tmp.candidates.aggregate([
     { $match: { 'ab_es': { $nin: excluded_abstracts } } },
-    { $merge: { into: { db: 'BvSalud', coll: 'background_set' } } }
+    { $merge: { into: { db: 'BvSalud', coll: 'background_isciii_fis' } } }
 ])
 
-// background set (with well defined and homogeneous fields)
-bvsalud.background_set.aggregate([
+// reec background
+datasets.reec.aggregate([
+    { $match: { 'ab_es': { $nin: excluded_abstracts } } },
+    { $merge: { into: { db: 'BvSalud', coll: 'background_reec' } } }
+])
+
+// remove duplicates regarding the pair fields: spanish title and spanish abstract
+var target_collections = [
+    bvsalud.background_literature_es,
+    bvsalud.background_isciii_fis,
+    bvsalud.background_reec,
+]
+target_collections.forEach(function (collection) {
+    collection.aggregate([
+        {
+            $group: {
+                _id: { ti_es: "$ti_es", ab_es: "$ab_es" },
+                duplicates: { $addToSet: "$_id" },
+                count: { $sum: 1 }
+            }
+        },
+        { $match: { count: { "$gt": 1 } } }
+    ],
+        { allowDiskUse: true }
+    ).forEach(function (document) {
+        document.duplicates.shift();
+        collection.remove({ _id: { $in: document.duplicates } })
+    })
+})
+
+// merge into a single background (with original field names)
+var background_collections = [
+    bvsalud.background_literature_es,
+    bvsalud.background_isciii_fis,
+    bvsalud.background_reec
+]
+background_collections.forEach(function (collection) {
+    collection.aggregate([
+        { $merge: { into: { db: 'tmp', coll: 'background' } } }
+    ])
+})
+
+// elaborate the background set (with desired field names)
+bvsalud.background.aggregate([
     {
         $set: {
             id: '$_id',

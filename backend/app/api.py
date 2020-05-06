@@ -31,8 +31,10 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from app import app
 
 # Flask config
-app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
-mongo = PyMongo(app)
+# MONGO_URI = 'mongodb://mongo-container/BvSalud'
+# MONGO_DATASETS_URI='mongodb://mongo-container/datasets'
+# app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
+mongo = PyMongo(app, uri=os.environ.get('MONGO_URI'))
 mongo_datasets = PyMongo(app, uri=os.environ.get('MONGO_DATASETS_URI'))
 CORS(app)
 bcrypt = Bcrypt(app)
@@ -48,7 +50,7 @@ SEED_INITIAL_VALUE = 777
 DEVELOPMENT_SET_LENGTH = 750
 ABSTRACT_MINIMUM_LENGTH = 200
 
-# TODO mongoimpor the Fri.gz to localhost mongo and replace this local files access by: mongo.db.{development_set_intersection,development_set_union,test_set_without_codes, test_set_with_codes}
+# TODO mongoimport the Fri.gz to localhost mongo and replace this local files access by: mongo.db.{development_set_intersection,development_set_union,test_set_without_annotations, test_set_with_codes}
 FILE_PATHS = {
     'dev-union': 'data/mesinesp-development-set-official-union.json',
     'dev-intersection': 'data/mesinesp-development-set-core-descriptors-intersection.json',
@@ -719,14 +721,12 @@ def extract_development_set(strategy):
 def extract_test_set(version):
     '''Extract the double validated documents that are not present in the
     previuosly extracted development set in two possible versions:
-    - `without_decs_codes` to deliver the set to participants, or
-    - `with_decs_codes` (may include duplicates) for evaluation purposes.
+    - `without_annotations` to deliver the set to participants, or
+    - `with_annotations` (may include duplicates) for evaluation purposes.
     '''
     all_docs = get_documents(COLLECTIONS)
 
-    # development_set = list(mongo.db.development_set_union.find({}))
-    with open(FILE_PATHS.get('dev-union')) as f:
-        development_set = json.load(f).get('articles')
+    development_set = list(mongo.db.development_set_union.find({}))
 
     # get the double validated docs ids
     annotator_ids = get_annotators()
@@ -740,11 +740,15 @@ def extract_test_set(version):
     test_ids = [doc_id for doc_id in double_validated_ids if doc_id not in development_real_ids]
 
     # if version is with decs codes, get the decs codes for each document
-    if version == 'with_codes':
+    if version == 'with_annotations':
         test_annotations = list(mongo.db.annotations_validated.find({'doc': {'$in': test_ids}}, {'_id': 0}))
         annotations = defaultdict(list)
         for annotation in test_annotations:
             annotations[annotation.get('doc')].append(annotation.get('decsCode'))
+    
+    # ignore duplicated decs codes
+    for k, v in annotations.items():
+        annotations[k] = list(set(v))
 
     # build the test set
     test_set = list()
@@ -761,15 +765,19 @@ def extract_test_set(version):
                     'db': doc.get('db'),
                     'year': doc.get('entry_date').year if doc.get('entry_date') else None,
                     # the test set provided to participants cannot contain the DeCS codes
-                    'decsCodes': annotations.get(doc.get('_id')) if version == 'with_codes' else [],
+                    'decsCodes': annotations.get(doc.get('_id')) if version == 'with_annotations' else [],
                 })
             # debug: list in output flask console the excluded docs with short abstracts
             # elif doc.get('_id') == test_id and len(doc.get('ab_es')) < ABSTRACT_MINIMUM_LENGTH:
             #     print(f'doc excluded from test set because its abstract length is less than {ABSTRACT_MINIMUM_LENGTH}:', doc.get('_id'))
 
     # override the collection in mongodb
-    # mongo.db.test_set_without_codes.delete_many({})
-    # mongo.db.test_set_without_codes.insert_many(copy.deepcopy(test_set))
+    if version == 'without_annotations':
+        target_collection = mongo.db.test_set_without_annotations
+    elif version == 'with_annotations':
+        target_collection = mongo.db.test_set_with_annotations
+    target_collection.delete_many({})
+    target_collection.insert_many(copy.deepcopy(test_set))
 
     return jsonify(test_set)
 
@@ -788,24 +796,36 @@ def extract_background_set(version):
     pass
 
 
-@app.route('/count_sources/<dataset>', methods=['GET'])
-def count_sources(dataset):
+@app.route('/map_sources/<dataset>', methods=['GET'])
+def map_sources(dataset):
     '''Count the number of documents from each source database.'''
     if dataset == 'development':
-        filepath = FILE_PATHS.get('dev-union')
+        target_collection = mongo.db.development_set_union
     if dataset == 'test':
-        filepath = FILE_PATHS.get('test')
-    with open(filepath) as f:
-        docs = json.load(f).get('articles')
+        target_collection = mongo.db.test_set_without_annotations
+    if dataset == 'background':
+        target_collection = mongo.db.background_subset_2019
+    if dataset == 'evaluation':
+        target_collection = mongo.db.evaluation_set
+    
+    docs = target_collection.find({})
 
-    sources = defaultdict(int)
+    source_collections = [
+        mongo.db.selected_importants,
+        mongo_datasets.db.isciii,
+        mongo_datasets.db.reec,
+    ]
+
+    mappings = list()
     for doc in docs:
-        for collection in COLLECTIONS:
-            if collection.find_one({'ab_es': doc.get('abstractText')}):
+        for collection in source_collections:
+            db_name = doc.get('db') if collection.name == 'selected_importants' else collection.name
+            if collection.find_one({'ti_es': doc.get('title'), 'ab_es': doc.get('abstractText')}):
                 break
-        sources[collection.name] += 1
+        mappings.append({'id': doc.get('id'), 'db': db_name})
+        
 
-    return jsonify(sources)
+    return jsonify(mappings)
 
 
 @app.route('/calculate_jaccard/<dataset>', methods=['GET'])
@@ -882,3 +902,31 @@ def calculate_jaccard(dataset):
             'double_indexed_and_double_validated': double_indexed_and_double_validated
         }
     })
+
+
+@app.route('/shuffle_and_fake/<dataset>', methods=['GET'])
+def shuffle_and_set_fake_ids(dataset):
+    '''Shuffle and set fake autoincremental ids to documents.'''
+    # if dataset == 'test_with_annotations':
+    #     collection = mongo.db.test_set_with_annotations
+    # if dataset == 'test_without_annotations':
+    #     collection = mongo.db.test_set_without_annotations
+    if dataset == 'background':
+        collection = mongo.db.background_subset_2019
+    if dataset == 'evaluation':
+        collection = mongo.db.evaluation_set
+    docs = list(collection.find({}, {'_id': 0}))
+
+    # shuffle collection
+    random.shuffle(docs)
+
+    # override with fake autoincremental ids
+    for i, doc in enumerate(docs, 1):
+        doc['id'] = f'mesinesp-evaluation-{i:0{len(str(len(docs)))}}'
+
+    # override in mongodb
+    collection.delete_many({})
+    collection.insert_many(copy.deepcopy(docs))
+
+    return jsonify(docs)
+

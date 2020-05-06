@@ -1,10 +1,10 @@
 <div fxLayout="column" fxLayoutGap="1em" style="padding: 3em;">
   <h1 style="margin-bottom: 2em;">Panel de Administrador</h1>
   <div fxLayout fxLayoutGap="1em">
-    <a href="{{ api.url }}/results" mat-stroked-button>Resultados anotación</a>
+    <a href="{{ api.url }}/results" mat-stroked-button>Resultados de anotación (ver en Firefox)</a>
   </div>
-  <div fxLayout fxLayoutGap="1em">
-    <a href="{{ api.url }}/train_set" mat-stroked-button>Train set</a>
+  <!-- <div fxLayout fxLayoutGap="1em">
+    <a href="{{ api.url }}/training_set" mat-stroked-button>Train set</a>
   </div>
   <div fxLayout fxLayoutGap="1em">
     <a href="{{ api.url }}/development_set/all" mat-stroked-button color="accent">Development set (all)</a>
@@ -17,7 +17,7 @@
   </div>
   <div fxLayout fxLayoutGap="1em">
     <a href="{{ api.url }}/background_set" mat-stroked-button>Backgound set</a>
-  </div>
+  </div> -->
   <mat-tab-group>
     <mat-tab *ngFor="let panel of panels" label="{{ panel.title }}">
       <section fxLayout="column" fxLayoutAlign="center start" style="margin-top: 3em;">
