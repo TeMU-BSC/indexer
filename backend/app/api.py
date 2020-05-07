@@ -39,6 +39,8 @@ mongo_datasets = PyMongo(app, uri=os.environ.get('MONGO_DATASETS_URI'))
 CORS(app)
 bcrypt = Bcrypt(app)
 app.config['JSON_AS_ASCII'] = False
+app.config['JSON_SORT_KEYS'] = False
+# app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
 # CONSTANTS
 COLLECTIONS = [
@@ -331,6 +333,9 @@ def mark_doc_as(status):
             {'$pull': {'docs': doc_to_mark['doc']}}
         )
     return jsonify({'success': result.acknowledged})
+
+
+##############################################################################
 
 
 @app.route('/results', methods=['GET'])
@@ -660,7 +665,7 @@ def get_results():
 
 @app.route('/development_set/<strategy>', methods=['GET'])
 def extract_development_set(strategy):
-    '''Extract randomly 750 docuemnts and its validated DeCS codes, regarding
+    '''Extract randomly 750 documents and its validated DeCS codes, regarding
     the strategy (union or intersection).'''
     # select the doc ids for development set
     annotator_ids = get_annotators()
@@ -796,38 +801,6 @@ def extract_background_set(version):
     pass
 
 
-@app.route('/map_sources/<dataset>', methods=['GET'])
-def map_sources(dataset):
-    '''Count the number of documents from each source database.'''
-    if dataset == 'development':
-        target_collection = mongo.db.development_set_union
-    if dataset == 'test':
-        target_collection = mongo.db.test_set_without_annotations
-    if dataset == 'background':
-        target_collection = mongo.db.background_subset_2019
-    if dataset == 'evaluation':
-        target_collection = mongo.db.evaluation_set
-    
-    docs = target_collection.find({})
-
-    source_collections = [
-        mongo.db.selected_importants,
-        mongo_datasets.db.isciii,
-        mongo_datasets.db.reec,
-    ]
-
-    mappings = list()
-    for doc in docs:
-        for collection in source_collections:
-            db_name = doc.get('db') if collection.name == 'selected_importants' else collection.name
-            if collection.find_one({'ti_es': doc.get('title'), 'ab_es': doc.get('abstractText')}):
-                break
-        mappings.append({'id': doc.get('id'), 'db': db_name})
-        
-
-    return jsonify(mappings)
-
-
 @app.route('/calculate_jaccard/<dataset>', methods=['GET'])
 def calculate_jaccard(dataset):
     '''Calculate the Jaccard index (intersection/union) of the given dataset.'''
@@ -930,3 +903,101 @@ def shuffle_and_set_fake_ids(dataset):
 
     return jsonify(docs)
 
+
+# @app.route('/map_sources/<dataset>', methods=['GET'])
+# def map_sources(dataset):
+#     '''Map the original id and the participants dataset id of each document
+#     with its corresponding database of origin.'''
+#     # gather dataset documents
+#     if dataset == 'development':
+#         target_collection = mongo.db.development_set_union
+#     if dataset == 'test':
+#         target_collection = mongo.db.test_set_without_annotations
+#     # if dataset == 'background':
+#     #     target_collection = mongo.db.background_subset_2019
+#     if dataset == 'evaluation':
+#         target_collection = mongo.db.evaluation_set
+#     docs = list(target_collection.find({}))
+
+#     # gather original documents
+#     titles = list(target_collection.distinct('title'))
+#     sources = defaultdict(list)
+#     sources['literature_es'] = list(mongo.db.all_articles.find({'ti_es': {'$in': titles}}))
+#     sources['isciii_portalfis'] = list(mongo_datasets.db.isciii.find({'ti_es': {'$in': titles}}))
+#     sources['reec'] = list(mongo_datasets.db.reec.find({'ti_es': {'$in': titles}}))
+
+#     # debugging
+#     for k, v in sources.items():
+#         print(f'{k}: {len(v)}')
+
+#     # construct the mappings
+#     mappings = list()
+#     for doc in docs:
+#         found = False
+#         source_db = 'unknown'
+#         for source_coll, source_docs in sources.items():
+#             current_db = doc.get('db') if source_coll == 'literature_es' else source_coll
+#             for source_doc in source_docs:
+#                 found = doc.get('title') == source_doc.get('ti_es') and doc.get('abstractText') == source_doc.get('ab_es')
+#                 if found:
+#                     source_db = current_db
+#                     break
+#         mappings.append({
+#             'original_id': source_doc.get('_id'),
+#             'participants_id': doc.get('id'),
+#             'source_db': source_db
+#         })
+
+#     return jsonify(mappings)
+
+
+@app.route('/map_sources/<dataset>', methods=['GET'])
+def map_sources(dataset):
+    '''Map the original id and the participants dataset id of each document
+    with its corresponding database of origin.'''
+    # gather dataset documents
+    if dataset == 'development':
+        target_collection = mongo.db.development_set_union
+    if dataset == 'test':
+        target_collection = mongo.db.test_set_without_annotations
+    # if dataset == 'background':
+    #     target_collection = mongo.db.background_subset_2019
+    if dataset == 'evaluation':
+        target_collection = mongo.db.evaluation_set
+
+    # gather original documents
+    # source_collections = [
+    #     mongo.db.all_articles,
+    #     mongo_datasets.db.isciii,
+    #     mongo_datasets.db.reec,
+    # ]
+    # sources = dict()
+    # for collection in source_collections:
+    #     sources[collection.name] = list(collection.find({}, {'_id': 1, 'ti_es': 1, 'db': 1}))
+
+    # debugging
+    # for k, v in sources.items():
+    #     print(f'{k}: {len(v)}')
+    
+    # get titles
+    isciii_titles = mongo_datasets.db.isciii.distinct('ti_es')
+    reec_titles = mongo_datasets.db.reec.distinct('ti_es')
+    print(len(isciii_titles))
+    print(len(reec_titles))
+
+    # construct the mappings
+    mappings = list()
+    docs = target_collection.find({})
+    for doc in docs:
+        if doc.get('title') in isciii_titles:
+            source_db = 'isciii_portalfis'
+        elif doc.get('title') in reec_titles:
+            source_db = 'reec'
+        else:
+            source_db = 'ibecs/lilacs'
+        mappings.append({
+            'participants_id': doc.get('id'),
+            'source_db': source_db
+        })
+
+    return jsonify(mappings)

@@ -18,7 +18,7 @@
  * $ mongo extract-background-set.js
  * 
  * And then uploaded to production mongo version 4.0 like so:
- * $ mongodump --archive --db=BvSalud --collection=literature_es | mongorestore --host=bsccnio01.bsc.es --archive --db=BvSalud --collection=literature_es
+ * $ mongodump --archive --db=BvSalud --collection=ibecs_lilacs_es | mongorestore --host=bsccnio01.bsc.es --archive --db=BvSalud --collection=ibecs_lilacs_es
  * $ mongodump --archive --db=BvSalud --collection=background_set | mongorestore --host=bsccnio01.bsc.es --archive --db=BvSalud --collection=background_set
  * $ mongodump --archive --db=BvSalud --collection=background_subset_2019 | mongorestore --host=bsccnio01.bsc.es --archive --db=BvSalud --collection=background_subset_2019
  */
@@ -43,7 +43,7 @@ excluded_collections.forEach(function (collection) {
 })
 var excluded_abstracts = tmp.excluded.distinct('abstractText')
 
-// literature background: articles with its abstract in spanish (es),
+// ibecs_lilacs background: articles with its abstract in spanish (es),
 // `abstract_es` collection was previously crafted by ankush.rana@bsc.es
 var es_ids = bvsalud.abstract_es.distinct('_id')
 bvsalud.all_articles.aggregate([
@@ -53,7 +53,13 @@ bvsalud.all_articles.aggregate([
             'ab_es': { $nin: excluded_abstracts }
         }
     },
-    { $out: 'background_literature_es' }
+    { $out: 'background_ibecs_lilacs_es' }
+])
+
+// background ibecs_lilacs es subset (publications from 2019 onwards)
+bvsalud.background_ibecs_lilacs_es.aggregate([
+    { $match: { entry_date: { '$gte': new Date('2019') } } },
+    { $out: 'background_ibecs_lilacs_es_subset_2019' }
 ])
 
 // isciii fis background
@@ -70,7 +76,8 @@ datasets.reec.aggregate([
 
 // remove duplicates regarding the pair fields: spanish title and spanish abstract
 var target_collections = [
-    bvsalud.background_literature_es,
+    bvsalud.background_ibecs_lilacs_es,
+    bvsalud.background_ibecs_lilacs_es_subset_2019,
     bvsalud.background_isciii_fis,
     bvsalud.background_reec,
 ]
@@ -94,7 +101,7 @@ target_collections.forEach(function (collection) {
 
 // merge into a single background (with original field names)
 var background_collections = [
-    bvsalud.background_literature_es,
+    bvsalud.background_ibecs_lilacs_es_subset_2019,
     bvsalud.background_isciii_fis,
     bvsalud.background_reec
 ]
@@ -105,7 +112,7 @@ background_collections.forEach(function (collection) {
 })
 
 // elaborate the background set (with desired field names)
-bvsalud.background.aggregate([
+tmp.background.aggregate([
     {
         $set: {
             id: '$_id',
@@ -128,13 +135,7 @@ bvsalud.background.aggregate([
             decsCodes: 1
         }
     },
-    { $out: 'background_set' }
-])
-
-// background subset (publications from 2019 onwards)
-bvsalud.background_set.aggregate([
-    { $match: { 'year': { $gte: 2019 } } },
-    { $out: 'background_subset_2019' }
+    { $merge: { into: { db: 'BvSalud', coll: 'background_set' } } }
 ])
 
 // remove the temporary database

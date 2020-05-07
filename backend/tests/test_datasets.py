@@ -32,11 +32,11 @@ with open('/home/alejandro/Documents/mesinesp/mesinesp-test-set-without-annotati
 # with open('/home/alejandro/Documents/mesinesp/mesinesp-test-set-with-annotations.json') as f:
 #     test_with_annotations = json.load(f).get('articles')
 
-with open('/home/alejandro/Documents/mesinesp/mesinesp-background-set.json') as f:
-    # background = json.load(f).get('articles')
-    background = json.load(f)
+# with open('/home/alejandro/Documents/mesinesp/mesinesp-background-set.json') as f:
+#     # background = json.load(f).get('articles')
+#     background = json.load(f)
 
-with open('/home/alejandro/Documents/mesinesp/mesinesp-background-subset-2019.json') as f:
+with open('/home/alejandro/Documents/mesinesp/final/background_subset_2019.json') as f:
     # background_2019 = json.load(f).get('articles')
     background_2019 = json.load(f)
 
