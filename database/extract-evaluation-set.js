@@ -28,7 +28,7 @@ var bvsalud = db.getSiblingDB('BvSalud')
 // build the evaluation set = test set without annotations + background subset 2019
 var member_collections = [
     bvsalud.test_set_without_annotations,
-    bvsalud.background_subset_2019,
+    bvsalud.background_set,
 ]
 member_collections.forEach(function (collection) {
     collection.aggregate([

@@ -119,7 +119,8 @@ tmp.background.aggregate([
             title: '$ti_es',
             abstractText: '$ab_es',
             journal: { $arrayElemAt: ['$ta', 0] },
-            db: '$db',
+            // db: { $ifNull: [ "$db", "null" ] },
+            db: { $cond: [{ $eq: [{ $ifNull: ["$db", null] }, null] }, null, "$db"] },
             year: { $year: '$entry_date' },
             decsCodes: []
         }

@@ -730,13 +730,13 @@ def extract_development_set(strategy):
     #     for doc in all_docs:
     #         if dev.get('title') == doc.get('ti_es') and dev.get('abstractText') == doc.get('ab_es'):
     #             mappings.append({
-    #                 'participants_id': dev.get('id'),
+    #                 'fake_id': dev.get('id'),
     #                 'real_id': doc.get('_id'),
     #                 # 'origin_db': doc.get('db'),
     #             })
     # with open('mappings-dev.tsv', 'w') as f:
     #     fieldnames = [
-    #         'participants_id',
+    #         'fake_id',
     #         'real_id',
     #         # 'origin_db',
     #     ]
@@ -800,7 +800,7 @@ def extract_test_set(version):
             if doc.get('_id') == test_id and len(doc.get('ab_es')) >= ABSTRACT_MINIMUM_LENGTH:
                 index += 1
                 mappings.append({
-                    'participants_id': f'mesinesp-test-{index:03}',
+                    'fake_id': f'mesinesp-test-{index:03}',
                     'real_id': doc.get('_id'),
                     # 'origin_db': doc.get('db'),
                 })
@@ -828,7 +828,7 @@ def extract_test_set(version):
 
     with open('mappings-test.tsv', 'w') as f:
         fieldnames = [
-            'participants_id',
+            'fake_id',
             'real_id',
             # 'origin_db',
         ]
@@ -855,9 +855,9 @@ def extract_background_set():
     
     # mappings = list()
     # for i, doc in enumerate(back, 1):
-    #     participants_id = f'mesinesp-background-{i:0{len(str(len(back)))}}'
+    #     fake_id = f'mesinesp-background-{i:0{len(str(len(back)))}}'
     #     mappings.append({
-    #         'participants_id': participants_id,
+    #         'fake_id': fake_id,
     #         'real_id': doc.get('_id'),
     #         # 'origin_db': doc.get('db'),
     #     })
@@ -866,60 +866,37 @@ def extract_background_set():
     # TEMP: ONLY TO MAP ORIGINAL IDS WITH PARTICIPANTS IDS
 
     # build the background set
-    sources = [
-        mongo.db.all_articles,
-        mongo_datasets.db.isciii,
-        mongo_datasets.db.reec,
-    ]
-    all_docs = get_documents(sources)
-    back_set_preliminar = list(mongo.db.background_set.find({}))
-    back_ids = [doc.get('id') for doc in back_set_preliminar]
-    back_set = list()
+    docs = list(mongo.db.background_set.find({}))
+    random.shuffle(docs)
     mappings = list()
-    index = 0
-    for back_id in back_ids:
-        for doc in all_docs:
-            if doc.get('_id') == back_id and len(doc.get('ab_es')) >= ABSTRACT_MINIMUM_LENGTH:
-                index += 1
-                participants_id = f'mesinesp-background-{index:0{len(str(len(back_ids)))}}'
-                mappings.append({
-                    'participants_id': participants_id,
-                    'real_id': doc.get('_id'),
-                    # 'origin_db': doc.get('db'),
-                })
-                back_set.append({
-                    'id': f'mesinesp-back-{index:03}',
-                    'title': doc.get('ti_es'),
-                    'abstractText': doc.get('ab_es'),
-                    'journal': doc.get('ta')[0] if doc.get('ta') else None,
-                    'db': doc.get('db'),
-                    'year': doc.get('entry_date').year if doc.get('entry_date') else None,
-                    # the back set provided to participants cannot contain any DeCS codes
-                    'decsCodes': [],
-                })
-            # debug: list in output flask console the excluded docs with short abstracts
-            # elif doc.get('_id') == back_id and len(doc.get('ab_es')) < ABSTRACT_MINIMUM_LENGTH:
-            #     print(f'doc excluded from back set because its abstract length is less than {ABSTRACT_MINIMUM_LENGTH}:', doc.get('_id'))
+    for i, doc in enumerate(docs, 1):
+        fake_id = f'mesinesp-background-{i:0{len(str(len(docs)))}}'
+        mappings.append({
+            'fake_id': fake_id,
+            'real_id': doc.get('_id'),
+            # 'origin_db': doc.get('db'),
+        })
+        doc['id'] = fake_id
 
     # override the collection in mongodb
     # if version == 'none':
-    #     target_collection = mongo.db.back_set_without_annotations
+    #     target_collection = mongo.db.background_set_without_annotations
     # elif version == 'union':
-    #     target_collection = mongo.db.back_set_with_annotations
+    #     target_collection = mongo.db.background_set_with_annotations_union
     # target_collection.delete_many({})
-    # target_collection.insert_many(copy.deepcopy(back_set))
+    # target_collection.insert_many(copy.deepcopy(docs))
 
-    with open('mappings-background.tsv', 'w') as f:
-        fieldnames = [
-            'participants_id',
-            'real_id',
-            # 'origin_db',
-        ]
-        dw = csv.DictWriter(f, fieldnames=fieldnames, delimiter='\t')
-        dw.writeheader()
-        dw.writerows(mappings)
+    # with open('mappings-background.tsv', 'w') as f:
+    #     fieldnames = [
+    #         'fake_id',
+    #         'real_id',
+    #         # 'origin_db',
+    #     ]
+    #     dw = csv.DictWriter(f, fieldnames=fieldnames, delimiter='\t')
+    #     dw.writeheader()
+    #     dw.writerows(mappings)
 
-    return jsonify(back_set)
+    return jsonify(docs)
 
 
 @app.route('/calculate_jaccard/<dataset>', methods=['GET'])
@@ -1006,7 +983,7 @@ def shuffle_and_set_fake_ids(dataset):
     # if dataset == 'test_without_annotations':
     #     collection = mongo.db.test_set_without_annotations
     if dataset == 'background':
-        collection = mongo.db.background_subset_2019
+        collection = mongo.db.background_set
     if dataset == 'evaluation':
         collection = mongo.db.evaluation_set
     docs = list(collection.find({}, {'_id': 0}))
@@ -1015,12 +992,30 @@ def shuffle_and_set_fake_ids(dataset):
     random.shuffle(docs)
 
     # override with fake autoincremental ids
+    mappings = list()
     for i, doc in enumerate(docs, 1):
-        doc['id'] = f'mesinesp-evaluation-{i:0{len(str(len(docs)))}}'
+        fake_id = f'mesinesp-{dataset}-{i:0{len(str(len(docs)))}}'
+        real_id = doc.get('id')
+        mappings.append({
+            'fake_id': fake_id,
+            'real_id': real_id,
+            # 'origin_db': doc.get('db'),
+        })
+        doc['id'] = fake_id
+
+    with open(f'mappings-{dataset}.tsv', 'w') as f:
+        fieldnames = [
+            'fake_id',
+            'real_id',
+            # 'origin_db',
+        ]
+        dw = csv.DictWriter(f, fieldnames=fieldnames, delimiter='\t')
+        dw.writeheader()
+        dw.writerows(mappings)
 
     # override in mongodb
-    collection.delete_many({})
-    collection.insert_many(copy.deepcopy(docs))
+    # collection.delete_many({})
+    # collection.insert_many(copy.deepcopy(docs))
 
     return jsonify(docs)
 
@@ -1065,7 +1060,7 @@ def shuffle_and_set_fake_ids(dataset):
 #                     break
 #         mappings.append({
 #             'original_id': source_doc.get('_id'),
-#             'participants_id': doc.get('id'),
+#             'fake_id': doc.get('id'),
 #             'source_db': source_db
 #         })
 
@@ -1117,7 +1112,7 @@ def map_sources(dataset):
         else:
             source_db = 'ibecs/lilacs'
         mappings.append({
-            'participants_id': doc.get('id'),
+            'fake_id': doc.get('id'),
             'source_db': source_db
         })
 
