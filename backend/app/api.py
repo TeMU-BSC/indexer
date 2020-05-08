@@ -697,7 +697,7 @@ def extract_development_set(strategy):
     random.seed(SEED_INITIAL_VALUE)
     development_set = list()
     for n in range(1, DEVELOPMENT_SET_LENGTH + 1):
-        while True:    
+        while True:
             choice = random.choice(chosen_annotations)
             chosen_annotations.remove(choice)
             for doc in all_docs:
@@ -721,13 +721,40 @@ def extract_development_set(strategy):
 
     return jsonify(development_set)
 
+    # ------------------------------------------------------------------------
+    # # TEMP: ONLY TO MAP ORIGINAL IDS WITH PARTICIPANTS IDS
+    # all_docs = get_documents(COLLECTIONS)
+    # development_set = list(mongo.db.development_set_union.find({}))
+    # mappings = list()
+    # for dev in development_set:
+    #     for doc in all_docs:
+    #         if dev.get('title') == doc.get('ti_es') and dev.get('abstractText') == doc.get('ab_es'):
+    #             mappings.append({
+    #                 'participants_id': dev.get('id'),
+    #                 'real_id': doc.get('_id'),
+    #                 # 'origin_db': doc.get('db'),
+    #             })
+    # with open('mappings-dev.tsv', 'w') as f:
+    #     fieldnames = [
+    #         'participants_id',
+    #         'real_id',
+    #         # 'origin_db',
+    #     ]
+    #     dw = csv.DictWriter(f, fieldnames=fieldnames, delimiter='\t')
+    #     dw.writeheader()
+    #     dw.writerows(mappings)
+    # return jsonify(mappings)
+
+
 
 @app.route('/test_set/<version>', methods=['GET'])
 def extract_test_set(version):
     '''Extract the double validated documents that are not present in the
-    previuosly extracted development set in two possible versions:
-    - `without_annotations` to deliver the set to participants, or
-    - `with_annotations` (may include duplicates) for evaluation purposes.
+    previuosly extracted development set in four possible versions:
+    - `none` to deliver the set to participants, or
+    - `all`, or
+    - `union`, or
+    - `intersection`
     '''
     all_docs = get_documents(COLLECTIONS)
 
@@ -745,23 +772,38 @@ def extract_test_set(version):
     test_ids = [doc_id for doc_id in double_validated_ids if doc_id not in development_real_ids]
 
     # if version is with decs codes, get the decs codes for each document
-    if version == 'with_annotations':
+    if version != 'none':
         test_annotations = list(mongo.db.annotations_validated.find({'doc': {'$in': test_ids}}, {'_id': 0}))
         annotations = defaultdict(list)
         for annotation in test_annotations:
             annotations[annotation.get('doc')].append(annotation.get('decsCode'))
-    
-    # ignore duplicated decs codes
-    for k, v in annotations.items():
-        annotations[k] = list(set(v))
+        
+        # prepare the codes depending on the version
+        chosen_annotations = dict()
+        for doc, codes in annotations.items():
+            unique = set(codes)
+            selected_codes = list()
+            if version == 'all':
+                selected_codes = codes
+            if version == 'union':
+                selected_codes = list(unique)
+            if version == 'intersection':
+                selected_codes = [code for code, count in Counter(codes).items() if count == 2]
+            chosen_annotations[doc] = selected_codes
 
     # build the test set
     test_set = list()
+    mappings = list()
     index = 0
     for test_id in test_ids:
         for doc in all_docs:
             if doc.get('_id') == test_id and len(doc.get('ab_es')) >= ABSTRACT_MINIMUM_LENGTH:
                 index += 1
+                mappings.append({
+                    'participants_id': f'mesinesp-test-{index:03}',
+                    'real_id': doc.get('_id'),
+                    # 'origin_db': doc.get('db'),
+                })
                 test_set.append({
                     'id': f'mesinesp-test-{index:03}',
                     'title': doc.get('ti_es'),
@@ -770,35 +812,114 @@ def extract_test_set(version):
                     'db': doc.get('db'),
                     'year': doc.get('entry_date').year if doc.get('entry_date') else None,
                     # the test set provided to participants cannot contain the DeCS codes
-                    'decsCodes': annotations.get(doc.get('_id')) if version == 'with_annotations' else [],
+                    'decsCodes': chosen_annotations.get(doc.get('_id')) if version != 'none' else [],
                 })
             # debug: list in output flask console the excluded docs with short abstracts
             # elif doc.get('_id') == test_id and len(doc.get('ab_es')) < ABSTRACT_MINIMUM_LENGTH:
             #     print(f'doc excluded from test set because its abstract length is less than {ABSTRACT_MINIMUM_LENGTH}:', doc.get('_id'))
 
     # override the collection in mongodb
-    if version == 'without_annotations':
-        target_collection = mongo.db.test_set_without_annotations
-    elif version == 'with_annotations':
-        target_collection = mongo.db.test_set_with_annotations
-    target_collection.delete_many({})
-    target_collection.insert_many(copy.deepcopy(test_set))
+    # if version == 'none':
+    #     target_collection = mongo.db.test_set_without_annotations
+    # elif version == 'union':
+    #     target_collection = mongo.db.test_set_with_annotations
+    # target_collection.delete_many({})
+    # target_collection.insert_many(copy.deepcopy(test_set))
+
+    with open('mappings-test.tsv', 'w') as f:
+        fieldnames = [
+            'participants_id',
+            'real_id',
+            # 'origin_db',
+        ]
+        dw = csv.DictWriter(f, fieldnames=fieldnames, delimiter='\t')
+        dw.writeheader()
+        dw.writerows(mappings)
 
     return jsonify(test_set)
 
 
-@app.route('/background_set/<version>', methods=['GET'])
-def extract_background_set(version):
+@app.route('/background_set', methods=['GET'])
+def extract_background_set():
     '''Extract all documents from ibecs/lilacs Spanish abstracts, isciii
     and reec, that are not present in the previuosly extracted development and test sets.
-    There are two possible versions:
-    - `all` for all possible documents that match the described criteria, or
-    - `from_2019` for the filtered ibecs/lilacs articles published from year 2019 onwards.
 
     NOTE: This extraction is preferred to be done with the mongo shell.
     See `database/extract-background-set.js` file in this project.
     '''
-    pass
+    # pass
+
+    # # map participants ids with real ids
+    # with open('/home/alejandro/Downloads/corregidos/mesinesp-background-set.json') as f:
+    #     back = json.load(j).get('articles')
+    
+    # mappings = list()
+    # for i, doc in enumerate(back, 1):
+    #     participants_id = f'mesinesp-background-{i:0{len(str(len(back)))}}'
+    #     mappings.append({
+    #         'participants_id': participants_id,
+    #         'real_id': doc.get('_id'),
+    #         # 'origin_db': doc.get('db'),
+    #     })
+    
+    # ------------------------------------------------------------------------
+    # TEMP: ONLY TO MAP ORIGINAL IDS WITH PARTICIPANTS IDS
+
+    # build the background set
+    sources = [
+        mongo.db.all_articles,
+        mongo_datasets.db.isciii,
+        mongo_datasets.db.reec,
+    ]
+    all_docs = get_documents(sources)
+    back_set_preliminar = list(mongo.db.background_set.find({}))
+    back_ids = [doc.get('id') for doc in back_set_preliminar]
+    back_set = list()
+    mappings = list()
+    index = 0
+    for back_id in back_ids:
+        for doc in all_docs:
+            if doc.get('_id') == back_id and len(doc.get('ab_es')) >= ABSTRACT_MINIMUM_LENGTH:
+                index += 1
+                participants_id = f'mesinesp-background-{index:0{len(str(len(back_ids)))}}'
+                mappings.append({
+                    'participants_id': participants_id,
+                    'real_id': doc.get('_id'),
+                    # 'origin_db': doc.get('db'),
+                })
+                back_set.append({
+                    'id': f'mesinesp-back-{index:03}',
+                    'title': doc.get('ti_es'),
+                    'abstractText': doc.get('ab_es'),
+                    'journal': doc.get('ta')[0] if doc.get('ta') else None,
+                    'db': doc.get('db'),
+                    'year': doc.get('entry_date').year if doc.get('entry_date') else None,
+                    # the back set provided to participants cannot contain any DeCS codes
+                    'decsCodes': [],
+                })
+            # debug: list in output flask console the excluded docs with short abstracts
+            # elif doc.get('_id') == back_id and len(doc.get('ab_es')) < ABSTRACT_MINIMUM_LENGTH:
+            #     print(f'doc excluded from back set because its abstract length is less than {ABSTRACT_MINIMUM_LENGTH}:', doc.get('_id'))
+
+    # override the collection in mongodb
+    # if version == 'none':
+    #     target_collection = mongo.db.back_set_without_annotations
+    # elif version == 'union':
+    #     target_collection = mongo.db.back_set_with_annotations
+    # target_collection.delete_many({})
+    # target_collection.insert_many(copy.deepcopy(back_set))
+
+    with open('mappings-background.tsv', 'w') as f:
+        fieldnames = [
+            'participants_id',
+            'real_id',
+            # 'origin_db',
+        ]
+        dw = csv.DictWriter(f, fieldnames=fieldnames, delimiter='\t')
+        dw.writeheader()
+        dw.writerows(mappings)
+
+    return jsonify(back_set)
 
 
 @app.route('/calculate_jaccard/<dataset>', methods=['GET'])

@@ -8,11 +8,11 @@ var tmp = db.getSiblingDB('tmp')
 // find on a single collection
 // var duplicate_criteria = { ti_es: "$ti_es", ab_es: "$ab_es" }
 var duplicate_criteria = { title: "$title", abstractText: "$abstractText" }
-bvsalud.abstract_es.aggregate([
+bvsalud.background.aggregate([
     {
         $group: {
             _id: duplicate_criteria,
-            duplicates: { $addToSet: "$_id" },
+            duplicates: { $addToSet: "$id" },
             count: { $sum: 1 }
         }
     },
@@ -24,10 +24,10 @@ bvsalud.abstract_es.aggregate([
 )
 
 // console output
-printjson(`Duplicates found: ${tmp.duplicates.findOne().duplicates.length}`)
+// printjson(`Duplicates found: ${tmp.duplicates.findOne().duplicates.length}`)
 
 // remove the temporary database
-tmp.dropDatabase()
+// tmp.dropDatabase()
 
 // ---------------------------------------------------------------------------
 

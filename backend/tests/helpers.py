@@ -23,6 +23,15 @@ def has_no_duplicates(dataset: List[dict]) -> bool:
     return len(dataset) == len(set(titles)) and len(dataset) == len(set(abstracts))
 
 
+def has_no_annotations(dataset: List[dict]) -> bool:
+    '''Return true if there is no annotations in any document in dataset;
+    return false otherwise.'''
+    # look for decsCodes key
+    decs_codes = [document.get('decsCodes') for document in dataset]
+
+    return not all(decs_codes)
+
+
 def is_not_present_in(dataset: List[dict],
                       checking_datasets: List[List[dict]]) -> bool:
     '''Return true if any document in dataset is not present in any of
