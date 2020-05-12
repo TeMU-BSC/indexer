@@ -42,7 +42,7 @@ with open(output_file_tmp, 'w') as f:
     json.dump(docs_reordered, f)
 
 bash_command = f'''
-cat {output_file_tmp} | jq -c '.[]' | sed '1s/^/{{"articles":[\\n/; $s/$/\\n]}}/; $!s/$/,/' > {output_file} && rm {output_file_tmp}
+cat {output_file_tmp} | jq -c '.[]' | sed '/"_id":/s/"_id":[^,]*,//g; 1s/^/{{"articles":[\\n/; $s/$/\\n]}}/; $!s/$/,/' > {output_file} && rm {output_file_tmp}
 '''
 print(bash_command)
 subprocess.call(['bash', '-c', bash_command])

@@ -23,6 +23,8 @@
  * $ mongodump --archive --db=BvSalud --collection=background_subset_2019 | mongorestore --host=bsccnio01.bsc.es --archive --db=BvSalud --collection=background_subset_2019
  */
 
+// constants
+var MINIMUM_ABSTRACT_CHARACTERS = 200
 
 // connection to required databases
 var bvsalud = db.getSiblingDB('BvSalud')
@@ -30,6 +32,28 @@ var datasets = db.getSiblingDB('datasets')
 
 // create a temporary database
 var tmp = db.getSiblingDB('tmp')
+
+// drop possible previuos existing collections
+tmp.dropDatabase()
+bvsalud.background_ibecs_lilacs_es.drop()
+bvsalud.background_ibecs_lilacs_es_subset_2019.drop()
+bvsalud.background_isciii_fis.drop()
+bvsalud.background_reec.drop()
+bvsalud.background_set.drop()
+
+// get the ids of the valid and spanish abstract from `abstract_es` collection, which was previously crafted by ankush.rana@bsc.es
+var valid_ids_es = bvsalud.abstract_es.distinct('_id', {
+    $nor: [
+        { ab_es: null },
+        { ab_es: 'No disponible' }
+    ]
+})
+
+// generate `articles_es` collection with only the valid documents with abstracts in spanish
+bvsalud.all_articles.aggregate([
+    { $match: { '_id': { $in: valid_ids_es } } },
+    { $out: 'articles_es' }
+])
 
 // gather previous development and test sets to be later excluded from background set
 var excluded_collections = [
@@ -43,14 +67,14 @@ excluded_collections.forEach(function (collection) {
 })
 var excluded_abstracts = tmp.excluded.distinct('abstractText')
 
-// ibecs_lilacs background: articles with its abstract in spanish (es),
-// `abstract_es` collection was previously crafted by ankush.rana@bsc.es
-var es_ids = bvsalud.abstract_es.distinct('_id')
-bvsalud.all_articles.aggregate([
+// ibecs_lilacs_es background: articles with its abstract in spanish (es)
+bvsalud.articles_es.aggregate([
     {
         $match: {
-            '_id': { $in: es_ids },
-            'ab_es': { $nin: excluded_abstracts }
+            // ignore the documents from the previous development and test sets
+            'ab_es': { $nin: excluded_abstracts },
+            // ignore the documents with an abstract of less than the minimum stablished length
+            $expr: { $gte: [{ $strLenCP: "$ab_es" }, MINIMUM_ABSTRACT_CHARACTERS] }
         }
     },
     { $out: 'background_ibecs_lilacs_es' }

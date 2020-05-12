@@ -886,15 +886,15 @@ def extract_background_set():
     # target_collection.delete_many({})
     # target_collection.insert_many(copy.deepcopy(docs))
 
-    # with open('mappings-background.tsv', 'w') as f:
-    #     fieldnames = [
-    #         'fake_id',
-    #         'real_id',
-    #         # 'origin_db',
-    #     ]
-    #     dw = csv.DictWriter(f, fieldnames=fieldnames, delimiter='\t')
-    #     dw.writeheader()
-    #     dw.writerows(mappings)
+    with open('mappings-background.tsv', 'w') as f:
+        fieldnames = [
+            'fake_id',
+            'real_id',
+            # 'origin_db',
+        ]
+        dw = csv.DictWriter(f, fieldnames=fieldnames, delimiter='\t')
+        dw.writeheader()
+        dw.writerows(mappings)
 
     return jsonify(docs)
 
