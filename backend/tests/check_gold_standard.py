@@ -31,30 +31,43 @@ Martin
 
 '''
 
+import csv
 import json
 import statistics
+
+# /home/alejandro/code/decs-indexer/frontend/src/assets/sourcedata/DeCS.2019.both.v5.tsv
+# with open('/home/alejandro/code/decs-indexer/frontend/src/assets/sourcedata/DeCS.2019.both.v5.tsv') as f:
+#     reader = csv.DictReader(f, dialect=csv.excel_tab)
+#     decs = list(reader)
+#     codes = [item.get('decsCode') for item in decs]
+#     print(len(codes))
+
+with open('/home/alejandro/code/decs-indexer/backend/data/decs.json') as f:
+    decs = json.load(f)
+    codes = [item.get('decsCode') for item in decs]
+    print(len(decs))
 
 # temu sets
 with open('/home/alejandro/Documents/mesinesp/mesinesp-datasets-and-mappings-v2/mesinesp-development-set-official-union.json') as f:
     dev_temu = json.load(f).get('articles')
-    print(len(dev_temu))
+    # print(len(dev_temu))
 
 with open('/home/alejandro/Documents/mesinesp/mesinesp-datasets-and-mappings-v2/mesinesp-test-set-with-annotations-official-union.json') as f:
     test_temu = json.load(f).get('articles')
-    print(len(test_temu))
+    # print(len(test_temu))
 
 with open('/home/alejandro/Documents/mesinesp/mesinesp-datasets-and-mappings-v2/mesinesp-evaluation-set.json') as f:
     evaluation_temu = json.load(f).get('articles')
-    print(len(evaluation_temu))
+    # print(len(evaluation_temu))
 
 # Tasos' sets
 with open('/home/alejandro/Downloads/mesinesp-GoldStandard-test-set-official-union.json') as f:
     gold_standard = json.load(f).get('articles')
-    print(len(gold_standard))
+    # print(len(gold_standard))
 
 with open('/home/alejandro/Downloads/Model 1.json') as f:
     model1 = json.load(f).get('documents')
-    print(len(model1))
+    # print(len(model1))
 
 # check all decs codes are the same between Tasos' gold standard file and our test set file
 decs_compared = list()
@@ -62,7 +75,7 @@ for article in test_temu:
     for a in gold_standard:
         if article.get('abstractText') == a.get('abstractText') and article.get('title') == a.get('title'):
             decs_compared.append(article.get('decsCodes') == a.get('decsCodes'))
-print(all(decs_compared))
+# print(all(decs_compared))
 
 # compare Model 1 vs evaluation set (very slow execution, it lasts more than 1 minute)
 evaluation_compared = list()
@@ -70,11 +83,24 @@ for article in evaluation_temu:
     for a in model1:
         if article.get('abstractText') == a.get('abstractText') and article.get('title') == a.get('title'):
             evaluation_compared.append(article.get('decsCodes') == a.get('decsCodes'))
-print(all(evaluation_compared))
+# print(all(evaluation_compared))
 
 # check decs codes length distribution similarity
 dev_decs_lengths = [len(a.get('decsCodes')) for a in dev_temu]
-print(statistics.mean(dev_decs_lengths))
+# print(statistics.mean(dev_decs_lengths))
 
 test_decs_lengths = [len(a.get('decsCodes')) for a in test_temu]
-print(statistics.mean(test_decs_lengths))
+# print(statistics.mean(test_decs_lengths))
+
+# check if all labels in Model 1 are present in decs official list
+labels_in_official_decs = list()
+wrong_labels = list()
+for item in model1:
+    for label in item.get('labels'):
+        if label in codes:
+            labels_in_official_decs.append(label)
+        else:
+            wrong_labels.append(label)
+# print(all(labels_in_official_decs))
+print(len(labels_in_official_decs))
+print(len(wrong_labels))
