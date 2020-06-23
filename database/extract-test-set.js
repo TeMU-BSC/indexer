@@ -29,18 +29,6 @@ var datasets = db.getSiblingDB('datasets')
 // create a temporary database
 var tmp = db.getSiblingDB('tmp')
 
-// gather candidates for test set
-// var candidates = [
-//     bvsalud.selected_importants,
-//     datasets.isciii,
-//     datasets.reec
-// ]
-// candidates.forEach(function (candidate) {
-//     candidate.aggregate([
-//         { $merge: { into: { db: 'tmp', coll: 'candidates' } } }
-//     ])
-// })
-
 bvsalud.selected_importants.aggregate([
     { $merge: { into: { db: 'tmp', coll: 'candidates' } } }
 ])
@@ -91,7 +79,7 @@ bvsalud.validations.aggregate([
     { $merge: { into: { db: 'tmp', coll: 'double_validated_ids' } } }
 ])
 var double_validated_ids = tmp.double_validated_ids.distinct('_id')
-print('double validated docs: ' + double_validated_ids.length)
+// print('double validated docs: ' + double_validated_ids.length)
 
 // build the test set
 tmp.candidates.aggregate([
@@ -120,5 +108,6 @@ tmp.candidates.aggregate([
     },
     { $merge: { into: { db: 'BvSalud', coll: 'test_set_without_annotations_mongoshell' } } }
 ])
-printjson(bvsalud.test_set_without_annotations_mongoshell.count())
+
+// printjson(bvsalud.test_set_without_annotations_mongoshell.count())
 
