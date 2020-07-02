@@ -22,6 +22,9 @@
  * $ mongodump --archive --db=BvSalud --collection=test_set_without_annotations | mongorestore --host=bsccnio01.bsc.es --archive --db=BvSalud --collection=test_set_without_annotations
  */
 
+ // constants
+var MINIMUM_ABSTRACT_CHARACTERS = 200
+
 // connection to required databases
 var bvsalud = db.getSiblingDB('BvSalud')
 var datasets = db.getSiblingDB('datasets')
@@ -29,18 +32,23 @@ var datasets = db.getSiblingDB('datasets')
 // create a temporary database
 var tmp = db.getSiblingDB('tmp')
 
-bvsalud.selected_importants.aggregate([
-    { $merge: { into: { db: 'tmp', coll: 'candidates' } } }
-])
-datasets.isciii.aggregate([
-    { $merge: { into: { db: 'tmp', coll: 'candidates' } } }
-])
-datasets.reec.aggregate([
-    { $merge: { into: { db: 'tmp', coll: 'candidates' } } }
-])
+// previous drops
+bvsalud.test_set_without_annotations_mongoshell.drop()
+
+// prepare a temporary collection with all document text sources
+var sources = [
+    bvsalud.selected_importants,
+    datasets.isciii,
+    datasets.reec,
+]
+sources.forEach(function (collection) {
+    collection.aggregate([
+        { $merge: { into: { db: 'tmp', coll: 'sources' } } }
+    ])
+})
 
 // remove duplicates regarding the pair fields: spanish title and spanish abstract
-tmp.candidates.aggregate([
+tmp.sources.aggregate([
     {
         $group: {
             _id: { ti_es: "$ti_es", ab_es: "$ab_es" },
@@ -53,7 +61,7 @@ tmp.candidates.aggregate([
     { allowDiskUse: true }
 ).forEach(function (document) {
     document.duplicates.shift();
-    tmp.candidates.remove({ _id: { $in: document.duplicates } })
+    tmp.sources.remove({ _id: { $in: document.duplicates } })
 })
 
 // gather previous development to be later excluded
@@ -67,6 +75,7 @@ excluded_collections.forEach(function (collection) {
     ])
 })
 var excluded_ids = tmp.excluded.distinct('_id')
+excluded_ids = []
 
 // get the double validated docs ids
 var annotators_ids = bvsalud.users.distinct('id', { role: 'annotator' })
@@ -82,8 +91,17 @@ var double_validated_ids = tmp.double_validated_ids.distinct('_id')
 // print('double validated docs: ' + double_validated_ids.length)
 
 // build the test set
-tmp.candidates.aggregate([
-    { $match: { '_id': { $in: double_validated_ids, $nin: excluded_ids }, } },
+tmp.sources.aggregate([
+    {
+        $match: {
+
+            // include only the double validated documents and exclude the documents from the development set
+            '_id': { $in: double_validated_ids, $nin: excluded_ids },
+
+            // include only the documents with an abstract greater than or equal than the minimum defined length
+            $expr: { $gte: [{ $strLenCP: "$ab_es" }, MINIMUM_ABSTRACT_CHARACTERS] }
+        }
+    },
     {
         $set: {
             id: '$_id',

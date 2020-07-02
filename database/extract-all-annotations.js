@@ -41,14 +41,16 @@ annotation_collections.forEach(function (collection) {
         // rename fields, get the timestamp of each annotation and determine if the annoation has been validated
         {
             $set: {
+                annotatorId: '$id',
                 annotatorName: '$fullname',
                 documentId: '$doc',
                 timestamp: { $dateToString: { date: { $toDate: '$_id' } } },
                 validated: collection.getName() == 'annotations_validated',
             }
         },
+        { $match : { annotatorId : /^A/ } },
         { $project: { fromUsers: 0 } },
-        { $project: { _id: 0, annotatorName: 1, documentId: 1, decsCode: 1, timestamp: 1, validated: 1, } },
+        { $project: { _id: 0, annotatorId: 1, annotatorName: 1, documentId: 1, decsCode: 1, timestamp: 1, validated: 1, } },
         { $merge: { into: 'all_annotations' } },
     ])
 })

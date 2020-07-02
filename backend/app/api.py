@@ -819,14 +819,18 @@ def extract_test_set(version):
             #     print(f'doc excluded from test set because its abstract length is less than {ABSTRACT_MINIMUM_LENGTH}:', doc.get('_id'))
 
     # override the collection in mongodb
-    # if version == 'none':
-    #     target_collection = mongo.db.test_set_without_annotations
-    # elif version == 'union':
-    #     target_collection = mongo.db.test_set_with_annotations
-    # target_collection.delete_many({})
-    # target_collection.insert_many(copy.deepcopy(test_set))
+    if version == 'none':
+        target_collection = mongo.db.test_set_without_annotations
+    elif version == 'all':
+        target_collection = mongo.db.test_set_with_annotations_all
+    elif version == 'union':
+        target_collection = mongo.db.test_set_with_annotations_union
+    elif version == 'intersection':
+        target_collection = mongo.db.test_set_with_annotations_intersection
+    target_collection.delete_many({})
+    target_collection.insert_many(copy.deepcopy(test_set))
 
-    with open('mappings-test.tsv', 'w') as f:
+    with open('mappings-test-v2.tsv', 'w') as f:
         fieldnames = [
             'fake_id',
             'real_id',

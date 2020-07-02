@@ -40,15 +40,15 @@ services:
       # - MONGO_DATASETS_URI=mongodb://dummy:dummyPassword@mongo-container/datasets
       
       # We also can access without authentication
-      - MONGO_URI=mongodb://mongo-container/BvSalud
-      - MONGO_DATASETS_URI=mongodb://mongo-container/datasets
+      # - MONGO_URI=mongodb://mongo-container/BvSalud
+      # - MONGO_DATASETS_URI=mongodb://mongo-container/datasets
       
       # [Option B] Development against the real production database
       # First, you should have a VPN connection tunnel stablished to reach the mongod service remotely.
       # $ sudo apt update && sudo apt install -y openfortivpn && sudo openfortivpn gw.bsc.es:443 -u USERNAME
 
-      # - MONGO_URI=mongodb://bsccnio01.bsc.es/BvSalud
-      # - MONGO_DATASETS_URI=mongodb://bsccnio01.bsc.es/datasets
+      - MONGO_URI=mongodb://bsccnio01.bsc.es/BvSalud
+      - MONGO_DATASETS_URI=mongodb://bsccnio01.bsc.es/datasets
     volumes:
       - ./backend:/app
     ports:
