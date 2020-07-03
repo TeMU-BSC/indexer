@@ -6,10 +6,9 @@
  * 
  * Usage:
  * $ mongo bsccnio01.bsc.es find-documents-in-dev-and-test.js
- * $ mongoexport --host=bsccnio01.bsc.es --db=BvSalud --collection=documents_in_dev_and_test | sed '/"_id":/s/"_id":[^,]*,//g; $!s/$/,/; 1s/^/{"articles": [/; $s/$/]}/' > documents_in_dev_and_test_with_mappings.json
+ * $ mongoexport --host=bsccnio01.bsc.es --db=BvSalud --collection=documents_in_dev_and_test | sed '/"_id":/s/"_id":[^,]*,//g; $!s/$/,/; 1s/^/{"articles": [/; $s/$/]}/' > documents_in_dev_and_test.json
  */
 
-var MINIMUM_ABSTRACT_CHARACTERS = 200
 var bvsalud = db.getSiblingDB('BvSalud')
 var datasets = db.getSiblingDB('datasets')
 var assignedDocsIds = bvsalud.assignments.distinct('docs', { user: /^A/ })
@@ -58,8 +57,7 @@ sets.forEach(function (collection) {
         { $project: { originalDocData: 0 } },
         {
             $project: {
-                realId: 1,
-                fakeId: '$id',
+                id: '$realId',
                 title: 1,
                 abstractText: 1,
             }
