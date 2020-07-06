@@ -11,8 +11,6 @@
 
 var bvsalud = db.getSiblingDB('BvSalud')
 var datasets = db.getSiblingDB('datasets')
-var assignedDocsIds = bvsalud.assignments.distinct('docs', { user: /^A/ })
-print(assignedDocsIds.length)
 var sources = [
     bvsalud.selected_importants,
     datasets.isciii,
@@ -20,11 +18,15 @@ var sources = [
 ]
 bvsalud.sources.drop()
 sources.forEach(function (collection) {
-    collection.aggregate([{ $merge: { into: 'sources' } }])
+    collection.aggregate([{ $merge: { into: 'sources'} }])
 })
+var assignedDocsIds = bvsalud.assignments.distinct('docs', { user: /^A/ })
+// print(assignedDocsIds.length)
+
 bvsalud.documents_assigned.drop()
 bvsalud.sources.aggregate([
     { $match: { _id: { $in: assignedDocsIds } } },
     { $project: { id: '$_id', title: '$ti_es', abstractText: '$ab_es', } },
     { $merge: { into: 'documents_assigned' } }
 ])
+// print(bvsalud.documents_assigned.count())
