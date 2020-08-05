@@ -11,10 +11,8 @@ services:
     volumes:
       - /var/lib/mongodb:/data/db
       - ./database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-      # - ./database/mongo-volume:/data/db
     ports:
       - 27017-27019:27017-27019
-    # entrypoint: mongod --auth --bind_ip_all
     entrypoint: mongod --bind_ip_all
 
   backend:

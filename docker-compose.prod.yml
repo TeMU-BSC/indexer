@@ -7,10 +7,12 @@ services:
       - MONGO_URI=mongodb://bsccnio01.bsc.es/BvSalud
       - MONGO_DATASETS_URI=mongodb://bsccnio01.bsc.es/datasets
     command: uwsgi app.ini
+    restart: always
   frontend:
     container_name: angular-container-production
     build:
       context: ./frontend
+
       # https://docs.docker.com/compose/compose-file/#args
       args:
         - APP_API_URL=http://bsccnio01.bsc.es/api
@@ -18,3 +20,4 @@ services:
       dockerfile: Dockerfile.prod
     ports:
       - '80:80'
+    restart: always
