@@ -15,13 +15,14 @@
   </mat-chip-list>
   <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="addChip($event)">
     <mat-option *ngFor="let option of filteredOptions | async | slice : 0 : 15" [value]="option"
-      matTooltip="{{ option.definitionSpanish }}" matTooltipPosition="right">
-      <!-- <span [innerHTML]="option.termSpanish | highlight: autocompleteChipList.value"></span> -->
-      <!-- (<span [innerHTML]="option.decsCode | highlight: autocompleteChipList.value"></span>) -->
+      matTooltip="{{ option.definitionSpanish || option.termSpanish }}" class="multiline-auto-complete-options">
+      <!-- <span [innerHTML]="option.termSpanish | highlight: chipInput.value"></span> -->
+      <!-- (<span [innerHTML]="option.decsCode | highlight: chipInput.value"></span>) -->
       <!-- <span [innerHTML]="option.definitionSpanish" class="text-muted"></span> -->
       <span>{{ option.termSpanish }}</span>
       (<span>{{ option.decsCode }}</span>)
-      <span class="text-muted">{{ option.definitionSpanish }}</span>
+      <br/>
+      <span class="text-muted text-smaller">{{ option.definitionSpanish }}</span>
     </mat-option>
   </mat-autocomplete>
   <mat-hint>

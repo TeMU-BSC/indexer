@@ -1,24 +1,24 @@
 version: "3.7"
 services:
-  database:
-    image: mongo:4.2
-    container_name: mongo-container
-    restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
-      - MONGO_INITDB_DATABASE=BvSalud
-    volumes:
-      - /var/lib/mongodb:/data/db
-      - ./database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-    ports:
-      - 27017-27019:27017-27019
-    entrypoint: mongod --bind_ip_all
+  # database:
+  #   image: mongo:4.2
+  #   container_name: indexer-database
+  #   restart: always
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=root
+  #     - MONGO_INITDB_ROOT_PASSWORD=example
+  #     - MONGO_INITDB_DATABASE=BvSalud
+  #   volumes:
+  #     - /var/lib/mongodb:/data/db
+  #     - ./database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+  #   ports:
+  #     - 27017-27019:27017-27019
+  #   entrypoint: mongod --bind_ip_all
 
   backend:
-    container_name: flask-container
-    links:
-      - database
+    container_name: indexer-backend
+    # links:
+    #   - database
     build: ./backend
     environment:
 
@@ -54,7 +54,7 @@ services:
     command: flask run --host 0.0.0.0
 
   frontend:
-    container_name: angular-container
+    container_name: indexer-frontend
     links:
       - backend
     build: ./frontend

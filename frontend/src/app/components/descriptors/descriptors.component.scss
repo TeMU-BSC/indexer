@@ -15,7 +15,11 @@ input {
 }
 
 .text-muted {
-  color: #6c757d !important;
+  color: #6c757d;
+}
+
+.text-smaller {
+  font-size: smaller;
 }
 
 // https://stackoverflow.com/a/59722196
@@ -26,4 +30,11 @@ input {
 
 .space-left {
   margin-left: .2em;
+}
+
+// https://github.com/angular/components/issues/4071#issuecomment-644057476
+.multiline-auto-complete-options {
+	height: auto;
+	line-height: normal;
+	padding: 8px 16px;
 }
