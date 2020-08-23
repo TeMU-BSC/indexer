@@ -3,7 +3,7 @@
     <mat-card-header class="bg-lightgrey card-padding higher-line">
       <mat-card-title>{{ doc.title }} <span class="text-muted">({{ doc.id }})</span></mat-card-title>
     </mat-card-header>
-    <mat-card-content [innerHTML]="doc.abstract" class="card-padding higher-line">
-    </mat-card-content>
+    <!-- <mat-card-content [innerHTML]="doc.abstract" class="card-padding higher-line"></mat-card-content> -->
+    <mat-card-content class="card-padding higher-line">{{ doc.abstract }}</mat-card-content>
   </mat-card>
 </div>
