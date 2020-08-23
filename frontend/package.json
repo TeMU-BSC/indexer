@@ -30,7 +30,7 @@
     "diacritic-regex": "^1.1.0",
     "ngx-papaparse": "^4.0.4",
     "rxjs": "~6.5.4",
-    "simplemattable": "^5.4.0",
+    "simplemattable": "^6.0.0",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
   },
