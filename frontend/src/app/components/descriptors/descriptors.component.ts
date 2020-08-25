@@ -53,7 +53,7 @@ export class DescriptorsComponent implements OnChanges {
       debounceTime(100),
       startWith(''),
       map((value: string | null) => value
-        ? this.customFilter(value, 'termSpanish', ['termSpanish', 'termEnglish', 'meshCode', 'synonyms'])
+        ? this.customFilter(value, 'termSpanish', ['termSpanish', 'termEnglish', 'meshCode', 'synonyms', 'definitionSpanish'])
         : this.precodedDescriptors.filter(d => !this.chips.includes(d)))
     )
   }
