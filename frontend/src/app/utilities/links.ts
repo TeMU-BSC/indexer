@@ -1,0 +1,1 @@
+export const bvsSearch = 'http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start'

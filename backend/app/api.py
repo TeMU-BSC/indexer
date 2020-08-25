@@ -198,7 +198,7 @@ def get_assigned_docs():
     found_user = mongo.db.assignments.find_one({'user': user})
     assigned_doc_ids = []
     if found_user:
-        assigned_doc_ids = found_user.get('docs')
+        assigned_doc_ids = found_user.get('docs')[:3]
 
     docs = list()
     for collection in COLLECTIONS:

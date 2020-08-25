@@ -1,7 +1,6 @@
 <div fxLayout="column" fxLayoutGap="1em" style="padding: 1em;">
   <smc-simplemattable [data]="docs" [columns]="columns" [filter]="false" [loading]="loading" [paginator]="true"
-    [sorting]="true" [paginatorPageSize]="5" [paginatorPageSizeOptions]="[5, 10, 20]" [rowClickable]="true"
-    (rowClick)="selectDoc($event)">
+    [sorting]="true" [paginatorPageSize]="10" [rowClickable]="true" (rowClick)="selectDoc($event)">
   </smc-simplemattable>
   <div fxLayout fxLayoutAlign="center">
     <app-doc *ngIf="selectedDoc" [doc]="selectedDoc" (completed)="refresh()" (validated)="refresh()" fxFlex.gt-sm="75">

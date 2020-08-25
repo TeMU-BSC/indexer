@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core'
+import { Title } from '@angular/platform-browser'
 import { HttpClient } from '@angular/common/http'
 import { Router, CanActivate } from '@angular/router'
 import { MatDialog } from '@angular/material/dialog'
@@ -24,6 +25,7 @@ export class AuthService implements CanActivate {
     private api: ApiService,
     private router: Router,
     public dialog: MatDialog,
+    private title: Title,
   ) { }
 
   /**
@@ -55,6 +57,7 @@ export class AuthService implements CanActivate {
         } else if (response.user) {
           this.user = response.user
           localStorage.setItem(this.browserStorageKey, JSON.stringify(this.user))
+          this.title.setTitle(`Indizador - ${this.user.email}`)
         }
       }
     )
@@ -65,6 +68,7 @@ export class AuthService implements CanActivate {
    */
   public logout(): void {
     localStorage.removeItem(this.browserStorageKey)
+    this.title.setTitle(`Indizador`)
     this.router.navigateByUrl('/')
   }
 

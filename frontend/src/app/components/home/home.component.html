@@ -1,8 +1,8 @@
 <section fxLayout="column" fxLayoutAlign="center">
   <div class="bg-blue">
-    <h1 style="line-height: 1em;">Indizador DeCS del PlanTL</h1>
-    <p style="font-size: larger; font-weight: lighter;">
-      Indizador web para Descriptores en Ciencias de la Salud
+    <h1 style="font-weight: bold; line-height: normal;">Indizador del PlanTL</h1>
+    <p style="font-size: large; font-weight: lighter;">
+      Asigna etiquetas controladas a diferentes tipos de documentos
     </p>
     <div *ngIf="!auth.isLoggedIn()" class="buttons">
       <button mat-raised-button (click)=auth.openLoginDialog()>
@@ -19,10 +19,16 @@
       </button>
     </div>
   </div>
-  <div style="padding-top: 5em; padding-bottom: 2em; text-align: center;">
+  <div style="padding: 5em 1em 5em 1em; width: 36em; align-self: center;">
+    <p>
+      Indizar consiste en asignar etiquetas controladas (términos de una lista con códigos asociados) a un documento de
+      texto teniendo en cuenta el contenido de éste.
+    </p>
     <p>
       Los <a href="http://decses.bvsalud.org/E/homepagee.htm">Descriptores en Ciencias de la Salud (DeCS)</a>
-      son términos que tienen asociados códigos y sinónimos para categorizar documentos científicos.
+      son un tipo de dichas etiquetas controladas. Consisten en términos con códigos y sinónimos asociados para
+      categorizar documentos científicos. Los DeCS son el análogo en español de los MeSH terms (todo término DeCS
+      corresponde a un MeSH pero hay MeSH terms que no tienen conversión a término DeCS).
     </p>
     <p>
       Esta herramienta web facilita el proceso de adjudicar códigos (que actúan como etiquetas) a diferentes documentos,
