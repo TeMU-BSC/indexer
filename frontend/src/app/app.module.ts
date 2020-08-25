@@ -57,7 +57,8 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe'
     HttpClientModule,
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
+    HighlightPipe,
   ],
   bootstrap: [AppComponent]
 })
