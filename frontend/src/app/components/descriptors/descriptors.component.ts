@@ -13,7 +13,7 @@ import { FormConfig } from 'src/app/models/form'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { customSort, inputIncludedInValue, removeConsecutiveSpaces } from 'src/app/utilities/functions'
-
+import DOMPurify from 'dompurify'
 
 @Component({
   selector: 'app-descriptors',
@@ -190,6 +190,13 @@ export class DescriptorsComponent implements OnChanges {
         this.removeChip(chip)
       }
     })
+  }
+
+  /**
+   * https://web.dev/trusted-types/#use-a-library
+   */
+  avoidXss(html: string) {
+    return DOMPurify.sanitize(html, { RETURN_TRUSTED_TYPE: true })
   }
 
 }

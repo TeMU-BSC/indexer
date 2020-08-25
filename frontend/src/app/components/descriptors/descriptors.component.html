@@ -18,13 +18,13 @@
       matTooltip="{{ option.definitionSpanish }}" matTooltipShowDelay="1000" class="multiline-auto-complete-options">
       <div fxLayout fxLayoutAlign="space-between">
         <div class="content">
-          <span [innerHTML]="option.termSpanish | highlight: chipInput.value | safeHtml"></span>
+          <span [innerHTML]="avoidXss(option.termSpanish | highlight: chipInput.value)"></span>
           -
-          <span [innerHTML]="option.definitionSpanish | highlight: chipInput.value | safeHtml"
+          <span [innerHTML]="avoidXss(option.definitionSpanish | highlight: chipInput.value)"
             class="text-muted text-smaller truncate"></span>
         </div>
         <span fxFlex="10" fxLayoutAlign="end end"
-          [innerHTML]="option.decsCode | highlight: chipInput.value | safeHtml"></span>
+          [innerHTML]="avoidXss(option.decsCode | highlight: chipInput.value)"></span>
       </div>
     </mat-option>
   </mat-autocomplete>
