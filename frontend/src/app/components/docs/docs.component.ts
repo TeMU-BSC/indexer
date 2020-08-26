@@ -81,7 +81,7 @@ export class DocsComponent implements AfterViewInit {
     const assignment = {
       user: this.auth.getCurrentUser().id,
       pageIndex: event?.pageIndex,
-      pageSize: event.pageSize,
+      pageSize: event?.pageSize,
     }
     this.api.getAssignedDocs(assignment).subscribe(
       next => {

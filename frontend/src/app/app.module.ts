@@ -7,7 +7,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
 
 // npm third-party libraries
 import { FlexLayoutModule } from '@angular/flex-layout'
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { MaterialModule } from './styling/material.module'
 import { SimplemattableModule } from 'simplemattable'
 
@@ -51,7 +50,6 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe'
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    FontAwesomeModule,
     FlexLayoutModule,
     SimplemattableModule,
     HttpClientModule,

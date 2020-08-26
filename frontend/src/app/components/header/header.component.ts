@@ -1,6 +1,6 @@
 import { Component } from '@angular/core'
 import { AuthService } from 'src/app/services/auth.service'
-import { bvsSearch } from 'src/app/utilities/links'
+import { Links } from 'src/app/utilities/links'
 
 @Component({
   selector: 'app-header',
@@ -9,7 +9,7 @@ import { bvsSearch } from 'src/app/utilities/links'
 })
 export class HeaderComponent {
 
-  bvsSearch = bvsSearch
+  links = Links
 
   constructor(public auth: AuthService) { }
 

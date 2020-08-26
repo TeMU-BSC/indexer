@@ -1,17 +1,17 @@
 <footer fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign="center center" fxLayoutAlign.gt-md="space-around center"
   fxLayoutGap="2em">
   <div fxFlex="33">
-    <a href="https://www.plantl.gob.es/">
+    <a [href]="links.plantl">
       <img src="assets/images/plantl.png" alt="Logo del PlanTL" class="img-fluid rounded plantl-logo">
     </a>
   </div>
   <div fxFlex="33">
     Developed by the
-    <a href="https://www.bsc.es/discover-bsc/organisation/scientific-structure/text-mining">
+    <a [href]="links.temuAtBsc">
       Text Mining unit
     </a>
     at
-    <a href="https://www.bsc.es/">BSC</a> &copy; 2019.
+    <a [href]="links.bsc">BSC</a> &copy; 2019.
     <br>
     Code licensed under a MIT License.
   </div>
@@ -19,14 +19,17 @@
     Find us on
     <br>
     <span fxLayout="row" fxLayoutAlign="center" fxLayoutGap="2em">
-      <a href="https://es.linkedin.com/in/plan-tl-tecnolog%C3%ADas-lenguaje-5b49aa182" matTooltip="LinkedIn">
-        <fa-icon [icon]="faLinkedin"></fa-icon>
+      <a [href]="links.linkedin">
+        <!-- <fa-icon [icon]="faLinkedin" title="LinkedIn"></fa-icon> -->
+        LinkedIn
       </a>
-      <a href="https://github.com/PlanTL-SANIDAD" matTooltip="GitHub">
-        <fa-icon [icon]="faGithub"></fa-icon>
+      <a [href]="links.github">
+        <!-- <fa-icon [icon]="faGithub" title="GitHub"></fa-icon> -->
+        GitHub
       </a>
-      <a href="https://twitter.com/TeMU_BSC" matTooltip="Twitter">
-        <fa-icon [icon]="faTwitter"></fa-icon>
+      <a [href]="links.twitter">
+        <!-- <fa-icon [icon]="faTwitter" title="Twitter"></fa-icon> -->
+        Twitter
       </a>
     </span>
   </div>
