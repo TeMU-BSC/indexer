@@ -182,7 +182,7 @@ def get_assigned_docs():
         assigned_doc_ids = found_user.get('docs')
 
     # Pagination
-    page_index = dict(request.json).get('pageIndex', 1)
+    page_index = dict(request.json).get('pageIndex', 0)
     per_page = 10
     total = len(assigned_doc_ids)
     pagination_docs_ids = get_paginated_items(
@@ -224,7 +224,7 @@ def get_assigned_docs():
 
     return jsonify({
         'items': assigned_docs,
-        'page': page_index + 1,
+        'pageIndex': page_index,
         'perPage': per_page,
         'total': total,
     })
