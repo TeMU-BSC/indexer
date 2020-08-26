@@ -8,9 +8,11 @@
  * https://developer.okta.com/blog/2019/12/09/angular-webpack
  */
 
-// JavaScript version (must have the .js file extension)
-// const webpack = require('webpack');
 
+// JavaScript version (must have the .js file extension)
+// -----------------------------------------------------
+
+// const webpack = require('webpack');
 // module.exports = {
 //   plugins: [
 //     new webpack.DefinePlugin({
@@ -20,7 +22,10 @@
 //   ]
 // };
 
+
 // TypeScript version (must have the .ts file extension)
+// -----------------------------------------------------
+
 import { CustomWebpackBrowserSchema } from '@angular-builders/custom-webpack';
 import * as webpack from 'webpack';
 import * as pkg from './package.json';
@@ -36,9 +41,9 @@ import * as pkg from './package.json';
 export default (config: webpack.Configuration, options: CustomWebpackBrowserSchema) => {
   config.plugins.push(
     new webpack.DefinePlugin({
-      APP_VERSION: JSON.stringify(pkg.version),
       // APP_ENV: env,
-      PROCESS_ENV: JSON.stringify(process.env)
+      APP_VERSION: JSON.stringify(pkg.version),
+      PROCESS_ENV: JSON.stringify(process.env),
     })
   );
 
