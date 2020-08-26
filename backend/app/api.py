@@ -24,6 +24,7 @@ from statistics import mean
 from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
+from flask_paginate import Pagination, get_page_args
 from flask_pymongo import PyMongo
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
@@ -59,6 +60,11 @@ FILE_PATHS = {
 # Helper functions
 
 
+def get_paginated_items(items: list, page_index=0, per_page=10):
+    offset = page_index * per_page
+    return items[offset: offset + per_page]
+
+
 def get_annotators() -> list:
     '''List of id's from users that have the `annotator` role.'''
     return mongo.db.users.distinct('id', {'role': 'annotator'})
@@ -71,6 +77,7 @@ def get_documents(collections: list) -> list:
     for collection in collections:
         documents.extend(collection.find({}))
     return documents
+
 
 # Flask routes
 
@@ -146,11 +153,6 @@ def login_encrypt():
     return jsonify(result)
 
 
-@app.route('/users', methods=['GET'])
-def get_users():
-    return jsonify([user for user in mongo.db.users.find({}, {'_id': 0})])
-
-
 @app.route('/assignment/add', methods=['POST'])
 def assign_docs_to_users():
     '''Add some documents IDs to the user key in the 'assignments' collection.'''
@@ -174,13 +176,21 @@ def get_assigned_docs():
     the needed doc data from the 'selected_importants' collection.'''
     user = request.json['user']
     found_user = mongo.db.assignments.find_one({'user': user})
+
     assigned_doc_ids = []
     if found_user:
         assigned_doc_ids = found_user.get('docs')
 
+    # Pagination
+    page_index = dict(request.json).get('pageIndex', 1)
+    per_page = 10
+    total = len(assigned_doc_ids)
+    pagination_docs_ids = get_paginated_items(
+        items=assigned_doc_ids, page_index=page_index, per_page=per_page)
+
     docs = list()
     for collection in COLLECTIONS:
-        docs.extend(collection.find({'_id': {'$in': assigned_doc_ids}}))
+        docs.extend(collection.find({'_id': {'$in': pagination_docs_ids}}))
 
     assigned_docs = []
     for doc in docs:
@@ -211,7 +221,18 @@ def get_assigned_docs():
             'validated': validated
         }
         assigned_docs.append(doc_relevant_info)
-    return jsonify(assigned_docs)
+
+    return jsonify({
+        'items': assigned_docs,
+        'page': page_index + 1,
+        'perPage': per_page,
+        'total': total,
+    })
+
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    return jsonify(list(mongo.db.users.find({}, {'_id': 0})))
 
 
 @app.route('/annotation/add', methods=['POST'])
@@ -609,11 +630,12 @@ def get_results():
             first_ann_time = doc_annotations[0]['_id'].generation_time
             last_ann_time = doc_annotations[-1]['_id'].generation_time
             elapsed_ann_time = last_ann_time - first_ann_time
+
             # datetime.timedelta instance
             elapsed_minutes = elapsed_ann_time.total_seconds() // 60
             if elapsed_minutes < MINUTES_LIMIT:
                 user_times.append(int(elapsed_minutes))
-        # print(user_id, user_times)
+
         avg_minutes_per_doc = mean(user_times)
         times_stats.append({
             'annotator': user_id,
@@ -1084,8 +1106,6 @@ def map_sources(dataset):
     # get titles
     isciii_titles = mongo_datasets.db.isciii.distinct('ti_es')
     reec_titles = mongo_datasets.db.reec.distinct('ti_es')
-    print(len(isciii_titles))
-    print(len(reec_titles))
 
     # construct the mappings
     mappings = list()

@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs'
 import { Papa } from 'ngx-papaparse'
 
 import { environment } from 'src/environments/environment'
-import { ApiResponse, Annotation } from 'src/app/models/api'
+import { ApiResponse, Annotation, PaginatedResponse } from 'src/app/models/api'
 import { Doc, Descriptor } from 'src/app/models/decs'
 import { _sortByOrder } from 'src/app/utilities/functions'
 import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
@@ -56,8 +56,8 @@ export class ApiService {
   /**
    * Get the assigned docs to the current user.
    */
-  getAssignedDocs(assignment: any): Observable<Doc[]> {
-    return this.http.post<Doc[]>(`${this.url}/assignment/get`, assignment)
+  getAssignedDocs(assignment: any): Observable<PaginatedResponse> {
+    return this.http.post<PaginatedResponse>(`${this.url}/assignment/get`, assignment)
   }
 
   assignDocsToUsers(assignments: any[]): Observable<any> {

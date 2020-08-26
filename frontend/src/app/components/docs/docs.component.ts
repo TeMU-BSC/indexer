@@ -3,6 +3,7 @@ import { TableColumn, Width } from 'simplemattable'
 import { Doc } from 'src/app/models/decs'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
+import { PageEvent } from '@angular/material/paginator'
 
 
 @Component({
@@ -13,9 +14,10 @@ import { AuthService } from 'src/app/services/auth.service'
 export class DocsComponent implements AfterViewInit {
 
   columns = []
-  docs: Doc[]
+  data: Doc[]
   selectedDoc: Doc
-  loading = true
+  loading: boolean
+  paginatorLength: number
 
   constructor(
     private api: ApiService,
@@ -74,9 +76,13 @@ export class DocsComponent implements AfterViewInit {
     this.refresh()
   }
 
-  refresh() {
-    this.api.getAssignedDocs({ user: this.auth.getCurrentUser().id }).subscribe(
-      next => this.docs = next,
+  refresh(event?: PageEvent) {
+    this.loading = true
+    this.api.getAssignedDocs({ user: this.auth.getCurrentUser().id, pageIndex: event?.pageIndex }).subscribe(
+      next => {
+        this.data = next.items
+        this.paginatorLength = next.total
+      },
       error => console.error(error),
       () => this.loading = false
     )

@@ -16,3 +16,10 @@ export interface ApiResponse {
   suggestions?: any
   validatedDecsCodes?: Descriptor['decsCode'][]
 }
+
+export interface PaginatedResponse {
+  items: any[]
+  page: number
+  perPage: number
+  total: number
+}
