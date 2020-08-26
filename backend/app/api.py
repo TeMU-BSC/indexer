@@ -183,7 +183,7 @@ def get_assigned_docs():
 
     # Pagination
     page_index = dict(request.json).get('pageIndex', 0)
-    per_page = 10
+    per_page = dict(request.json).get('pageSize', 10)
     total = len(assigned_doc_ids)
     pagination_docs_ids = get_paginated_items(
         items=assigned_doc_ids, page_index=page_index, per_page=per_page)
