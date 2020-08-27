@@ -4,9 +4,9 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { ApiResponse } from 'src/app/models/api'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'
-import * as EXAMPLE_DESCRIPTOR from 'src/assets/examples/descriptor.json'
 import * as EXAMPLE_USER from 'src/assets/examples/user.json'
+import * as EXAMPLE_DOCUMENT from 'src/assets/examples/document.json'
+import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'
 
 
 @Component({
@@ -19,31 +19,14 @@ export class AdminComponent {
   dataFromFile: any[]
   selectedFile: File
   response: ApiResponse
-  panels = [
-    {
-      title: 'Registrar usuarios',
-      keywords: 'usuarios',
-      exampleJson: (EXAMPLE_USER as any).default,
-      action: 'registerManyUsers()'
-    },
-    {
-      title: 'Asignar documentos a usuarios',
-      keywords: 'asignaciones de documentos',
-      exampleJson: (EXAMPLE_ASSIGNMENT as any).default,
-      action: 'assignDocsToUsers()'
-    },
-    // {
-    //   title: 'Cargar DeCS indizados [#to_do]',
-    //   keywords: 'DeCS indizados',
-    //   exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
-    //   action: 'functionToBeImplemented()'
-    // },
-    // {
-    //   title: 'Cargar sugerencias DeCS [#to_do]',
-    //   keywords: 'DeCS sugeridos',
-    //   exampleJson: (EXAMPLE_DESCRIPTOR as any).default,
-    //   action: 'functionToBeImplemented()'
-    // }
+  projects = [
+    { name: 'mesinesp', db: 'BvSalud' },
+    { name: 'desarrollo', db: 'dev' },
+  ]
+  actions = [
+    { name: 'crear usuario', method: this.registerManyUsers.bind(this), jsonSnippet: (EXAMPLE_USER as any).default },
+    { name: 'crear documento', method: this.createDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT as any).default },
+    { name: 'asignar documentos a usuarios', method: this.assignDocsToUsers.bind(this), jsonSnippet: (EXAMPLE_ASSIGNMENT as any).default },
   ]
 
   constructor(
@@ -53,7 +36,7 @@ export class AdminComponent {
   ) { }
 
   /**
-   * Set the content of the uploaded file to the 'data' property.
+   * Set the content of the uploaded file to the 'dataFromFile' property.
    * @param event JSON file upload
    */
   onFileSelected(event) {
@@ -62,23 +45,6 @@ export class AdminComponent {
     fileReader.readAsText(this.selectedFile, 'UTF-8')
     fileReader.onloadend = () => this.dataFromFile = JSON.parse(fileReader.result as string)
     fileReader.onerror = error => console.error(error)
-  }
-
-  onClickEvent(panel: any) {
-    switch (panel.title) {
-      case 'Registrar usuarios':
-        this.registerManyUsers()
-        break
-      case 'Asignar documentos a usuarios':
-        this.assignDocsToUsers()
-        break
-      case 'Cargar DeCS indizados':
-
-        break
-      case 'Cargar sugerencias DeCS':
-
-        break
-    }
   }
 
   registerManyUsers() {
@@ -107,6 +73,10 @@ export class AdminComponent {
         }
       }
     )
+  }
+
+  createDocs() {
+    alert('TODO: Implement create docs in backend')
   }
 
 }

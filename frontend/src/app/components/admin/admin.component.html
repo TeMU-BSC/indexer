@@ -1,32 +1,53 @@
-<div fxLayout="column" fxLayoutGap="1em" style="padding: 3em;">
+<div fxLayout="column" fxLayoutAlign="center start" fxLayoutGap="1em" style="padding: 3em;">
   <h1 style="margin-bottom: 2em;">Panel de Administrador</h1>
-  <div fxLayout fxLayoutGap="1em">
-    <a href="{{ api.url }}/results" mat-stroked-button>Resultados de anotación (ver en Firefox)</a>
+  <!-- <a href="{{ api.url }}/results" mat-stroked-button>Resultados de anotación (ver en Firefox)</a> -->
+  <mat-form-field appearance="fill">
+    <mat-label>Proyecto</mat-label>
+    <mat-select #project>
+      <mat-option *ngFor="let project of projects" [value]="project">
+        {{ project.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Acción</mat-label>
+    <mat-select #action>
+      <mat-option *ngFor="let action of actions" [value]="action">
+        {{ action.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div *ngIf="action.value">
+    <div *ngIf="action.value?.jsonSnippet">
+      <p>Estructura del fichero:</p>
+      <pre style="padding: 1.5em; background-color: black; color: lightgrey;">[{{ action.value.jsonSnippet | json }}, ...]</pre>
+    </div>
+    <form fxLayout="column" fxLayoutAlign="center start">
+      <mat-form-field appearance="fill">
+        <mat-label>Fichero JSON</mat-label>
+        <ngx-mat-file-input #removableInput [accept]="'.json'" (change)="onFileSelected($event)">
+        </ngx-mat-file-input>
+        <button mat-icon-button matSuffix *ngIf="!removableInput.empty" (click)="removableInput.clear($event)">
+          <mat-icon>clear</mat-icon>
+        </button>
+        <mat-icon matSuffix>attach_file</mat-icon>
+      </mat-form-field>
+      <button mat-raised-button color="primary" [disabled]="removableInput.empty" (click)="action.value.method()">
+        {{ action.value?.name }}
+      </button>
+    </form>
   </div>
-  <!-- <div fxLayout fxLayoutGap="1em">
-    <a href="{{ api.url }}/training_set" mat-stroked-button>Train set</a>
-  </div>
-  <div fxLayout fxLayoutGap="1em">
-    <a href="{{ api.url }}/development_set/all" mat-stroked-button color="accent">Development set (all)</a>
-    <a href="{{ api.url }}/development_set/union" mat-stroked-button color="accent">Development set (union)</a>
-    <a href="{{ api.url }}/development_set/intersection" mat-stroked-button color="accent">Development set (intersection)</a>
-  </div>
-  <div fxLayout fxLayoutGap="1em">
-    <a href="{{ api.url }}/test_set/with_codes" mat-stroked-button color="primary">Test set with codes (for evaluation)</a>
-    <a href="{{ api.url }}/test_set/without_codes" mat-stroked-button color="primary">Test set without codes (for participants)</a>
-  </div>
-  <div fxLayout fxLayoutGap="1em">
-    <a href="{{ api.url }}/background_set" mat-stroked-button>Backgound set</a>
-  </div> -->
-  <mat-tab-group>
+
+  <!-- <mat-tab-group>
     <mat-tab *ngFor="let panel of panels" label="{{ panel.title }}">
       <section fxLayout="column" fxLayoutAlign="center start" style="margin-top: 3em;">
         <p>
           Elige un fichero que contenga una <b>lista de {{ panel.keywords }}</b> en formato
           <a href="https://www.w3schools.com/js/js_json_arrays.asp">JSON Array</a>.
         </p>
-        <p>Ejemplo:</p>
-        <pre style="padding: 2em; background-color: lightgray">[{{ panel.exampleJson | json }}, ...]</pre>
+        <p>Fichero de ejemplo:</p>
+        <pre style="padding: 2em; background-color: lightgray">[{{ panel.jsonSnippet | json }}, ...]</pre>
         <form fxLayout="column" fxLayoutAlign="center start">
           <mat-form-field>
             <ngx-mat-file-input #removableInput placeholder="Seleccionar fichero JSON" [accept]="'.json'"
@@ -43,5 +64,5 @@
         </form>
       </section>
     </mat-tab>
-  </mat-tab-group>
+  </mat-tab-group> -->
 </div>

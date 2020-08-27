@@ -1,0 +1,7 @@
+{
+  "id": "id-del-documento",
+  "title": "Título del documento",
+  "abstract": "Abstract del documento.",
+  "source": "IBECS | LILACS | PortalFIS | REEC | GooglePatents",
+  "type": "article | clinical_study | clinical_research_project | patent"
+}

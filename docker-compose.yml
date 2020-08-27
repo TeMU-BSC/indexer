@@ -45,7 +45,7 @@ services:
       # First, you should have a VPN connection tunnel stablished to reach the mongod service remotely.
       # $ sudo apt update && sudo apt install -y openfortivpn && sudo openfortivpn gw.bsc.es:443 -u USERNAME
 
-      - MONGO_URI=mongodb://bsccnio01.bsc.es/BvSalud
+      - MONGO_URI=mongodb://bsccnio01.bsc.es/dev
       - MONGO_DATASETS_URI=mongodb://bsccnio01.bsc.es/datasets
     volumes:
       - ./backend:/app
@@ -60,7 +60,7 @@ services:
     build: ./frontend
     environment:
       - APP_API_URL=http://localhost:5000
-      - APP_BROWSER_STORAGE_KEY=BvSalud
+      - APP_BROWSER_STORAGE_KEY=dev
     volumes:
       - ./frontend:/app
     ports:
