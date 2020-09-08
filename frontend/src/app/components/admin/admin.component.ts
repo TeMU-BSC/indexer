@@ -1,12 +1,14 @@
 import { Component } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
-import { ApiResponse } from 'src/app/models/api'
-import { ApiService } from 'src/app/services/api.service'
-import { AuthService } from 'src/app/services/auth.service'
 import * as EXAMPLE_USER from 'src/assets/examples/user.json'
 import * as EXAMPLE_DOCUMENT from 'src/assets/examples/document.json'
 import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'
+import { ApiService } from 'src/app/services/api.service'
+import { AuthService } from 'src/app/services/auth.service'
+import { User } from 'src/app/models/user'
+import { Assignment } from 'src/app/models/assignment'
+import { ApiResponse } from 'src/app/models/api'
 
 
 @Component({
@@ -24,8 +26,8 @@ export class AdminComponent {
     { name: 'desarrollo', db: 'dev' },
   ]
   actions = [
-    { name: 'crear usuario', method: this.registerManyUsers.bind(this), jsonSnippet: (EXAMPLE_USER as any).default },
-    { name: 'crear documento', method: this.createDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT as any).default },
+    { name: 'registrar usuario', method: this.registerUser.bind(this), jsonSnippet: (EXAMPLE_USER as any).default },
+    { name: 'insertar documento', method: this.insertDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT as any).default },
     { name: 'asignar documentos a usuarios', method: this.assignDocsToUsers.bind(this), jsonSnippet: (EXAMPLE_ASSIGNMENT as any).default },
   ]
 
@@ -47,13 +49,13 @@ export class AdminComponent {
     fileReader.onerror = error => console.error(error)
   }
 
-  registerManyUsers() {
-    this.auth.registerMany(this.dataFromFile).subscribe(
+  registerUser() {
+    this.auth.registerUser(this.dataFromFile as User).subscribe(
       response => this.response = response,
       error => console.error(error),
       () => {
         if (this.response.success) {
-          this.snackBar.open(`Usuarios registrados: ${this.response.registeredUsers}`, 'OK')
+          this.snackBar.open(`Usuario registrado: ${this.response.success}`, 'OK')
         } else {
           this.snackBar.open(`Error: ${this.response.message}`, 'REVISAR FICHERO')
         }
@@ -62,7 +64,7 @@ export class AdminComponent {
   }
 
   assignDocsToUsers() {
-    this.api.assignDocsToUsers(this.dataFromFile).subscribe(
+    this.api.assignDocsToUsers(this.dataFromFile as Assignment[]).subscribe(
       response => this.response = response,
       error => console.error(error),
       () => {
@@ -75,7 +77,7 @@ export class AdminComponent {
     )
   }
 
-  createDocs() {
+  insertDocs() {
     alert('TODO: Implement create docs in backend')
   }
 

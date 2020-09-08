@@ -39,23 +39,23 @@ export class AuthService implements CanActivate {
     return true
   }
 
-  /**
-   * Register new users.
-   */
-  public registerMany(users: User[]): Observable<any> {
-    return this.http.post<any>(`${this.api.url}/user/register`, users)
+  public registerUser(user: User): Observable<any> {
+    return this.http.request<User>('post', `${this.api.url}/insert/user`, { body: user })
   }
 
-  /**
-   * Log in an existing user.
-   */
+  public deleteUser(user: User): Observable<any> {
+    return this.http.request<any>('delete', `${this.api.url}/delete/user`, { body: user })
+  }
+
+  public registerManyUsers(users: User[]): Observable<any> {
+    return this.http.post<any>(`${this.api.url}/insert/users`, users)
+  }
+
   public login(user: User): void {
-    this.http.post(`${this.api.url}/user/login`, user).subscribe(
-      (response: ApiResponse) => {
-        if (response.message) {
-          alert(response.message)
-        } else if (response.user) {
-          this.user = response.user
+    this.http.request('get', `${this.api.url}/find/user`, { body: user }).subscribe(
+      response => {
+        if (response['found_item']) {
+          this.user = response['found_item']
           localStorage.setItem(this.browserStorageKey, JSON.stringify(this.user))
           this.title.setTitle(`Indizador - ${this.user.email}`)
         }
@@ -63,34 +63,22 @@ export class AuthService implements CanActivate {
     )
   }
 
-  /**
-   * Log out the current user.
-   */
   public logout(): void {
     localStorage.removeItem(this.browserStorageKey)
     this.title.setTitle(`Indizador`)
     this.router.navigateByUrl('/')
   }
 
-  /**
-   * Check if any user is logged in.
-   */
   public isLoggedIn(): boolean {
     return localStorage.getItem(this.browserStorageKey) !== null
   }
 
-  /**
-   * Get the data from the current logged user.
-   */
   public getCurrentUser(): User {
     if (this.isLoggedIn()) {
       return JSON.parse(localStorage.getItem(this.browserStorageKey))
     }
   }
 
-  /**
-   * Open a material dialog to enter the email and password.
-   */
   public openLoginDialog(): void {
     const dialogRef = this.dialog.open(LoginComponent, {
       width: '300px',

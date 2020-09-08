@@ -14,6 +14,13 @@ import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { customSort, inputIncludedInValue, removeConsecutiveSpaces } from 'src/app/utilities/functions'
 
+/**
+ * TODO: new option in autocomplete that searches programatically in the original decs webpage Spanish searcher:
+ * url = Links.decsEspanolSearch
+ * document.getElementsByName('search_exp')[0].value = 'guante';
+ * document.getElementsByName('consult_button')[0].parentElement.click()
+ */
+
 @Component({
   selector: 'app-descriptors',
   templateUrl: './descriptors.component.html',
@@ -29,7 +36,6 @@ export class DescriptorsComponent implements OnChanges {
   @ViewChild('chipInput') chipInput: ElementRef<HTMLInputElement>
   @ViewChild('auto') matAutocomplete: MatAutocomplete
   autocompleteChipList = new FormControl()
-  addOnBlur = true
   separatorKeysCodes: number[] = [ENTER]
   options: Descriptor[]
   precodedDescriptors: Descriptor[]

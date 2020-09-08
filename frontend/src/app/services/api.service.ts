@@ -5,10 +5,11 @@ import { Observable, of } from 'rxjs'
 import { Papa } from 'ngx-papaparse'
 
 import { environment } from 'src/environments/environment'
+import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
+import { _sortByOrder } from 'src/app/utilities/functions'
 import { ApiResponse, Annotation, PaginatedResponse } from 'src/app/models/api'
 import { Doc, Descriptor } from 'src/app/models/decs'
-import { _sortByOrder } from 'src/app/utilities/functions'
-import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
+import { Assignment } from 'src/app/models/assignment'
 
 
 @Injectable({
@@ -53,15 +54,12 @@ export class ApiService {
     return _sortByOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
   }
 
-  /**
-   * Get the assigned docs to the current user.
-   */
-  getAssignedDocs(assignment: any): Observable<PaginatedResponse> {
-    return this.http.post<PaginatedResponse>(`${this.url}/assignment/get`, assignment)
+  getAssignedDocs(assignment: Assignment): Observable<PaginatedResponse> {
+    return this.http.post<PaginatedResponse>(`${this.url}/find/assignments`, assignment)
   }
 
-  assignDocsToUsers(assignments: any[]): Observable<any> {
-    return this.http.post<any>(`${this.url}/assignment/add`, assignments)
+  assignDocsToUsers(assignments: Assignment[]): Observable<any> {
+    return this.http.post<Assignment>(`${this.url}/insert/assignments`, assignments)
   }
 
   /**

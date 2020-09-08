@@ -1,6 +1,5 @@
 <div fxLayout="column" fxLayoutAlign="center start" fxLayoutGap="1em" style="padding: 3em;">
   <h1 style="margin-bottom: 2em;">Panel de Administrador</h1>
-  <!-- <a href="{{ api.url }}/results" mat-stroked-button>Resultados de anotación (ver en Firefox)</a> -->
   <mat-form-field appearance="fill">
     <mat-label>Proyecto</mat-label>
     <mat-select #project>
@@ -38,31 +37,4 @@
       </button>
     </form>
   </div>
-
-  <!-- <mat-tab-group>
-    <mat-tab *ngFor="let panel of panels" label="{{ panel.title }}">
-      <section fxLayout="column" fxLayoutAlign="center start" style="margin-top: 3em;">
-        <p>
-          Elige un fichero que contenga una <b>lista de {{ panel.keywords }}</b> en formato
-          <a href="https://www.w3schools.com/js/js_json_arrays.asp">JSON Array</a>.
-        </p>
-        <p>Fichero de ejemplo:</p>
-        <pre style="padding: 2em; background-color: lightgray">[{{ panel.jsonSnippet | json }}, ...]</pre>
-        <form fxLayout="column" fxLayoutAlign="center start">
-          <mat-form-field>
-            <ngx-mat-file-input #removableInput placeholder="Seleccionar fichero JSON" [accept]="'.json'"
-              (change)="onFileSelected($event)">
-            </ngx-mat-file-input>
-            <button mat-icon-button matSuffix *ngIf="!removableInput.empty" (click)="removableInput.clear($event)">
-              <mat-icon>clear</mat-icon>
-            </button>
-            <mat-icon matSuffix>attach_file</mat-icon>
-          </mat-form-field>
-          <button mat-raised-button color="accent" [disabled]="removableInput.empty" (click)="onClickEvent(panel)">
-            {{ panel.title }}
-          </button>
-        </form>
-      </section>
-    </mat-tab>
-  </mat-tab-group> -->
 </div>

@@ -8,10 +8,10 @@
       </mat-icon>
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
-    <input matInput #chipInput [placeholder]="removable ? 'Busca un descriptor...' : ''"
+    <input matInput #chipInput [placeholder]="removable ? 'Busca descriptores' : ''"
       [formControl]="autocompleteChipList" [matAutocomplete]="auto" matAutocompletePosition="below"
       [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-      [matChipInputAddOnBlur]="addOnBlur" [readonly]="!removable">
+      matChipInputAddOnBlur="true" [readonly]="!removable">
   </mat-chip-list>
   <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="addChip($event)">
     <mat-option *ngFor="let i = index; let option of filteredOptions | async | slice : 0 : 15" [value]="option"

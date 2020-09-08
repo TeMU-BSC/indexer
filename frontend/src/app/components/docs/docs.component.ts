@@ -1,9 +1,10 @@
 import { AfterViewInit, Component } from '@angular/core'
+import { PageEvent } from '@angular/material/paginator'
 import { TableColumn, Width } from 'simplemattable'
-import { Doc } from 'src/app/models/decs'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { PageEvent } from '@angular/material/paginator'
+import { Doc } from 'src/app/models/decs'
+import { Assignment } from 'src/app/models/assignment'
 
 
 @Component({
@@ -23,7 +24,6 @@ export class DocsComponent implements AfterViewInit {
     private api: ApiService,
     public auth: AuthService
   ) {
-    // init the columns of the table
     this.columns = [
       new TableColumn<Doc, 'id'>('ID documento', 'id')
         .withColFilter().withColFilterLabel('Filtrar'),
@@ -50,26 +50,6 @@ export class DocsComponent implements AfterViewInit {
         .withTransform(validatedDecsCodes => validatedDecsCodes.length.toString())
         .withSortTransform((_, doc) => doc.validatedDecsCodes.length),
     ]
-
-    // version 2: without decsCodes counts per document and phase (completed, validated)
-    // this.columns = [
-    //   new TableColumn<Doc, 'id'>('ID documento', 'id')
-    //     .withColFilter().withColFilterLabel('Filtrar'),
-    //   new TableColumn<Doc, 'title'>('Título', 'title')
-    //     .isHiddenXs(true)
-    //     .withWidth(Width.pct(75))
-    //     .withColFilter().withColFilterLabel('Filtrar'),
-    //   new TableColumn<Doc, 'completed'>('Completado (núm. de DeCS)', 'completed')
-    //     .withColFilter().withColFilterLabel('Filtrar')
-    //     .withTransform((completed, doc) => completed ? `Sí (${doc.decsCodes.length})` : `No (${doc.decsCodes.length})`)
-    //     .withSortTransform((_, doc) => doc.decsCodes.length)
-    //     .withNgStyle(completed => ({ color: completed ? 'green' : 'red' })),
-    //   new TableColumn<Doc, 'validated'>('Validado (núm. de DeCS)', 'validated')
-    //     .withColFilter().withColFilterLabel('Filtrar')
-    //     .withTransform((validated, doc) => validated ? `Sí (${doc.validatedDecsCodes.length})` : `No (${doc.validatedDecsCodes.length})`)
-    //     .withSortTransform((_, doc) => doc.validatedDecsCodes.length)
-    //     .withNgStyle(validated => ({ color: validated ? 'green' : 'red' })),
-    // ]
   }
 
   ngAfterViewInit() {
@@ -78,8 +58,8 @@ export class DocsComponent implements AfterViewInit {
 
   refresh(event?: PageEvent) {
     this.loading = true
-    const assignment = {
-      user: this.auth.getCurrentUser().id,
+    const assignment: Assignment = {
+      userId: this.auth.getCurrentUser().id,
       pageIndex: event?.pageIndex,
       pageSize: event?.pageSize,
     }

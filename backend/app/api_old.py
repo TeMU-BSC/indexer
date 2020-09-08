@@ -6,6 +6,8 @@ This backend is built with Flask and connects to a given MongoDB instance.
 Author: alejandro.asensio@bsc.es
 '''
 
+# Standard library imports
+from bson.objectid import ObjectId
 from collections import Counter, defaultdict
 import copy
 import csv
@@ -17,86 +19,47 @@ import random
 import re
 from statistics import mean
 
-from flask import Flask, jsonify, request, make_response
+# Third party imports
+from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_paginate import Pagination, get_page_args
 from flask_pymongo import PyMongo
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
+# Local imports
 from app import app
 
 
-MONGO_HOST = os.environ.get('MONGO_HOST')
-MONGO_DATABASE = os.environ.get('MONGO_DATABASE')
-app.config['MONGO_URI'] = f'mongodb://{MONGO_HOST}:27017/{MONGO_DATABASE}'
-mongo = PyMongo(app)
+# Flask config
+MONGO_URI = f"mongodb://{os.environ.get('MONGO_HOST')}/{os.environ.get('MONGO_DATABASE')}"
+MONGO_DATASETS_URI = f"mongodb://{os.environ.get('MONGO_HOST')}/{os.environ.get('MONGO_DATASETS')}"
+mongo = PyMongo(app, uri=MONGO_URI)
+mongo_datasets = PyMongo(app, uri=MONGO_DATASETS_URI)
 CORS(app)
+bcrypt = Bcrypt(app)
 app.config['JSON_AS_ASCII'] = False
 app.config['JSON_SORT_KEYS'] = False
 
+# CONSTANTS
+COLLECTIONS = [
+    mongo.db.selected_importants,
+    mongo_datasets.db.isciii,
+    mongo_datasets.db.reec,
+    mongo_datasets.db.patents,
+]
+SEED_INITIAL_VALUE = 777
+DEVELOPMENT_SET_LENGTH = 750
+ABSTRACT_MINIMUM_LENGTH = 200
 
-@app.route('/')
-def index():
-    return jsonify(status='up')
+# TODO mongoimport the Fri.gz to localhost mongo and replace this local files access by: mongo.db.{development_set_intersection,development_set_union,test_set_without_annotations, test_set_with_codes}
+FILE_PATHS = {
+    'dev-union': 'data/mesinesp-development-set-official-union.json',
+    'dev-intersection': 'data/mesinesp-development-set-core-descriptors-intersection.json',
+    'test': 'data/mesinesp-test-set.json',
+}
 
-
-@app.route('/insert/<item>', methods=['POST'])
-def insert_one(item):
-    collection = f'{item}s'
-    document = request.json
-    result = mongo.db[collection].insert_one(document)
-    return jsonify(success=result.acknowledged)
-
-
-@app.route('/find/<item>', methods=['GET'])
-def find_one(item):
-    collection = f'{item}s'
-    filter = request.json
-    result = mongo.db[collection].find_one(filter)
-    if result:
-        result['generation_time'] = result['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
-        result['_id'] = str(result['_id'])
-    return jsonify(found_item=result)
-
-
-@app.route('/find/<item>s', methods=['GET'])
-def find_many(item):
-    collection = f'{item}s'
-    filter = request.json
-    result = list(mongo.db[collection].find(filter))
-    for document in result:
-        document['generation_time'] = document['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
-        document['_id'] = str(document['_id'])
-    return jsonify(found_items=result)
-
-
-@app.route('/update/<item>', methods=['PUT'])
-def update_one(item):
-    collection = f'{item}s'
-    filter = request.json
-    update = request.json
-    result = mongo.db[collection].update_one(filter, update)
-    return jsonify(modified_count=result.modified_count)
-
-
-@app.route('/delete/<item>', methods=['DELETE'])
-def delete_one(item):
-    collection = f'{item}s'
-    filter = request.json
-    result = mongo.db[collection].delete_one(filter)
-    return jsonify(deleted_count=result.deleted_count)
-
-
-
-
-
-
-@app.route('/login', methods=['POST'])
-def login():
-    filter = dict(email=request.json['email'], password=request.json['password'])
-    return find_one('user')
-
+# Helper functions
 
 
 def get_paginated_items(items: list, page_index=0, per_page=10):
@@ -104,9 +67,39 @@ def get_paginated_items(items: list, page_index=0, per_page=10):
     return items[offset: offset + per_page]
 
 
-def get_annotators_ids() -> list:
+def get_annotators() -> list:
     '''List of id's from users that have the `annotator` role.'''
     return mongo.db.users.distinct('id', {'role': 'annotator'})
+
+
+def get_documents(collections: list) -> list:
+    '''List of all documents with their data from the given collections (list
+    of flask_pymongo Database objects).'''
+    documents = list()
+    for collection in collections:
+        documents.extend(collection.find({}))
+    return documents
+
+
+# Flask routes
+
+
+@app.route('/')
+def index():
+    return f'''Welcome to the DeCS Indexer API! To check the connection to
+    MongoDB you can list the /docs route.
+    
+    Environment variables defined in docker-compose file:
+    FLASK_ENV={os.environ.get('FLASK_ENV')}
+    MONGO_URI={os.environ.get('MONGO_URI')}
+    MONGO_DATASETS_URI={os.environ.get('MONGO_DATASETS_URI')}
+    '''
+
+
+@app.route('/docs', methods=['GET'])
+def get_docs():
+    '''Get all documents potentially used in this app.'''
+    return jsonify(get_documents(COLLECTIONS))
 
 
 @app.route('/doc/<id>', methods=['GET'])
@@ -114,6 +107,52 @@ def get_doc(id):
     '''Get a document by its id.'''
     doc = mongo.db.selected_importants.find_one({'_id': id})
     return jsonify({'id': doc['_id'], 'title': doc['ti_es'], 'abstract': doc['ab_es']})
+
+
+@app.route('/user/create', methods=['POST'])
+def register_users():
+    '''Register many users. Try to insert many new users, except BulkWriteError occurs.'''
+    users = request.json
+    try:
+        result = mongo.db.users.insert_many(users)
+        success = result.acknowledged
+        message = None
+        registered_users_cursor = mongo.db.users.find(
+            {'_id': {'$in': result.inserted_ids}}, {'_id': 0})
+        registered_users = len([user for user in registered_users_cursor])
+    except BulkWriteError as error:
+        success = False
+        message = error.details['writeErrors'][0]['errmsg']
+        registered_users = 0
+    return jsonify({'success': success, 'message': message, 'registeredUsers': registered_users})
+
+
+@app.route('/user/login', methods=['POST'])
+def login():
+    '''Check if the given email and password match the ones for that user in database.'''
+    user = request.json
+    result = {'sucess': False, 'user': None,
+              'message': 'Invalid user and/or password'}
+    found_user = mongo.db.users.find_one(
+        {'email': user['email'], 'password': user['password']}, {'_id': 0, 'password': 0})
+    if found_user:
+        result = {'sucess': True, 'user': found_user, 'message': None}
+    return jsonify(result)
+
+
+# Encrypt approach (not used to accelerate the final user support regarding passwords)
+@app.route('/user/login_encrypt', methods=['POST'])
+def login_encrypt():
+    '''Check if the given email and password match that user and its encrypted password in database.'''
+    user = request.json
+    result = {'sucess': False, 'user': None, 'message': 'User not found'}
+    found_user = mongo.db.users.find_one({'email': user['email']}, {'_id': 0})
+    if found_user:
+        if bcrypt.check_password_hash(found_user['password'], user['password']):
+            result = {'sucess': True, 'user': found_user, 'message': None}
+        else:
+            result['message'] = 'Invalid password'
+    return jsonify(result)
 
 
 @app.route('/assignment/add', methods=['POST'])
@@ -133,7 +172,7 @@ def assign_docs_to_users():
     return jsonify({'success': success})
 
 
-@app.route('/find/assignments', methods=['POST'])
+@app.route('/assignment/get', methods=['POST'])
 def get_assigned_docs():
     '''Find the assigned docs IDs to the current user, and then retrieving
     the needed doc data from the 'selected_importants' collection.'''
@@ -317,7 +356,7 @@ def get_results():
     # # PHASE 1: ANNOTATION (commented because it's not needed anymore)
 
     # # Get the data from mongo
-    # annotator_ids = get_annotators_ids()
+    # annotator_ids = get_annotators()
     # total_completions = list(mongo.db.completions.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     # total_annotations = list(mongo.db.annotations.find({'user': {'$in': annotator_ids}}, {'_id': 0}))
     # completed_total_codes = mongo.db.annotations.count_documents({})
@@ -419,7 +458,7 @@ def get_results():
     # PHASE 2: VALIDATION
 
     # Get the data from mongo
-    annotator_ids = get_annotators_ids()
+    annotator_ids = get_annotators()
     total_validations = list(mongo.db.validations.find(
         {'user': {'$in': annotator_ids}}, {'_id': 0}))
     total_annotations = list(mongo.db.annotations_validated.find(
@@ -663,7 +702,7 @@ def extract_development_set(strategy):
     '''Extract randomly 750 documents and its validated DeCS codes, regarding
     the strategy (union or intersection).'''
     # select the doc ids for development set
-    annotator_ids = get_annotators_ids()
+    annotator_ids = get_annotators()
     validations = list(mongo.db.validations.find(
         {'user': {'$in': annotator_ids}}, {'_id': 0}))
     validated_docs = [
@@ -761,7 +800,7 @@ def extract_test_set(version):
     development_set = list(mongo.db.development_set_union.find({}))
 
     # get the double validated docs ids
-    annotator_ids = get_annotators_ids()
+    annotator_ids = get_annotators()
     validations = list(mongo.db.validations.find(
         {'user': {'$in': annotator_ids}}, {'_id': 0}))
     validated_ids = [
@@ -932,7 +971,7 @@ def calculate_jaccard(dataset):
         docs = test_set_with_codes
 
     # get annotations before validation
-    annotator_ids = get_annotators_ids()
+    annotator_ids = get_annotators()
     indexings = list(mongo.db.completions.find(
         {'user': {'$in': annotator_ids}}, {'_id': 0}))
     indexed_docs = [

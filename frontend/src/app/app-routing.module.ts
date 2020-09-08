@@ -12,7 +12,8 @@ const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'doc/:id', component: DocDetailComponent, canActivate: [AuthService] },
   { path: 'docs', component: DocsComponent, canActivate: [AuthService] },
-  { path: 'admin', component: AdminComponent, canActivate: [AuthService, AuthAdminService] },
+  // { path: 'admin', component: AdminComponent, canActivate: [AuthService, AuthAdminService] },
+  { path: 'admin', component: AdminComponent },
 ]
 
 @NgModule({
