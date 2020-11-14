@@ -55,7 +55,7 @@ export class ApiService {
   }
 
   getAssignedDocs(assignment: Assignment): Observable<PaginatedResponse> {
-    return this.http.post<PaginatedResponse>(`${this.url}/find/assignments`, assignment)
+    return this.http.post<PaginatedResponse>(`${this.url}/assignments`, assignment)
   }
 
   assignDocsToUsers(assignments: Assignment[]): Observable<any> {

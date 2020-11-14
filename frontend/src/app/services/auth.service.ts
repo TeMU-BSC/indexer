@@ -52,6 +52,7 @@ export class AuthService implements CanActivate {
   }
 
   public login(user: User): void {
+    console.log(user)
     this.http.request('get', `${this.api.url}/find/user`, { body: user }).subscribe(
       response => {
         if (response['found_item']) {

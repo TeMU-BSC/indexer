@@ -41,6 +41,14 @@ def index():
     return jsonify(status='up')
 
 
+# from app import dev
+# @app.route('/insert/random/docs/<amount>')
+# def insert_random_docs(item, amount):
+#     random_documents = [doc_generator() for _ in range(amount)]
+#     result = mongo.db.docs.insert_many(random_documents)
+#     return jsonify(success=result.acknowledged)
+
+
 @app.route('/insert/<item>', methods=['POST'])
 def insert_one(item):
     collection = f'{item}s'
@@ -57,18 +65,19 @@ def find_one(item):
     if result:
         result['generation_time'] = result['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
         result['_id'] = str(result['_id'])
+        result['filter'] = filter
     return jsonify(found_item=result)
 
 
-@app.route('/find/<item>s', methods=['GET'])
-def find_many(item):
-    collection = f'{item}s'
-    filter = request.json
-    result = list(mongo.db[collection].find(filter))
-    for document in result:
-        document['generation_time'] = document['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
-        document['_id'] = str(document['_id'])
-    return jsonify(found_items=result)
+# @app.route('/find-many/<item>', methods=['GET'])
+# def find_many(item):
+#     collection = f'{item}s'
+#     filter = request.json
+#     result = list(mongo.db[collection].find(filter))
+#     for document in result:
+#         document['generation_time'] = document['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
+#         document['_id'] = str(document['_id'])
+#     return jsonify(found_items=result)
 
 
 @app.route('/update/<item>', methods=['PUT'])
@@ -92,11 +101,16 @@ def delete_one(item):
 
 
 
+
+
 @app.route('/login', methods=['POST'])
 def login():
     filter = dict(email=request.json['email'], password=request.json['password'])
-    return find_one('user')
-
+    result = mongo.db.users.find_one(filter)
+    if result:
+        result['generation_time'] = result['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
+        result['_id'] = str(result['_id'])
+    return jsonify(found_user=result)
 
 
 def get_paginated_items(items: list, page_index=0, per_page=10):
@@ -133,7 +147,7 @@ def assign_docs_to_users():
     return jsonify({'success': success})
 
 
-@app.route('/find/assignments', methods=['POST'])
+@app.route('/assignments', methods=['POST'])
 def get_assigned_docs():
     '''Find the assigned docs IDs to the current user, and then retrieving
     the needed doc data from the 'selected_importants' collection.'''
