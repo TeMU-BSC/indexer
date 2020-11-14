@@ -1,5 +1,5 @@
 export const Links = {
-  decsEspanolHome: 'http://decses.bvsalud.org/E/homepagee.htm',
+  decsEspanolHome: 'https://decs.bvsalud.org/es/',
   decsEspanolSearch: 'http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start',
   bsc: 'https://www.bsc.es/',
   plantl: 'https://www.plantl.gob.es/',
