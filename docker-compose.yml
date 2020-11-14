@@ -2,12 +2,12 @@ version: '3.7'
 services:
   mongo:
     image: mongo
-    container_name: indexer-mongo
+    container_name: mongo-development
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=example
-      - MONGO_INITDB_DATABASE=dev
+      - MONGO_INITDB_DATABASE=development
     volumes:
       - /var/lib/mongodb:/data/db
       - ./database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
@@ -16,14 +16,14 @@ services:
     entrypoint: mongod --bind_ip_all
 
   flask:
-    container_name: indexer-backend
+    container_name: flask-development
     depends_on:
       - mongo
     build: ./backend
     environment:
       - FLASK_ENV=development
       - MONGO_HOST=mongo
-      - MONGO_DATABASE=dev
+      - MONGO_DATABASE=development
     volumes:
       - ./backend:/app
     ports:
@@ -31,13 +31,13 @@ services:
     command: flask run --host 0.0.0.0
 
   angular:
-    container_name: indexer-frontend
+    container_name: angular-development
     depends_on:
       - flask
     build: ./frontend
     environment:
       - APP_API_URL=http://localhost:5000
-      - APP_BROWSER_STORAGE_KEY=indexer
+      - APP_BROWSER_STORAGE_KEY=decs-indexer
     volumes:
       - ./frontend:/app
     ports:

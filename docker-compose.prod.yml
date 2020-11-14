@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   backend:
-    container_name: flask-container-production
+    container_name: flask-production
     build: ./backend
     environment:
       - MONGO_URI=mongodb://bsccnio01.bsc.es/BvSalud
@@ -9,11 +9,9 @@ services:
     command: uwsgi app.ini
     restart: always
   frontend:
-    container_name: angular-container-production
+    container_name: angular-production
     build:
       context: ./frontend
-
-      # https://docs.docker.com/compose/compose-file/#args
       args:
         - APP_API_URL=http://bsccnio01.bsc.es/api
         - APP_BROWSER_STORAGE_KEY=BvSalud
