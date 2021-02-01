@@ -6,6 +6,7 @@ This backend is built with Flask and connects to a given MongoDB instance.
 Author: alejandro.asensio@bsc.es
 '''
 
+# Standard library.
 from collections import Counter, defaultdict
 import copy
 import csv
@@ -17,67 +18,66 @@ import random
 import re
 from statistics import mean
 
-from flask import Flask, jsonify, request, make_response
+# Third parties.
+from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_paginate import Pagination, get_page_args
 from flask_pymongo import PyMongo
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
+# Private modules.
+from .dev import doc_generator, JSONEncoder
 from app import app
 
 
-MONGO_HOST = os.environ.get('MONGO_HOST')
-MONGO_DATABASE = os.environ.get('MONGO_DATABASE')
-app.config['MONGO_URI'] = f'mongodb://{MONGO_HOST}:27017/{MONGO_DATABASE}'
-mongo = PyMongo(app)
-CORS(app)
 app.config['JSON_AS_ASCII'] = False
 app.config['JSON_SORT_KEYS'] = False
+app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
+CORS(app)
+mongo = PyMongo(app)
 
 
 @app.route('/')
 def index():
+    print('Hello from indexer flask API.')
     return jsonify(status='up')
 
 
-# from app import dev
-# @app.route('/insert/random/docs/<amount>')
-# def insert_random_docs(item, amount):
-#     random_documents = [doc_generator() for _ in range(amount)]
-#     result = mongo.db.docs.insert_many(random_documents)
-#     return jsonify(success=result.acknowledged)
+@app.route('/create/random/<item>/<amount>')
+def create_random_docs(item, amount):
+    collection = f'{item}s'
+    random_documents = list(doc_generator() for _ in range(int(amount)))
+    insertion_result = mongo.db[collection].insert_many(random_documents)
+    return jsonify(success=insertion_result.acknowledged)
 
 
-@app.route('/insert/<item>', methods=['POST'])
-def insert_one(item):
+@app.route('/create/<item>', methods=['POST'])
+def create_one(item):
     collection = f'{item}s'
     document = request.json
-    result = mongo.db[collection].insert_one(document)
-    return jsonify(success=result.acknowledged)
+    insertion_result = mongo.db[collection].insert_one(document)
+    return jsonify(success=insertion_result.acknowledged)
 
 
-@app.route('/find/<item>', methods=['GET'])
-def find_one(item):
+@app.route('/get/<item>/<identifier>')
+def get_one(item, identifier):
     collection = f'{item}s'
-    filter = request.json
-    result = mongo.db[collection].find_one(filter)
-    if result:
-        result['generation_time'] = result['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
-        result['_id'] = str(result['_id'])
-        result['filter'] = filter
-    return jsonify(found_item=result)
+    found_item = mongo.db[collection].find_one({'identifier': identifier})
+    if found_item:
+        found_item['generation_time'] = found_item['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
+        found_item['_id'] = str(found_item['_id'])
+    return jsonify(found_item=found_item)
 
 
-# @app.route('/find-many/<item>', methods=['GET'])
-# def find_many(item):
-#     collection = f'{item}s'
-#     filter = request.json
-#     result = list(mongo.db[collection].find(filter))
-#     for document in result:
-#         document['generation_time'] = document['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
-#         document['_id'] = str(document['_id'])
-#     return jsonify(found_items=result)
+@app.route('/get-many/<item>/<limit>', methods=['GET'])
+def get_many(item, limit):
+    collection = f'{item}s'
+    found_items = list(mongo.db[collection].find(limit=int(limit)))
+    for found_item in found_items:
+        found_item['generation_time'] = found_item['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
+        found_item['_id'] = str(found_item['_id'])
+    return jsonify(found_items=found_items)
 
 
 @app.route('/update/<item>', methods=['PUT'])
@@ -97,20 +97,27 @@ def delete_one(item):
     return jsonify(deleted_count=result.deleted_count)
 
 
-
-
-
-
+@app.route('/register', methods=['POST'])
+def register():
+    return create_one('user')
 
 
 @app.route('/login', methods=['POST'])
 def login():
-    filter = dict(email=request.json['email'], password=request.json['password'])
-    result = mongo.db.users.find_one(filter)
-    if result:
-        result['generation_time'] = result['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
-        result['_id'] = str(result['_id'])
-    return jsonify(found_user=result)
+    query_filter = request.json
+    email = query_filter.get('email')
+    password = query_filter.get('password')
+    found_user = mongo.db.users.find_one({'email': email, 'password': password})
+    if found_user:
+        found_user['generation_time'] = found_user['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
+        found_user['_id'] = str(found_user['_id'])
+    return jsonify(found_user=found_user)
+
+
+
+
+
+
 
 
 def get_paginated_items(items: list, page_index=0, per_page=10):

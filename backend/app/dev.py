@@ -13,9 +13,9 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 
 def doc_generator():
     return dict(
-        id=id_generator(),
+        identifier=id_generator(),
         title=lorem.words(random.randint(7, 13)),
-        abstract=lorem.paragraph(random.randint(1, 3)),
+        abstract=lorem.paragraph(),
         source=random.choice(sources),
         type=random.choice(types),
     )
