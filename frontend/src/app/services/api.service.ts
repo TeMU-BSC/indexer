@@ -17,7 +17,9 @@ import { Assignment } from 'src/app/models/assignment'
 })
 export class ApiService {
 
-  public url = environment.process.env.APP_API_URL
+  // public url = environment.process.env.APP_API_URL
+  public url = 'http://localhost:5000'
+
   options = {
     headers: new HttpHeaders('Access-Control-Allow-Credentials'),
     withCredentials: true

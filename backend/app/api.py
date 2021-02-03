@@ -7,6 +7,7 @@ Author: alejandro.asensio@bsc.es
 '''
 
 # Standard library.
+from bson import ObjectId
 from collections import Counter, defaultdict
 import copy
 import csv
@@ -27,7 +28,7 @@ from flask_pymongo import PyMongo
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 # Private modules.
-from .dev import doc_generator, JSONEncoder
+from .mock import generate_mock_items
 from app import app
 
 
@@ -40,61 +41,11 @@ mongo = PyMongo(app)
 
 @app.route('/')
 def index():
+    print(json.dumps(generate_mock_items('user', 3), indent=2))
+    print(json.dumps(generate_mock_items('document', 10), indent=2))
+    print(json.dumps(generate_mock_items('term', 29), indent=2))
     print('Hello from indexer flask API.')
     return jsonify(status='up')
-
-
-@app.route('/create/random/<item>/<amount>')
-def create_random_docs(item, amount):
-    collection = f'{item}s'
-    random_documents = list(doc_generator() for _ in range(int(amount)))
-    insertion_result = mongo.db[collection].insert_many(random_documents)
-    return jsonify(success=insertion_result.acknowledged)
-
-
-@app.route('/create/<item>', methods=['POST'])
-def create_one(item):
-    collection = f'{item}s'
-    document = request.json
-    insertion_result = mongo.db[collection].insert_one(document)
-    return jsonify(success=insertion_result.acknowledged)
-
-
-@app.route('/get/<item>/<identifier>')
-def get_one(item, identifier):
-    collection = f'{item}s'
-    found_item = mongo.db[collection].find_one({'identifier': identifier})
-    if found_item:
-        found_item['generation_time'] = found_item['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
-        found_item['_id'] = str(found_item['_id'])
-    return jsonify(found_item=found_item)
-
-
-@app.route('/get-many/<item>/<limit>', methods=['GET'])
-def get_many(item, limit):
-    collection = f'{item}s'
-    found_items = list(mongo.db[collection].find(limit=int(limit)))
-    for found_item in found_items:
-        found_item['generation_time'] = found_item['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
-        found_item['_id'] = str(found_item['_id'])
-    return jsonify(found_items=found_items)
-
-
-@app.route('/update/<item>', methods=['PUT'])
-def update_one(item):
-    collection = f'{item}s'
-    filter = request.json
-    update = request.json
-    result = mongo.db[collection].update_one(filter, update)
-    return jsonify(modified_count=result.modified_count)
-
-
-@app.route('/delete/<item>', methods=['DELETE'])
-def delete_one(item):
-    collection = f'{item}s'
-    filter = request.json
-    result = mongo.db[collection].delete_one(filter)
-    return jsonify(deleted_count=result.deleted_count)
 
 
 @app.route('/register', methods=['POST'])
@@ -112,6 +63,50 @@ def login():
         found_user['generation_time'] = found_user['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
         found_user['_id'] = str(found_user['_id'])
     return jsonify(found_user=found_user)
+
+
+@app.route('/get-many/<item>/<limit>', methods=['GET'])
+def get_many(item, limit):
+    collection = f'{item}s'
+    found_items = list(mongo.db[collection].find(limit=int(limit)))
+    for found_item in found_items:
+        found_item['generation_time'] = found_item['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
+        found_item['_id'] = str(found_item['_id'])
+    return jsonify(found_items=found_items)
+
+
+@app.route('/<item>', methods=['POST'])
+def create_one(item):
+    collection = f'{item}s'
+    document = request.json
+    insertion_result = mongo.db[collection].insert_one(document)
+    return jsonify(success=insertion_result.acknowledged)
+
+
+@app.route('/<item>/<identifier>', methods=['GET'])
+def get_one(item, identifier):
+    collection = f'{item}s'
+    found_item = mongo.db[collection].find_one({'identifier': identifier})
+    if found_item:
+        found_item['generation_time'] = found_item['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
+        found_item['_id'] = str(found_item['_id'])
+    return jsonify(found_item=found_item)
+
+
+@app.route('/<item>/<_id>', methods=['PUT'])
+def update_one(item, _id):
+    collection = f'{item}s'
+    update_for_item = request.json
+    updating_result = mongo.db[collection].update_one({'_id': ObjectId(_id)}, {'$set': update_for_item})
+    return jsonify(success=updating_result.acknowledged)
+
+
+@app.route('/<item>/<_id>', methods=['DELETE'])
+def delete_one(item, _id):
+    collection = f'{item}s'
+    deletion_result = mongo.db[collection].delete_one({'_id': ObjectId(_id)})
+    return jsonify(success=deletion_result.acknowledged)
+
 
 
 

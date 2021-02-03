@@ -52,11 +52,10 @@ export class AuthService implements CanActivate {
   }
 
   public login(user: User): void {
-    console.log(user)
-    this.http.request('get', `${this.api.url}/find/user`, { body: user }).subscribe(
+    this.http.post(`${this.api.url}/login`, { email: user.email, password: user.password }).subscribe(
       response => {
-        if (response['found_item']) {
-          this.user = response['found_item']
+        if (response['found_user']) {
+          this.user = response['found_user']
           localStorage.setItem(this.browserStorageKey, JSON.stringify(this.user))
           this.title.setTitle(`Indizador - ${this.user.email}`)
         }

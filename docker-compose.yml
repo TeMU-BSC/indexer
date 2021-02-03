@@ -1,45 +1,44 @@
-version: '3.7'
+version: '3.8'
 services:
-  mongo:
-    image: mongo
-    container_name: mongo-development
-    restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
-      - MONGO_INITDB_DATABASE=development
-    volumes:
-      - /var/lib/mongodb:/data/db
-      - ./database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-    ports:
-      - 27017-27019:27017-27019
-    entrypoint: mongod --bind_ip_all
-
+  # mongo:
+  #   image: mongo
+  #   container_name: indexer_mongo
+  #   restart: always
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=root
+  #     - MONGO_INITDB_ROOT_PASSWORD=example
+  #     - MONGO_INITDB_DATABASE=development
+  #   ports:
+  #     - 27017-27019:27017-27019
+  #   entrypoint: mongod --bind_ip_all
+  #   volumes:
+  #     - /var/lib/mongodb:/data/db
+  #     - ./database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
   flask:
-    container_name: flask-development
-    depends_on:
-      - mongo
+    container_name: indexer_flask
+    # depends_on:
+    #   - mongo
     build: ./backend
     environment:
       - FLASK_ENV=development
-      - MONGO_HOST=mongo
-      - MONGO_DATABASE=development
-    volumes:
-      - ./backend:/app
+      - MONGO_HOST=localhost
+      - MONGO_DATABASE=dev
     ports:
       - 5000:5000
     command: flask run --host 0.0.0.0
-
+    volumes:
+      - ./backend:/app
   angular:
-    container_name: angular-development
+    image: node:12-alpine
+    working_dir: /app
+    container_name: indexer_angular
     depends_on:
       - flask
-    build: ./frontend
     environment:
       - APP_API_URL=http://localhost:5000
-      - APP_BROWSER_STORAGE_KEY=decs-indexer
-    volumes:
-      - ./frontend:/app
+      - APP_BROWSER_STORAGE_KEY=temu_indexer
     ports:
       - 4200:4200
-    command: ng serve --host 0.0.0.0
+    command: npm start
+    volumes:
+      - ./frontend:/app

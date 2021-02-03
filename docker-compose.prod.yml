@@ -1,21 +1,32 @@
-version: '3.7'
 services:
-  backend:
-    container_name: flask-production
+
+  mongo:
+    image: mongo:4.4.3-bionic
+    container_name: indexer_mongo
+    ports:
+      - 27018:27017
+    volumes:
+      - /data/mongodb:/data/db
+    restart: always
+
+  flask:
+    container_name: indexer_flask
     build: ./backend
+    ports:
+      - 8080:8080
     environment:
-      - MONGO_URI=mongodb://bsccnio01.bsc.es/BvSalud
-      - MONGO_DATASETS_URI=mongodb://bsccnio01.bsc.es/datasets
+      - MONGO_URI=mongodb://mongo:27018/BvSalud
+      - MONGO_DATASETS_URI=mongodb://mongo:27018/datasets
     command: uwsgi app.ini
     restart: always
-  frontend:
-    container_name: angular-production
+
+  angular:
+    container_name: indexer_angular
     build:
       context: ./frontend
       args:
         - APP_API_URL=http://bsccnio01.bsc.es/api
-        - APP_BROWSER_STORAGE_KEY=BvSalud
-      dockerfile: Dockerfile.prod
+        - APP_BROWSER_STORAGE_KEY=mesinesp
     ports:
       - '80:80'
     restart: always
