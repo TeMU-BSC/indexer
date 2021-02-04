@@ -7,13 +7,15 @@ import { DocsComponent } from './components/docs/docs.component'
 import { AuthService } from './services/auth.service'
 import { AuthAdminService } from './services/auth-admin.service'
 import { DocDetailComponent } from './components/doc-detail/doc-detail.component'
+import { LoginComponent } from './components/login/login.component'
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'doc/:id', component: DocDetailComponent, canActivate: [AuthService] },
-  { path: 'docs', component: DocsComponent, canActivate: [AuthService] },
-  // { path: 'admin', component: AdminComponent, canActivate: [AuthService, AuthAdminService] },
   { path: 'admin', component: AdminComponent },
+  // { path: 'admin', component: AdminComponent, canActivate: [AuthService, AuthAdminService] },
+  { path: 'login', component: LoginComponent },
+  { path: 'docs', component: DocsComponent, canActivate: [AuthService] },
+  { path: 'doc/:id', component: DocDetailComponent, canActivate: [AuthService] },
 ]
 
 @NgModule({

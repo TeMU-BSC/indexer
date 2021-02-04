@@ -1,0 +1,46 @@
+{
+  "environ": {
+    "wsgi.version": (1,
+    0),
+    "wsgi.url_scheme": "http",
+    "wsgi.input": <_io.BufferedReader name=7>,
+    "wsgi.errors": <_io.TextIOWrapper name="<stderr>" mode="w" encoding="utf-8">,
+    "wsgi.multithread": True,
+    "wsgi.multiprocess": False,
+    "wsgi.run_once": False,
+    "werkzeug.server.shutdown": <function WSGIRequestHandler.make_environ.<locals>.shutdown_server at 0x7fdfd523e4c0>,
+    "SERVER_SOFTWARE": "Werkzeug/1.0.1",
+    "REQUEST_METHOD": "GET",
+    "SCRIPT_NAME": "",
+    "PATH_INFO": "/user",
+    "QUERY_STRING": "",
+    "REQUEST_URI": "/user",
+    "RAW_URI": "/user",
+    "REMOTE_ADDR": "127.0.0.1",
+    "REMOTE_PORT": 43452,
+    "SERVER_NAME": "127.0.0.1",
+    "SERVER_PORT": "5000",
+    "SERVER_PROTOCOL": "HTTP/1.1",
+    "HTTP_HOST": "localhost: 5000",
+    "HTTP_CONNECTION": "keep-alive",
+    "HTTP_ACCEPT": "application/json, text/plain, */*",
+    "HTTP_DNT": "1",
+    "HTTP_USER_AGENT": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36",
+    "CONTENT_TYPE": "application/json",
+    "HTTP_ORIGIN": "http://localhost:4200",
+    "HTTP_SEC_FETCH_SITE": "same-site",
+    "HTTP_SEC_FETCH_MODE": "cors",
+    "HTTP_SEC_FETCH_DEST": "empty",
+    "HTTP_REFERER": "http://localhost:4200/",
+    "HTTP_ACCEPT_ENCODING": "gzip, deflate, br",
+    "HTTP_ACCEPT_LANGUAGE": "en-US,en;q=0.9,es-ES;q=0.8,es;q=0.7",
+    "werkzeug.request": <Request "http://localhost:5000/user" [GET
+    ]>
+  },
+  "shallow": False,
+  "url_rule": <Rule "/<item>" (OPTIONS, HEAD, GET) -> read>,
+  "view_args": {
+    "item": "user"
+  },
+  "url": "http://localhost:5000/user"
+}

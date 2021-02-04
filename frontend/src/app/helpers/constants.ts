@@ -1,6 +1,6 @@
-export const Links = {
-  decsEspanolHome: 'https://decs.bvsalud.org/es/',
-  decsEspanolSearch: 'http://decses.bvsalud.org/cgi-bin/wxis1660.exe/decsserver/?IsisScript=../cgi-bin/decsserver/decsserver.xis&interface_language=e&previous_page=homepage&previous_task=NULL&task=start',
+export const externalLink = {
+  decs: 'https://decs.bvsalud.org/es/',
+  hpo: 'https://hpo.jax.org/',
   bsc: 'https://www.bsc.es/',
   plantl: 'https://www.plantl.gob.es/',
   temuAtBsc: 'https://www.bsc.es/discover-bsc/organisation/scientific-structure/text-mining',

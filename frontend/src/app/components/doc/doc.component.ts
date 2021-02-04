@@ -85,7 +85,7 @@ export class DocComponent implements AfterViewInit {
             }
             this.doc.completed = true
             this.completed.emit(true)
-            this.api.markAsCompleted({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe()
+            this.api.markAsCompleted({ doc: this.doc.identifier, user: this.auth.getCurrentUser().id }).subscribe()
             break
           case 'validate':
             if (this.validations.chips.length === 0) {
@@ -94,13 +94,13 @@ export class DocComponent implements AfterViewInit {
             }
             this.doc.validated = true
             this.validated.emit(true)
-            this.api.markAsValidated({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe()
+            this.api.markAsValidated({ doc: this.doc.identifier, user: this.auth.getCurrentUser().id }).subscribe()
             const validatedAnnotations = []
             this.validations.chips.forEach(chip => {
               validatedAnnotations.push({
                 decsCode: chip.decsCode,
                 user: this.auth.getCurrentUser().id,
-                doc: this.doc.id,
+                doc: this.doc.identifier,
               })
             })
             this.api.saveValidatedAnnotations(validatedAnnotations).subscribe()

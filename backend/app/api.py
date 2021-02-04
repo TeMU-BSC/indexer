@@ -48,49 +48,68 @@ def index():
     return jsonify(status='up')
 
 
-@app.route('/register', methods=['POST'])
-def register():
-    return create_one('user')
-
-
 @app.route('/login', methods=['POST'])
 def login():
-    query_filter = request.json
-    email = query_filter.get('email')
-    password = query_filter.get('password')
-    found_user = mongo.db.users.find_one({'email': email, 'password': password})
+    collection = 'users'
+    email = request.json.get('email')
+    password = request.json.get('password')
+    found_user = mongo.db[collection].find_one({'email': email, 'password': password})
     if found_user:
         found_user['generation_time'] = found_user['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
         found_user['_id'] = str(found_user['_id'])
-    return jsonify(found_user=found_user)
+    return jsonify(found_user)
 
 
-@app.route('/get-many/<item>/<limit>', methods=['GET'])
-def get_many(item, limit):
-    collection = f'{item}s'
-    found_items = list(mongo.db[collection].find(limit=int(limit)))
-    for found_item in found_items:
-        found_item['generation_time'] = found_item['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
-        found_item['_id'] = str(found_item['_id'])
-    return jsonify(found_items=found_items)
+@app.route('/doc/<identifier>', methods=['GET'])
+def get_doc(identifier):
+    doc = mongo.db.documents.find_one({'identifier': identifier}, {'_id': 0})
+    return jsonify(doc)
+
+
+@app.route('/docs/<email>', methods=['GET'])
+def get_assigned_documents_to_user(email):
+    user = mongo.db.users.find_one({'email': email})
+    assigned_document_identifiers = user.get('assigned_document_identifiers')
+    documents = list(mongo.db.documents.find({'identifier': {'$in': assigned_document_identifiers}}, {'_id': 0}))
+    return jsonify(documents)
+
+
+# Shared CRUD (Create, Read, Update, Delete) routes for `user`, `document`, `term`, `indexing`.
 
 
 @app.route('/<item>', methods=['POST'])
-def create_one(item):
+def create(item):
     collection = f'{item}s'
-    document = request.json
-    insertion_result = mongo.db[collection].insert_one(document)
-    return jsonify(success=insertion_result.acknowledged)
+    if isinstance(request.json, dict):
+        document = request.json
+        insertion_result = mongo.db[collection].insert_one(document)
+        success = insertion_result.acknowledged
+    elif isinstance(request.json, list):
+        documents = request.json
+        insert_many_result = mongo.db[collection].insert_many(documents)
+        success = insert_many_result.acknowledged
+    return jsonify(success=success)
 
 
-@app.route('/<item>/<identifier>', methods=['GET'])
-def get_one(item, identifier):
+@app.route('/<item>', methods=['GET'])
+def read(item):
     collection = f'{item}s'
-    found_item = mongo.db[collection].find_one({'identifier': identifier})
-    if found_item:
-        found_item['generation_time'] = found_item['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
-        found_item['_id'] = str(found_item['_id'])
-    return jsonify(found_item=found_item)
+    query_filter = request.json
+    is_multiple = request.args.get('multiple') == 'true'
+    if is_multiple:
+        limit = int(request.args.get('limit')) if request.args.get('limit') else 0
+        found_documents = list(mongo.db[collection].find(query_filter, limit=limit))
+        for found_document in found_documents:
+            found_document['generation_time'] = found_document['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
+            found_document['_id'] = str(found_document['_id'])
+        response = found_documents
+    else:
+        found_document = mongo.db[collection].find_one(query_filter)
+        if found_document:
+            found_document['generation_time'] = found_document['_id'].generation_time.strftime("%Y-%m-%d %H:%M:%S")
+            found_document['_id'] = str(found_document['_id'])
+        response = found_document
+    return jsonify(response)
 
 
 @app.route('/<item>/<_id>', methods=['PUT'])
@@ -115,210 +134,203 @@ def delete_one(item, _id):
 
 
 
-def get_paginated_items(items: list, page_index=0, per_page=10):
-    offset = page_index * per_page
-    return items[offset: offset + per_page]
+# def get_paginated_items(items: list, page_index=0, per_page=10):
+#     offset = page_index * per_page
+#     return items[offset: offset + per_page]
 
 
-def get_annotators_ids() -> list:
-    '''List of id's from users that have the `annotator` role.'''
-    return mongo.db.users.distinct('id', {'role': 'annotator'})
+# def get_annotators_ids() -> list:
+#     '''List of id's from users that have the `annotator` role.'''
+#     return mongo.db.users.distinct('id', {'role': 'annotator'})
 
 
-@app.route('/doc/<id>', methods=['GET'])
-def get_doc(id):
-    '''Get a document by its id.'''
-    doc = mongo.db.selected_importants.find_one({'_id': id})
-    return jsonify({'id': doc['_id'], 'title': doc['ti_es'], 'abstract': doc['ab_es']})
+# @app.route('/assignment/add', methods=['POST'])
+# def assign_docs_to_users():
+#     '''Add some documents IDs to the user key in the 'assignments' collection.'''
+#     assignments = request.json
+#     results = list()
+#     for assignment in assignments:
+#         for doc in assignment['docs']:
+#             result = mongo.db.assignments.update_one(
+#                 {'user': assignment['user']},
+#                 {'$push': {'docs': doc}},
+#                 upsert=True
+#             )
+#             results.append(result.acknowledged)
+#     success = all(results)
+#     return jsonify({'success': success})
 
 
-@app.route('/assignment/add', methods=['POST'])
-def assign_docs_to_users():
-    '''Add some documents IDs to the user key in the 'assignments' collection.'''
-    assignments = request.json
-    results = list()
-    for assignment in assignments:
-        for doc in assignment['docs']:
-            result = mongo.db.assignments.update_one(
-                {'user': assignment['user']},
-                {'$push': {'docs': doc}},
-                upsert=True
-            )
-            results.append(result.acknowledged)
-    success = all(results)
-    return jsonify({'success': success})
+# @app.route('/assignments', methods=['POST'])
+# def get_assigned_docs():
+#     '''Find the assigned docs IDs to the current user, and then retrieving
+#     the needed doc data from the 'selected_importants' collection.'''
+#     user = request.json['user']
+#     found_user = mongo.db.assignments.find_one({'user': user})
+
+#     assigned_doc_ids = []
+#     if found_user:
+#         assigned_doc_ids = found_user.get('docs')
+
+#     # Pagination
+#     page_index = dict(request.json).get('pageIndex', 0)
+#     per_page = dict(request.json).get('pageSize', 10)
+#     total = len(assigned_doc_ids)
+#     pagination_docs_ids = get_paginated_items(
+#         items=assigned_doc_ids, page_index=page_index, per_page=per_page)
+
+#     docs = list()
+#     for collection in COLLECTIONS:
+#         docs.extend(collection.find({'_id': {'$in': pagination_docs_ids}}))
+
+#     assigned_docs = []
+#     for doc in docs:
+#         # Find the decsCodes added by the current user
+#         decs_codes = mongo.db.annotations.distinct(
+#             'decsCode', {'doc': doc['_id'], 'user': user})
+#         # Get the validated decs codes
+#         validated_decs_codes = mongo.db.annotations_validated.distinct(
+#             'decsCode', {'user': user, 'doc': doc['_id']})
+#         # Check if this doc has been marked as completed by the current user
+#         completed = False
+#         user_completions = mongo.db.completions.find_one({'user': user})
+#         if user_completions:
+#             completed = doc['_id'] in user_completions.get('docs')
+#         # Check if this doc has been marked as validated by the current user
+#         validated = False
+#         user_validations = mongo.db.validations.find_one({'user': user})
+#         if user_validations:
+#             validated = doc['_id'] in user_validations.get('docs')
+#         # Prepare the relevant info to be returned
+#         doc_relevant_info = {
+#             'id': doc['_id'],
+#             'title': doc['ti_es'],
+#             'abstract': doc['ab_es'],
+#             'decsCodes': decs_codes,
+#             'validatedDecsCodes': validated_decs_codes,
+#             'completed': completed,
+#             'validated': validated
+#         }
+#         assigned_docs.append(doc_relevant_info)
+
+#     return jsonify({
+#         'items': assigned_docs,
+#         'pageIndex': page_index,
+#         'perPage': per_page,
+#         'total': total,
+#     })
 
 
-@app.route('/assignments', methods=['POST'])
-def get_assigned_docs():
-    '''Find the assigned docs IDs to the current user, and then retrieving
-    the needed doc data from the 'selected_importants' collection.'''
-    user = request.json['user']
-    found_user = mongo.db.assignments.find_one({'user': user})
-
-    assigned_doc_ids = []
-    if found_user:
-        assigned_doc_ids = found_user.get('docs')
-
-    # Pagination
-    page_index = dict(request.json).get('pageIndex', 0)
-    per_page = dict(request.json).get('pageSize', 10)
-    total = len(assigned_doc_ids)
-    pagination_docs_ids = get_paginated_items(
-        items=assigned_doc_ids, page_index=page_index, per_page=per_page)
-
-    docs = list()
-    for collection in COLLECTIONS:
-        docs.extend(collection.find({'_id': {'$in': pagination_docs_ids}}))
-
-    assigned_docs = []
-    for doc in docs:
-        # Find the decsCodes added by the current user
-        decs_codes = mongo.db.annotations.distinct(
-            'decsCode', {'doc': doc['_id'], 'user': user})
-        # Get the validated decs codes
-        validated_decs_codes = mongo.db.annotations_validated.distinct(
-            'decsCode', {'user': user, 'doc': doc['_id']})
-        # Check if this doc has been marked as completed by the current user
-        completed = False
-        user_completions = mongo.db.completions.find_one({'user': user})
-        if user_completions:
-            completed = doc['_id'] in user_completions.get('docs')
-        # Check if this doc has been marked as validated by the current user
-        validated = False
-        user_validations = mongo.db.validations.find_one({'user': user})
-        if user_validations:
-            validated = doc['_id'] in user_validations.get('docs')
-        # Prepare the relevant info to be returned
-        doc_relevant_info = {
-            'id': doc['_id'],
-            'title': doc['ti_es'],
-            'abstract': doc['ab_es'],
-            'decsCodes': decs_codes,
-            'validatedDecsCodes': validated_decs_codes,
-            'completed': completed,
-            'validated': validated
-        }
-        assigned_docs.append(doc_relevant_info)
-
-    return jsonify({
-        'items': assigned_docs,
-        'pageIndex': page_index,
-        'perPage': per_page,
-        'total': total,
-    })
+# @app.route('/users', methods=['GET'])
+# def get_users():
+#     return jsonify(list(mongo.db.users.find({}, {'_id': 0})))
 
 
-@app.route('/users', methods=['GET'])
-def get_users():
-    return jsonify(list(mongo.db.users.find({}, {'_id': 0})))
+# @app.route('/annotation/add', methods=['POST'])
+# def add_annotation():
+#     '''Add a new annotation to the 'annotations' collection. Use 'replace_one'
+#     instead of 'insert_one' to avoid repeated annotations by the same user
+#     logged at the same time in different browsers.'''
+#     annotation = request.json
+#     result = mongo.db.annotations.replace_one(
+#         annotation, annotation, upsert=True)
+#     return jsonify({'success': result.acknowledged})
 
 
-@app.route('/annotation/add', methods=['POST'])
-def add_annotation():
-    '''Add a new annotation to the 'annotations' collection. Use 'replace_one'
-    instead of 'insert_one' to avoid repeated annotations by the same user
-    logged at the same time in different browsers.'''
-    annotation = request.json
-    result = mongo.db.annotations.replace_one(
-        annotation, annotation, upsert=True)
-    return jsonify({'success': result.acknowledged})
+# @app.route('/annotation/remove', methods=['POST'])
+# def remove_annotation():
+#     '''Remove an existing annotation from the 'annotations' collection.'''
+#     annotation = request.json
+#     result = mongo.db.annotations.delete_one(annotation)
+#     return jsonify({'deletedCount': result.deleted_count})
 
 
-@app.route('/annotation/remove', methods=['POST'])
-def remove_annotation():
-    '''Remove an existing annotation from the 'annotations' collection.'''
-    annotation = request.json
-    result = mongo.db.annotations.delete_one(annotation)
-    return jsonify({'deletedCount': result.deleted_count})
+# @app.route('/annotations_validated/add', methods=['POST'])
+# def add_validated_annotations():
+#     '''Add some annotations validated by the user after comparing with suggestions from other users.'''
+#     validated_annotations = request.json
+#     result = mongo.db.annotations_validated.insert_many(validated_annotations)
+#     return jsonify({'success': result.acknowledged})
 
 
-@app.route('/annotations_validated/add', methods=['POST'])
-def add_validated_annotations():
-    '''Add some annotations validated by the user after comparing with suggestions from other users.'''
-    validated_annotations = request.json
-    result = mongo.db.annotations_validated.insert_many(validated_annotations)
-    return jsonify({'success': result.acknowledged})
+# @app.route('/annotations_validated/get', methods=['POST'])
+# def get_validated_annotations():
+#     '''Get the validated annotations by a given user for a given document.'''
+#     obj = request.json
+#     validated_decs_codes = mongo.db.annotations_validated.distinct(
+#         'decsCode', {'user': obj['user'], 'doc': obj['doc']})
+#     return jsonify({'validatedDecsCodes': list(validated_decs_codes)})
 
 
-@app.route('/annotations_validated/get', methods=['POST'])
-def get_validated_annotations():
-    '''Get the validated annotations by a given user for a given document.'''
-    obj = request.json
-    validated_decs_codes = mongo.db.annotations_validated.distinct(
-        'decsCode', {'user': obj['user'], 'doc': obj['doc']})
-    return jsonify({'validatedDecsCodes': list(validated_decs_codes)})
+# @app.route('/suggestions', methods=['POST'])
+# def get_suggestions():
+#     '''Get the decs codes for a specific document from other annotators that
+#     have marked as completed that same document.'''
+#     post = request.json
+#     other_users = mongo.db.completions.distinct(
+#         'user', {'docs': post['doc'], 'user': {'$ne': post['user']}})
+#     other_users.append('A0')
+#     suggestions = mongo.db.annotations.distinct(
+#         'decsCode', {'doc': post['doc'], 'user': {'$in': other_users}})
+#     return jsonify({'suggestions': suggestions})
+
+#     # # TODO Search machine suggestions on the fly (to replace the load_machine_suggestions() by Antonio)
+#     # decs = [d for d in mongo.db.decs.find({}, {'_id': 0})]
+#     # doc = mongo.db.seleced_importants.find_one({'_id': post['doc']})
+#     # for d in decs:
+#     #     string_match = re.findall(d['termSpanish'], doc['ab_es'])
+#     #     synonyms = re.findall(r'(?<=\|)?[^|]+(?=\|)?', d['synonyms'])
+#     #     for s in synonyms:
+#     #         print(s)
+#     #         # save the term
+#     # # get machine_suggestions
+#     # all_suggestions = list(community_suggestions) + automatic_suggestions
+#     # return jsonify({'suggestions': all_suggestions})
 
 
-@app.route('/suggestions', methods=['POST'])
-def get_suggestions():
-    '''Get the decs codes for a specific document from other annotators that
-    have marked as completed that same document.'''
-    post = request.json
-    other_users = mongo.db.completions.distinct(
-        'user', {'docs': post['doc'], 'user': {'$ne': post['user']}})
-    other_users.append('A0')
-    suggestions = mongo.db.annotations.distinct(
-        'decsCode', {'doc': post['doc'], 'user': {'$in': other_users}})
-    return jsonify({'suggestions': suggestions})
-
-    # # TODO Search machine suggestions on the fly (to replace the load_machine_suggestions() by Antonio)
-    # decs = [d for d in mongo.db.decs.find({}, {'_id': 0})]
-    # doc = mongo.db.seleced_importants.find_one({'_id': post['doc']})
-    # for d in decs:
-    #     string_match = re.findall(d['termSpanish'], doc['ab_es'])
-    #     synonyms = re.findall(r'(?<=\|)?[^|]+(?=\|)?', d['synonyms'])
-    #     for s in synonyms:
-    #         print(s)
-    #         # save the term
-    # # get machine_suggestions
-    # all_suggestions = list(community_suggestions) + automatic_suggestions
-    # return jsonify({'suggestions': all_suggestions})
+# @app.route('/load_machine_suggestions', methods=['POST'])
+# def load_machine_suggestions():
+#     '''Load suggestions generated by a script written by `antonio.miranda@bsc.es`.
+#     NOTE: This route has been used only once.'''
+#     post = request.json
+#     with open('data/suggestions_mesinesp.tsv') as csvfile:
+#         reader = csv.DictReader(csvfile, dialect=csv.excel_tab)
+#         for row in reader:
+#             annotation = {
+#                 'user': post['user'], 'doc': row['doc_id'], 'decsCode': row['decs_code']}
+#             mongo.db.annotations.replace_one(
+#                 annotation, annotation, upsert=True)
+#     return jsonify({'success': True})
 
 
-@app.route('/load_machine_suggestions', methods=['POST'])
-def load_machine_suggestions():
-    '''Load suggestions generated by a script written by `antonio.miranda@bsc.es`.
-    NOTE: This route has been used only once.'''
-    post = request.json
-    with open('data/suggestions_mesinesp.tsv') as csvfile:
-        reader = csv.DictReader(csvfile, dialect=csv.excel_tab)
-        for row in reader:
-            annotation = {
-                'user': post['user'], 'doc': row['doc_id'], 'decsCode': row['decs_code']}
-            mongo.db.annotations.replace_one(
-                annotation, annotation, upsert=True)
-    return jsonify({'success': True})
-
-
-@app.route('/mark_doc_as/<status>', methods=['POST'])
-def mark_doc_as(status):
-    '''Add a new doc into the 'docs' key in the 'completions' collection.'''
-    doc_to_mark = request.json
-    result = None
-    if status == 'completed':
-        result = mongo.db.completions.update_one(
-            {'user': doc_to_mark['user']},
-            {'$push': {'docs': request.json['doc']}},
-            upsert=True
-        )
-    if status == 'uncompleted':
-        result = mongo.db.completions.update_one(
-            {'user': doc_to_mark['user']},
-            {'$pull': {'docs': doc_to_mark['doc']}}
-        )
-    if status == 'validated':
-        result = mongo.db.validations.update_one(
-            {'user': doc_to_mark['user']},
-            {'$push': {'docs': request.json['doc']}},
-            upsert=True
-        )
-    if status == 'unvalidated':
-        result = mongo.db.validations.update_one(
-            {'user': doc_to_mark['user']},
-            {'$pull': {'docs': doc_to_mark['doc']}}
-        )
-    return jsonify({'success': result.acknowledged})
+# @app.route('/mark_doc_as/<status>', methods=['POST'])
+# def mark_doc_as(status):
+#     '''Add a new doc into the 'docs' key in the 'completions' collection.'''
+#     doc_to_mark = request.json
+#     result = None
+#     if status == 'completed':
+#         result = mongo.db.completions.update_one(
+#             {'user': doc_to_mark['user']},
+#             {'$push': {'docs': request.json['doc']}},
+#             upsert=True
+#         )
+#     if status == 'uncompleted':
+#         result = mongo.db.completions.update_one(
+#             {'user': doc_to_mark['user']},
+#             {'$pull': {'docs': doc_to_mark['doc']}}
+#         )
+#     if status == 'validated':
+#         result = mongo.db.validations.update_one(
+#             {'user': doc_to_mark['user']},
+#             {'$push': {'docs': request.json['doc']}},
+#             upsert=True
+#         )
+#     if status == 'unvalidated':
+#         result = mongo.db.validations.update_one(
+#             {'user': doc_to_mark['user']},
+#             {'$pull': {'docs': doc_to_mark['doc']}}
+#         )
+#     return jsonify({'success': result.acknowledged})
 
 
 ##############################################################################

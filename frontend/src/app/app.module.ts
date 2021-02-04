@@ -18,7 +18,6 @@ import { HomeComponent } from './components/home/home.component'
 import { AdminComponent } from './components/admin/admin.component'
 import { LoginComponent } from './components/login/login.component'
 import { DialogComponent } from './components/dialog/dialog.component'
-import { LoaderInterceptor } from './interceptors/loader.interceptor'
 import { DocsComponent } from './components/docs/docs.component'
 import { DocComponent } from './components/doc/doc.component'
 import { DescriptorsComponent } from './components/descriptors/descriptors.component'
@@ -55,7 +54,6 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe'
     HttpClientModule,
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
     HighlightPipe,
   ],
   bootstrap: [AppComponent]

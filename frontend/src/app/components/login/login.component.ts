@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
-
+import { User } from 'src/app/models/user'
+import { ApiService } from 'src/app/services/api.service'
+import { AuthService } from 'src/app/services/auth.service'
 
 @Component({
   selector: 'app-login',
@@ -9,13 +10,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 })
 export class LoginComponent {
 
-  constructor(
-    public dialogRef: MatDialogRef<LoginComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  email: string
+  password: string
 
-  onNoClick(): void {
-    this.dialogRef.close()
-  }
+  constructor(
+    public auth: AuthService,
+  ) { }
 
 }

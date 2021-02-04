@@ -12,11 +12,10 @@ import { Descriptor, Doc } from 'src/app/models/decs'
 import { FormConfig } from 'src/app/models/form'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { customSort, inputIncludedInValue, removeConsecutiveSpaces } from 'src/app/utilities/functions'
+import { customSort, inputIncludedInValue, removeConsecutiveSpaces } from 'src/app/helpers/functions'
 
 /**
  * TODO: new option in autocomplete that searches programatically in the original decs webpage Spanish searcher:
- * url = Links.decsEspanolSearch
  * document.getElementsByName('search_exp')[0].value = 'guante';
  * document.getElementsByName('consult_button')[0].parentElement.click()
  */
@@ -73,13 +72,13 @@ export class DescriptorsComponent implements OnChanges {
     if (!this.validation) { return }
     // if doc is validated, get the finished validated annotations and exit
     if (this.doc.validated) {
-      this.api.getValidatedDecsCodes({ user: this.auth.getCurrentUser().id, doc: this.doc.id }).subscribe(
+      this.api.getValidatedDecsCodes({ user: this.auth.getCurrentUser().id, doc: this.doc.identifier }).subscribe(
         response => this.chips = this.options.filter(descriptor => response.validatedDecsCodes.includes(descriptor.decsCode))
       )
       return
     }
     // otherwise it's validation mode, add suggestions to chips list
-    this.api.getSuggestions({ doc: this.doc.id, user: this.auth.getCurrentUser().id }).subscribe(
+    this.api.getSuggestions({ doc: this.doc.identifier, user: this.auth.getCurrentUser().id }).subscribe(
       response => {
         // get suggestions from other users
         const suggestions = this.options.filter(descriptor => response.suggestions.includes(descriptor.decsCode))
@@ -141,7 +140,7 @@ export class DescriptorsComponent implements OnChanges {
       this.annotation = {
         decsCode: chip.decsCode,
         user: this.auth.getCurrentUser().id,
-        doc: this.doc.id,
+        doc: this.doc.identifier,
       }
       this.api.addAnnotation(this.annotation).subscribe(() => this.decsChange.emit(true))
     }
@@ -163,7 +162,7 @@ export class DescriptorsComponent implements OnChanges {
     this.annotation = {
       decsCode: chip.decsCode,
       user: this.auth.getCurrentUser().id,
-      doc: this.doc.id,
+      doc: this.doc.identifier,
     }
     // optionally, remove annotation from backend
     if (!this.validation) { this.api.removeAnnotation(this.annotation).subscribe(() => this.decsChange.emit(true)) }

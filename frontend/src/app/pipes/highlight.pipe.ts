@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core'
 import { toRegex } from 'diacritic-regex'
-import { removeConsecutiveSpaces } from '../utilities/functions'
+import { removeConsecutiveSpaces } from '../helpers/functions'
 
 @Pipe({
   name: 'highlight'

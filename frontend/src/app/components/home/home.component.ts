@@ -1,6 +1,6 @@
 import { Component } from '@angular/core'
 import { AuthService } from 'src/app/services/auth.service'
-import { Links } from 'src/app/utilities/links'
+import { externalLink } from 'src/app/helpers/constants'
 
 @Component({
   selector: 'app-home',
@@ -9,7 +9,7 @@ import { Links } from 'src/app/utilities/links'
 })
 export class HomeComponent {
 
-  links = Links
+  link = externalLink
 
   constructor(public auth: AuthService) { }
 

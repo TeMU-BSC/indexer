@@ -6,7 +6,7 @@ import { Papa } from 'ngx-papaparse'
 
 import { environment } from 'src/environments/environment'
 import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
-import { _sortByOrder } from 'src/app/utilities/functions'
+import { _sortByOrder } from 'src/app/helpers/functions'
 import { ApiResponse, Annotation, PaginatedResponse } from 'src/app/models/api'
 import { Doc, Descriptor } from 'src/app/models/decs'
 import { Assignment } from 'src/app/models/assignment'
@@ -56,8 +56,9 @@ export class ApiService {
     return _sortByOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
   }
 
-  getAssignedDocs(assignment: Assignment): Observable<PaginatedResponse> {
-    return this.http.post<PaginatedResponse>(`${this.url}/assignments`, assignment)
+  getAssignedDocs(query: any): Observable<any> {
+    const { userEmail, pageIndex, pageSize } = query
+    return this.http.get<any>(`${this.url}/docs/${userEmail}`)
   }
 
   assignDocsToUsers(assignments: Assignment[]): Observable<any> {

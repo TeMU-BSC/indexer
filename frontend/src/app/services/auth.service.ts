@@ -7,8 +7,6 @@ import { Observable } from 'rxjs'
 
 import { environment } from 'src/environments/environment'
 import { User } from 'src/app/models/user'
-import { ApiResponse } from 'src/app/models/api'
-import { LoginComponent } from 'src/app/components/login/login.component'
 import { ApiService } from './api.service'
 
 
@@ -17,7 +15,7 @@ import { ApiService } from './api.service'
 })
 export class AuthService implements CanActivate {
 
-  browserStorageKey = environment.process.env.APP_BROWSER_STORAGE_KEY
+  browserStorageKey = environment.process.env.APP_BROWSER_STORAGE_KEY || 'indexer_logged_user'
   user: User
 
   constructor(
@@ -33,7 +31,7 @@ export class AuthService implements CanActivate {
    */
   canActivate() {
     if (!this.isLoggedIn()) {
-      this.openLoginDialog()
+      this.router.navigate(['login'])
       return false
     }
     return true
@@ -51,13 +49,14 @@ export class AuthService implements CanActivate {
     return this.http.post<any>(`${this.api.url}/insert/users`, users)
   }
 
-  public login(user: User): void {
-    this.http.post(`${this.api.url}/login`, { email: user.email, password: user.password }).subscribe(
-      response => {
-        if (response['found_user']) {
-          this.user = response['found_user']
+  public login(email: string, password: string): void {
+    this.http.post<User>(`${this.api.url}/login`, { email, password }).subscribe(
+      foundUser => {
+        if (foundUser) {
+          this.user = foundUser
           localStorage.setItem(this.browserStorageKey, JSON.stringify(this.user))
           this.title.setTitle(`Indizador - ${this.user.email}`)
+          this.router.navigate(['docs'])
         }
       }
     )
@@ -74,17 +73,7 @@ export class AuthService implements CanActivate {
   }
 
   public getCurrentUser(): User {
-    if (this.isLoggedIn()) {
-      return JSON.parse(localStorage.getItem(this.browserStorageKey))
-    }
-  }
-
-  public openLoginDialog(): void {
-    const dialogRef = this.dialog.open(LoginComponent, {
-      width: '300px',
-      data: { user: new User() }
-    })
-    dialogRef.afterClosed().subscribe(data => this.login(data.user))
+    return JSON.parse(localStorage.getItem(this.browserStorageKey))
   }
 
 }

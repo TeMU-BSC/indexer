@@ -15,7 +15,7 @@ import { Assignment } from 'src/app/models/assignment'
 export class DocsComponent implements AfterViewInit {
 
   columns = []
-  data: Doc[]
+  docs: Doc[]
   selectedDoc: Doc
   loading: boolean
   paginatorLength: number
@@ -25,7 +25,7 @@ export class DocsComponent implements AfterViewInit {
     public auth: AuthService
   ) {
     this.columns = [
-      new TableColumn<Doc, 'id'>('ID documento', 'id')
+      new TableColumn<Doc, 'identifier'>('Identificador', 'identifier')
         .withColFilter().withColFilterLabel('Filtrar'),
       new TableColumn<Doc, 'title'>('Título', 'title')
         .isHiddenXs(true)
@@ -58,15 +58,14 @@ export class DocsComponent implements AfterViewInit {
 
   refresh(event?: PageEvent) {
     this.loading = true
-    const assignment: Assignment = {
-      userId: this.auth.getCurrentUser().id,
+    this.api.getAssignedDocs({
+      userEmail: this.auth.getCurrentUser().email,
       pageIndex: event?.pageIndex,
       pageSize: event?.pageSize,
-    }
-    this.api.getAssignedDocs(assignment).subscribe(
-      next => {
-        this.data = next.items
-        this.paginatorLength = next.total
+    }).subscribe(
+      docs => {
+        this.docs = docs
+        this.paginatorLength = docs.length
       },
       error => console.error(error),
       () => this.loading = false

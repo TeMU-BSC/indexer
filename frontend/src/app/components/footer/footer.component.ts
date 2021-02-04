@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { Links } from 'src/app/utilities/links'
+import { externalLink } from 'src/app/helpers/constants'
 
 @Component({
   selector: 'app-footer',
@@ -8,6 +8,6 @@ import { Links } from 'src/app/utilities/links'
 })
 export class FooterComponent {
 
-  links = Links
+  link = externalLink
 
 }

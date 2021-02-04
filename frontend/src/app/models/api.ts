@@ -30,7 +30,7 @@ import { Descriptor, Doc } from './decs'
 
 export interface Annotation {
   decsCode: Descriptor['decsCode']
-  doc: Doc['id']
+  doc: Doc['identifier']
   user: User['id']
 }
 
