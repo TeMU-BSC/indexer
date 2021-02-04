@@ -22,7 +22,7 @@ import { DocsComponent } from './components/docs/docs.component'
 import { DocComponent } from './components/doc/doc.component'
 import { TermsComponent } from './components/terms/terms.component'
 import { DocDetailComponent } from './components/doc-detail/doc-detail.component'
-import { HighlightPipe } from './pipes/highlight.pipe'
+// import { HighlightPipe } from './pipes/highlight.pipe'
 import { SafeHtmlPipe } from './pipes/safe-html.pipe'
 
 
@@ -39,7 +39,7 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe'
     DocComponent,
     TermsComponent,
     DocDetailComponent,
-    HighlightPipe,
+    // HighlightPipe,
     SafeHtmlPipe,
   ],
   imports: [
@@ -54,7 +54,7 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe'
     HttpClientModule,
   ],
   providers: [
-    HighlightPipe,
+    // HighlightPipe,
   ],
   bootstrap: [AppComponent]
 })

@@ -14,7 +14,7 @@ import { User } from '../models/interfaces'
 })
 export class AuthService implements CanActivate {
 
-  browserStorageKey = environment.process.env.APP_BROWSER_STORAGE_KEY || 'indexer_logged_user'
+  browserStorageKey = 'indexer_logged_user'
   user: User
 
   constructor(
