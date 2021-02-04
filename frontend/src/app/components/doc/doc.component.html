@@ -1,12 +1,23 @@
 <div fxLayout="column" fxLayoutGap="1em">
   <mat-card>
     <mat-card-header class="bg-lightgrey card-padding higher-line">
-      <mat-card-title>{{ doc.title }} <span class="text-muted">({{ doc.identifier }})</span></mat-card-title>
+      <mat-card-title>
+        {{ doc.title }}
+        <span style="font-size: smaller; color: grey;">
+          ({{ doc.identifier }})
+        </span>
+      </mat-card-title>
     </mat-card-header>
-    <!-- <mat-card-content [innerHTML]="doc.abstract | safeHtml" class="card-padding higher-line"></mat-card-content> -->
     <mat-card-content class="card-padding higher-line">{{ doc.abstract }}</mat-card-content>
   </mat-card>
-  <section fxLayout="column" fxLayout.gt-sm fxLayoutAlign="start" fxLayoutGap="2em" fxFlex.gt-sm="50">
+
+  <app-terms [doc]="doc" [formConfig]="formConfigTerms" [removable]="!doc.completed"></app-terms>
+  <button mat-raised-button [disabled]="doc.completed" color="primary"
+    (click)="confirmDialogBeforeMark('complete')" fxFlexAlign="start" style="margin-top: 2em;">
+    Marcar como completado
+  </button>
+
+  <!-- <section fxLayout="column" fxLayout.gt-sm fxLayoutAlign="start" fxLayoutGap="2em" fxFlex.gt-sm="50">
     <div fxFlex="50" fxLayout="column">
       <h2>Fase 1: Indización</h2>
       <p>
@@ -41,5 +52,5 @@
         Validar indización
       </button>
     </div>
-  </section>
+  </section> -->
 </div>

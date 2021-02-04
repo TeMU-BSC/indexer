@@ -1,5 +1,5 @@
 <section fxLayout="column" fxLayoutAlign="center">
-  <div class="bg-blue">
+  <div class="bg-primary font-white text-centered">
     <h1 style="font-weight: bold; line-height: normal; margin-bottom: 0;">Indizador del Plan TL</h1>
     <p style="font-size: 1.3rem; font-weight: lighter;">
       Asigna términos controlados a diferentes tipos de documentos
@@ -33,11 +33,11 @@
       Explora algunas terminologías
     </h2>
     <div fxLayout fxLayoutGap="0.5rem">
-      <a mat-stroked-button [href]="link.decs" style="text-decoration: none; color: #669966">
+      <a mat-flat-button [href]="link.decs" style="text-decoration: none; background-color: #669966; color: white;">
         <span>DeCS</span>
         <mat-icon style="margin-left: 0.5rem;">open_in_new</mat-icon>
       </a>
-      <a mat-stroked-button [href]="link.hpo" style="text-decoration: none; color: #29657C;">
+      <a mat-flat-button [href]="link.hpo" style="text-decoration: none; background-color: #29657C; color: white;">
         <span>HPO</span>
         <mat-icon style="margin-left: 0.5rem;">open_in_new</mat-icon>
       </a>

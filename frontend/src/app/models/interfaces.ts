@@ -37,13 +37,9 @@ export interface FormConfig {
 }
 
 export interface ApiResponse {
-  success?: boolean
+  data?: any
   message?: string
-  user?: User
-  registeredUsers?: number
-  deletedCount?: number
-  suggestions?: any
-  validatedTermCodes?: Term['code'][]
+  success?: boolean
 }
 
 export interface PaginatedResponse {

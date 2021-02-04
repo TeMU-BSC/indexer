@@ -1,6 +1,5 @@
 import { Component } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
-
 import * as EXAMPLE_USER from 'src/assets/examples/user.json'
 import * as EXAMPLE_DOCUMENT from 'src/assets/examples/document.json'
 import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'

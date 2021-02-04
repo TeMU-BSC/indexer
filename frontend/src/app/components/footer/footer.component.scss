@@ -1,11 +1,7 @@
 // https://medium.com/@aleixsuau/how-to-use-angular-material-2-sass-variables-in-your-components-76ce0203f126
 
-// Import _variables.css to the component's sass file where you want to use it.
-@import "src/app/styling/_variables.scss";
-
-footer {
+.footer {
   color: white;
-  background-color: $primary;
   text-align: center;
   padding: 1em;
 }

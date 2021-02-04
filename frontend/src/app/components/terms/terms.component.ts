@@ -31,8 +31,6 @@ export class TermsComponent implements OnChanges {
   separatorKeysCodes: number[] = [ENTER]
   options: Term[]
   filteredOptions: Observable<Term[]>
-  chips: Term[] = []
-  indexing: Indexing
 
   constructor(
     public api: ApiService,
@@ -46,7 +44,7 @@ export class TermsComponent implements OnChanges {
     this.filteredOptions = this.autocompleteChipList.valueChanges.pipe(
       debounceTime(100),
       startWith(''),
-      map((value: string | null) => this.customFilter(value, 'term', ['term', 'synonyms', 'definition']))
+      map((value: string | null) => this.customFilter(value, 'term', ['term']))
     )
   }
 
@@ -54,8 +52,7 @@ export class TermsComponent implements OnChanges {
    * This component implements OnChanges method so it can react to parent changes on its @Input() 'doc' property.
    */
   ngOnChanges() {
-    // get the current indexings from the user
-    this.chips = this.options.filter(term => this.doc.terms?.includes(term))
+
     // if initial view (not validation phase), exit
     if (!this.validation) { return }
     // if doc is validated, get the finished validated indexings and exit
@@ -65,7 +62,7 @@ export class TermsComponent implements OnChanges {
         user_email: this.auth.getCurrentUser().email,
       })
         .subscribe(
-          response => this.chips = this.options.filter(term => response.validatedTermCodes.includes(term.code))
+          response => this.doc.terms = this.options.filter(term => response.validatedTermCodes.includes(term.code))
         )
       return
     }
@@ -79,14 +76,14 @@ export class TermsComponent implements OnChanges {
           // get suggestions from other users
           const suggestions = this.options.filter(term => response.suggestions.includes(term.code))
           // set icon for chips previously added by the current user
-          // this.chips.forEach(chip => {
+          // this.doc.terms.forEach(chip => {
           //   chip.iconColor = 'accent'
           //   chip.iconName = 'person'
           // })
           // remove possible duplicated chips
-          this.chips = this.chips.filter(chip => !suggestions.includes(chip))
+          this.doc.terms = this.doc.terms.filter(chip => !suggestions.includes(chip))
           // merge the two lists
-          this.chips = this.chips.concat(suggestions)
+          this.doc.terms = this.doc.terms.concat(suggestions)
         }
       )
   }
@@ -100,11 +97,11 @@ export class TermsComponent implements OnChanges {
     // if numeric, find the exact code match (there are no terms with 1 digit)
     if (input.length >= 2 && !isNaN(Number(input))) {
       const decsFiltered = this.api.terms
-        .filter(term => term.code.startsWith(input) && !this.chips.includes(term))
+        .filter(term => term.code.startsWith(input) && !this.doc.terms.includes(term))
       return customSort(decsFiltered, input, 'code')
     }
     // avoid showing the terms that are already added to current doc
-    const alreadyAdded = (term: Term) => this.chips.some(chip => chip.code === term.code)
+    const alreadyAdded = (term: Term) => this.doc.terms.some(chip => chip.code === term.code)
     const remainingTerms = this.api.terms.filter(term => !alreadyAdded(term))
     // filter the available terms by the given keys checking if input is included in value
     const filtered = remainingTerms.filter(term => filterKeys.some(key => inputIncludedInValue(input, term, key)))
@@ -117,8 +114,7 @@ export class TermsComponent implements OnChanges {
    */
   addChip(event: MatAutocompleteSelectedEvent): void {
     const chip = event.option.value as Term
-    this.chips.push(chip)
-    this.doc.terms?.push(chip)
+    this.doc.terms.push(chip)
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
     const indexing = {
@@ -133,28 +129,38 @@ export class TermsComponent implements OnChanges {
    * Remove a chip from the chip list and send it to the backend to remove it from database.
    */
   removeChip(chip: Term): void {
-    // remove chip from input field
-    const index = this.chips.indexOf(chip)
+
+    // Remove the chip from visual list.
+    const index = this.doc.terms.indexOf(chip)
     if (index >= 0) {
-      this.chips.splice(index, 1)
+      this.doc.terms.splice(index, 1)
     }
-    // remove the code from the doc associated terms list
-    const indexCode = this.doc.terms.indexOf(chip)
-    this.doc.terms.splice(indexCode, 1)
-    // build indexing object to send to backend
-    this.indexing = {
-      document_identifier: this.doc.identifier,
-      user_email: this.auth.getCurrentUser().email,
-      term: chip,
-    }
-    // optionally, remove indexing from backend
-    if (!this.validation) { this.api.removeIndexing(this.indexing).subscribe(() => this.termChange.emit(true)) }
-    // give visual feedback to the user
-    const snackBarRef = this.snackBar.open(`DeCS borrado: ${chip.term} (${chip.code})`, 'DESHACER')
-    // if the action button is clicked, re-add the recently removed chip (and optionally indexing to backend)
+
+    // Emulate term removal for the user.
+    const snackBarRef = this.snackBar.open('Término borrado del documento.', 'Deshacer')
+
+    // If the action button of snackbar is clicked, the term is not removed.
     snackBarRef.onAction().subscribe(() => {
-      this.chips.push(chip)
-      if (!this.validation) { this.api.addTermToDoc(this.indexing).subscribe(() => this.termChange.emit(true)) }
+      this.doc.terms.splice(index, 0, chip)
+      this.snackBar.open('El término no ha sido borrado.', 'Vale', { duration: 5000 })
+    })
+
+    // Otherwise, if the the the snackbar is closed by timeout, the term is sent to the backend to be deleted.
+    snackBarRef.afterDismissed().subscribe(info => {
+      if (!info.dismissedByAction) {
+
+        // // Remove the term from the terms list associated with the doc.
+        // const index = this.doc.terms.indexOf(chip)
+        // this.doc.terms.splice(index, 1)
+
+        // Remove the indexing from database.
+        const indexing = {
+          document_identifier: this.doc.identifier,
+          user_email: this.auth.getCurrentUser().email,
+          term: chip,
+        }
+        this.api.removeIndexing(indexing).subscribe()
+      }
     })
   }
 

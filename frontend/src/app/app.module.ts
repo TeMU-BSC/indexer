@@ -3,11 +3,11 @@ import { NgModule } from '@angular/core'
 import { AppRoutingModule } from './app-routing.module'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
+import { HttpClientModule } from '@angular/common/http'
 
 // npm third-party libraries
 import { FlexLayoutModule } from '@angular/flex-layout'
-import { MaterialModule } from './styling/material.module'
+import { MaterialModule } from './modules/material.module'
 import { SimplemattableModule } from 'simplemattable'
 
 // Created components, pipes, interceptors

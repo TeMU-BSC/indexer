@@ -71,6 +71,12 @@ def get_assigned_documents_to_user(email):
     user = mongo.db.users.find_one({'email': email})
     assigned_document_identifiers = user.get('assigned_document_identifiers')
     documents = list(mongo.db.documents.find({'identifier': {'$in': assigned_document_identifiers}}, {'_id': 0}))
+    for document in documents:
+        terms = mongo.db.indexings.distinct('term', {
+            'document_identifier': document.get('identifier'),
+            'user_email': email,
+            })
+        document['terms'] = terms
     return jsonify(documents)
 
 
@@ -120,10 +126,11 @@ def update_one(item, _id):
     return jsonify(success=updating_result.acknowledged)
 
 
-@app.route('/<item>/<_id>', methods=['DELETE'])
-def delete_one(item, _id):
+@app.route('/<item>', methods=['DELETE'])
+def delete_one(item):
     collection = f'{item}s'
-    deletion_result = mongo.db[collection].delete_one({'_id': ObjectId(_id)})
+    query_filter = request.json
+    deletion_result = mongo.db[collection].delete_one(query_filter)
     return jsonify(success=deletion_result.acknowledged)
 
 

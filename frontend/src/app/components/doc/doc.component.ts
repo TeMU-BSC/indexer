@@ -78,7 +78,7 @@ export class DocComponent implements AfterViewInit {
       if (confirmation) {
         switch (action) {
           case 'complete':
-            if (this.indexings.chips.length === 0) {
+            if (this.indexings.doc.terms.length === 0) {
               alert('Atención: no hay ningún código añadido.')
               return
             }
@@ -90,7 +90,7 @@ export class DocComponent implements AfterViewInit {
             }).subscribe()
             break
           case 'validate':
-            if (this.validations.chips.length === 0) {
+            if (this.validations.doc.terms.length === 0) {
               alert('Atención: no hay ningún código añadido.')
               return
             }
@@ -101,7 +101,7 @@ export class DocComponent implements AfterViewInit {
               user_email: this.auth.getCurrentUser().email
             }).subscribe()
             const validatedIndexings = []
-            this.validations.chips.forEach(chip => {
+            this.validations.doc.terms.forEach(chip => {
               validatedIndexings.push({
                 document_identifier: this.doc.identifier,
                 user_email: this.auth.getCurrentUser().email,

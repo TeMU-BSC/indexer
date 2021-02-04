@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { PageEvent } from '@angular/material/paginator'
 import { TableColumn, Width } from 'simplemattable'
 import { ApiService } from 'src/app/services/api.service'
@@ -11,7 +11,7 @@ import { Document } from 'src/app/models/interfaces'
   templateUrl: './docs.component.html',
   styleUrls: ['./docs.component.scss']
 })
-export class DocsComponent implements AfterViewInit {
+export class DocsComponent implements OnInit {
 
   columns = []
   docs: Document[] = []
@@ -49,7 +49,7 @@ export class DocsComponent implements AfterViewInit {
     ]
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.refresh()
   }
 

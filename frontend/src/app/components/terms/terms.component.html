@@ -3,11 +3,11 @@
     {{ formConfig.label }}
   </mat-label>
   <mat-chip-list #chipList>
-    <mat-chip *ngFor="let chip of chips"
-      [matTooltip]="chip.code"
+    <mat-chip *ngFor="let term of doc.terms"
+      [matTooltip]="term.terminology+': '+term.code"
       [removable]="removable"
-      (removed)="confirmDialogBeforeRemove(chip)">
-      {{ chip.term }}
+      (removed)="removeChip(term)">
+      {{ term.term }}
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
     <input #chipInput matInput
