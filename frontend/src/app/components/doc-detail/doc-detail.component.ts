@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute, ParamMap, Router } from '@angular/router'
 import { Observable } from 'rxjs'
 import { switchMap } from 'rxjs/operators'
-import { Doc } from 'src/app/models/decs'
+import { Document } from 'src/app/models/interfaces'
 import { ApiService } from 'src/app/services/api.service'
 
 @Component({
@@ -12,7 +12,7 @@ import { ApiService } from 'src/app/services/api.service'
 })
 export class DocDetailComponent implements OnInit {
 
-  doc$: Observable<Doc>
+  doc$: Observable<Document>
 
   constructor(
     private route: ActivatedRoute,

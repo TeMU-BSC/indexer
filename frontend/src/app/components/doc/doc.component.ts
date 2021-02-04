@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { DescriptorsComponent } from 'src/app/components/descriptors/descriptors.component'
+import { TermsComponent } from 'src/app/components/terms/terms.component'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
-import { Doc } from 'src/app/models/decs'
-import { FormConfig } from 'src/app/models/form'
+import { FormConfig } from 'src/app/models/interfaces'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
+import { Document } from 'src/app/models/interfaces'
 
 @Component({
   selector: 'app-doc',
@@ -14,22 +14,21 @@ import { AuthService } from 'src/app/services/auth.service'
 })
 export class DocComponent implements AfterViewInit {
 
-  @Input() doc: Doc
-  @ViewChild('indexings') indexings: DescriptorsComponent
-  @ViewChild('validations') validations: DescriptorsComponent
+  @Input() doc: Document
+  @ViewChild('indexings') indexings: TermsComponent
+  @ViewChild('validations') validations: TermsComponent
   @Output() completed = new EventEmitter<boolean>()
   @Output() validated = new EventEmitter<boolean>()
-  formConfigDescriptors: FormConfig = {
-    label: 'Indización',
-    hint: `Puedes buscar un descriptor por su término en español, término en inglés, número de registro (DeCS),
-    código MeSH análogo o alguno de sus sinónimos aceptados.`,
+  formConfigTerms: FormConfig = {
+    label: 'Términos',
+    hint: ``,
     buttonName: 'Completado',
     color: 'primary',
     action: 'complete'
   }
   formConfigValidations: FormConfig = {
-    label: 'Validación',
-    hint: `El icono rojo indica que ese descriptor ha sido añadido por ti en la fase 1 de indización; el resto son sugerencias.`,
+    label: 'Términos',
+    hint: ``,
     buttonName: 'Validado',
     color: 'accent',
     action: 'validate'
@@ -85,7 +84,10 @@ export class DocComponent implements AfterViewInit {
             }
             this.doc.completed = true
             this.completed.emit(true)
-            this.api.markAsCompleted({ doc: this.doc.identifier, user: this.auth.getCurrentUser().id }).subscribe()
+            this.api.markAsCompleted({
+              document_identifier: this.doc.identifier,
+              user_email: this.auth.getCurrentUser().email
+            }).subscribe()
             break
           case 'validate':
             if (this.validations.chips.length === 0) {
@@ -94,16 +96,19 @@ export class DocComponent implements AfterViewInit {
             }
             this.doc.validated = true
             this.validated.emit(true)
-            this.api.markAsValidated({ doc: this.doc.identifier, user: this.auth.getCurrentUser().id }).subscribe()
-            const validatedAnnotations = []
+            this.api.markAsValidated({
+              document_identifier: this.doc.identifier,
+              user_email: this.auth.getCurrentUser().email
+            }).subscribe()
+            const validatedIndexings = []
             this.validations.chips.forEach(chip => {
-              validatedAnnotations.push({
-                decsCode: chip.decsCode,
-                user: this.auth.getCurrentUser().id,
-                doc: this.doc.identifier,
+              validatedIndexings.push({
+                document_identifier: this.doc.identifier,
+                user_email: this.auth.getCurrentUser().email,
+                term: chip,
               })
             })
-            this.api.saveValidatedAnnotations(validatedAnnotations).subscribe()
+            this.api.saveValidatedIndexings(validatedIndexings).subscribe()
             break
         }
       }

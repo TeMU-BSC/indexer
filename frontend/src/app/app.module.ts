@@ -20,7 +20,7 @@ import { LoginComponent } from './components/login/login.component'
 import { DialogComponent } from './components/dialog/dialog.component'
 import { DocsComponent } from './components/docs/docs.component'
 import { DocComponent } from './components/doc/doc.component'
-import { DescriptorsComponent } from './components/descriptors/descriptors.component'
+import { TermsComponent } from './components/terms/terms.component'
 import { DocDetailComponent } from './components/doc-detail/doc-detail.component'
 import { HighlightPipe } from './pipes/highlight.pipe'
 import { SafeHtmlPipe } from './pipes/safe-html.pipe'
@@ -37,7 +37,7 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe'
     DialogComponent,
     DocsComponent,
     DocComponent,
-    DescriptorsComponent,
+    TermsComponent,
     DocDetailComponent,
     HighlightPipe,
     SafeHtmlPipe,

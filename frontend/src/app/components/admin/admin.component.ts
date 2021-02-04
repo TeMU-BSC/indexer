@@ -6,9 +6,7 @@ import * as EXAMPLE_DOCUMENT from 'src/assets/examples/document.json'
 import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { User } from 'src/app/models/user'
-import { Assignment } from 'src/app/models/assignment'
-import { ApiResponse } from 'src/app/models/api'
+import { ApiResponse, User } from 'src/app/models/interfaces'
 
 
 @Component({
@@ -26,9 +24,9 @@ export class AdminComponent {
     { name: 'desarrollo', db: 'dev' },
   ]
   actions = [
-    { name: 'registrar usuario', method: this.registerUser.bind(this), jsonSnippet: (EXAMPLE_USER as any).default },
-    { name: 'insertar documento', method: this.insertDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT as any).default },
-    { name: 'asignar documentos a usuarios', method: this.assignDocsToUsers.bind(this), jsonSnippet: (EXAMPLE_ASSIGNMENT as any).default },
+    // { name: 'registrar usuario', method: this.registerUser.bind(this), jsonSnippet: (EXAMPLE_USER as any).default },
+    // { name: 'insertar documento', method: this.insertDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT as any).default },
+    // { name: 'asignar documentos a usuarios', method: this.assignDocsToUsers.bind(this), jsonSnippet: (EXAMPLE_ASSIGNMENT as any).default },
   ]
 
   constructor(
@@ -49,36 +47,36 @@ export class AdminComponent {
     fileReader.onerror = error => console.error(error)
   }
 
-  registerUser() {
-    this.auth.registerUser(this.dataFromFile as User).subscribe(
-      response => this.response = response,
-      error => console.error(error),
-      () => {
-        if (this.response.success) {
-          this.snackBar.open(`Usuario registrado: ${this.response.success}`, 'OK')
-        } else {
-          this.snackBar.open(`Error: ${this.response.message}`, 'REVISAR FICHERO')
-        }
-      }
-    )
-  }
+  // registerUser() {
+  //   this.auth.registerUser(this.dataFromFile).subscribe(
+  //     response => this.response = response,
+  //     error => console.error(error),
+  //     () => {
+  //       if (this.response.success) {
+  //         this.snackBar.open(`Usuario registrado: ${this.response.success}`, 'OK')
+  //       } else {
+  //         this.snackBar.open(`Error: ${this.response.message}`, 'REVISAR FICHERO')
+  //       }
+  //     }
+  //   )
+  // }
 
-  assignDocsToUsers() {
-    this.api.assignDocsToUsers(this.dataFromFile as Assignment[]).subscribe(
-      response => this.response = response,
-      error => console.error(error),
-      () => {
-        if (this.response.success) {
-          this.snackBar.open(`Documentos asignados a usuarios correctamente.`, 'OK')
-        } else {
-          this.snackBar.open(`Error al asignar documentos a usuarios.`, 'REVISAR FICHERO')
-        }
-      }
-    )
-  }
+  // assignDocsToUsers() {
+  //   this.api.assignDocsToUsers(this.dataFromFile).subscribe(
+  //     response => this.response = response,
+  //     error => console.error(error),
+  //     () => {
+  //       if (this.response.success) {
+  //         this.snackBar.open(`Documentos asignados a usuarios correctamente.`, 'OK')
+  //       } else {
+  //         this.snackBar.open(`Error al asignar documentos a usuarios.`, 'REVISAR FICHERO')
+  //       }
+  //     }
+  //   )
+  // }
 
-  insertDocs() {
-    alert('TODO: Implement create docs in backend')
-  }
+  // insertDocs() {
+  //   alert('TODO: Implement create docs in backend')
+  // }
 
 }

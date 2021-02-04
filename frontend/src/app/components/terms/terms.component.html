@@ -1,0 +1,37 @@
+<mat-form-field appearance="outline">
+  <mat-label>
+    {{ formConfig.label }}
+  </mat-label>
+  <mat-chip-list #chipList>
+    <mat-chip *ngFor="let chip of chips"
+      [matTooltip]="chip.code"
+      [removable]="removable"
+      (removed)="confirmDialogBeforeRemove(chip)">
+      {{ chip.term }}
+      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+    </mat-chip>
+    <input #chipInput matInput
+      [formControl]="autocompleteChipList"
+      [placeholder]="removable ? 'Busca términos' : ''"
+      [readonly]="!removable"
+      [matChipInputFor]="chipList"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+      [matChipInputAddOnBlur]="true"
+      [matAutocomplete]="auto"
+      [matAutocompletePosition]="'below'"
+    >
+  </mat-chip-list>
+  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="addChip($event)">
+    <mat-option *ngFor="let i = index; let option of filteredOptions | async | slice : 0 : 5"
+      [value]="option"
+      [matTooltip]="option.terminology+': '+option.code"
+      [matTooltipShowDelay]="1000"
+      class="multiline-auto-complete-options"
+    >
+      {{ option.term }}
+    </mat-option>
+  </mat-autocomplete>
+  <mat-hint>
+    {{ formConfig.hint }}
+  </mat-hint>
+</mat-form-field>

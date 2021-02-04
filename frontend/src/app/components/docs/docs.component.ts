@@ -3,8 +3,7 @@ import { PageEvent } from '@angular/material/paginator'
 import { TableColumn, Width } from 'simplemattable'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { Doc } from 'src/app/models/decs'
-import { Assignment } from 'src/app/models/assignment'
+import { Document } from 'src/app/models/interfaces'
 
 
 @Component({
@@ -15,8 +14,8 @@ import { Assignment } from 'src/app/models/assignment'
 export class DocsComponent implements AfterViewInit {
 
   columns = []
-  docs: Doc[]
-  selectedDoc: Doc
+  docs: Document[] = []
+  selectedDoc: Document
   loading: boolean
   paginatorLength: number
 
@@ -25,30 +24,28 @@ export class DocsComponent implements AfterViewInit {
     public auth: AuthService
   ) {
     this.columns = [
-      new TableColumn<Doc, 'identifier'>('Identificador', 'identifier')
+      new TableColumn<Document, 'identifier'>('Identificador', 'identifier')
         .withColFilter().withColFilterLabel('Filtrar'),
-      new TableColumn<Doc, 'title'>('Título', 'title')
+      new TableColumn<Document, 'title'>('Título', 'title')
         .isHiddenXs(true)
         .withWidth(Width.pct(75))
         .withColFilter().withColFilterLabel('Filtrar'),
-      new TableColumn<Doc, 'completed'>('Completado', 'completed')
+      new TableColumn<Document, 'source'>('Fuente', 'source')
+        .isHiddenXs(true)
+        .withWidth(Width.pct(75))
+        .withColFilter().withColFilterLabel('Filtrar'),
+      new TableColumn<Document, 'type'>('Tipo', 'type')
+        .isHiddenXs(true)
+        .withWidth(Width.pct(75))
+        .withColFilter().withColFilterLabel('Filtrar'),
+      new TableColumn<Document, 'completed'>('Completado', 'completed')
         .withColFilter().withColFilterLabel('Filtrar')
         .withTransform(completed => completed ? 'Sí' : 'No')
         .withNgStyle(completed => ({ color: completed ? 'green' : 'red' })),
-      new TableColumn<Doc, 'decsCodes'>('DeCS iniciales', 'decsCodes')
-        .isHiddenXs(true)
-        .withColFilter().withColFilterLabel('Filtrar')
-        .withTransform(decsCodes => decsCodes.length.toString())
-        .withSortTransform((_, doc) => doc.decsCodes.length),
-      new TableColumn<Doc, 'validated'>('Validado', 'validated')
-        .withColFilter().withColFilterLabel('Filtrar')
-        .withTransform(validated => validated ? 'Sí' : 'No')
-        .withNgStyle(validated => ({ color: validated ? 'green' : 'red' })),
-      new TableColumn<Doc, 'validatedDecsCodes'>('DeCS validados', 'validatedDecsCodes')
-        .isHiddenXs(true)
-        .withColFilter().withColFilterLabel('Filtrar')
-        .withTransform(validatedDecsCodes => validatedDecsCodes.length.toString())
-        .withSortTransform((_, doc) => doc.validatedDecsCodes.length),
+      // new TableColumn<Document, 'validated'>('Validado', 'validated')
+      //   .withColFilter().withColFilterLabel('Filtrar')
+      //   .withTransform(validated => validated ? 'Sí' : 'No')
+      //   .withNgStyle(validated => ({ color: validated ? 'green' : 'red' })),
     ]
   }
 
@@ -72,7 +69,7 @@ export class DocsComponent implements AfterViewInit {
     )
   }
 
-  selectDoc(row: Doc) {
+  selectDoc(row: Document) {
     this.selectedDoc = row
   }
 

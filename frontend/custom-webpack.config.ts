@@ -26,17 +26,15 @@
 // TypeScript version (must have the .ts file extension)
 // -----------------------------------------------------
 
-import { CustomWebpackBrowserSchema } from '@angular-builders/custom-webpack';
-import * as webpack from 'webpack';
-import * as pkg from './package.json';
+import { CustomWebpackBrowserSchema } from '@angular-builders/custom-webpack'
+import * as webpack from 'webpack'
+import * as pkg from './package.json'
 
-// Filter only the environment variables starting by a given prefix
-// const prefix = 'APP_';
-// const keys = Object.keys(process.env).filter(key => key.startsWith(prefix));
-// let env = {};
-// keys.forEach(key => env[key] = process.env[key]);
-// console.log('process.env =', process.env);
-// console.log('env =', env);
+// Filter only the environment variables starting by a given prefix.
+// const prefix = 'APP_'
+// const keys = Object.keys(process.env).filter(key => key.startsWith(prefix))
+// let env = {}
+// keys.forEach(key => env[key] = process.env[key])
 
 export default (config: webpack.Configuration, options: CustomWebpackBrowserSchema) => {
   config.plugins.push(
@@ -45,7 +43,7 @@ export default (config: webpack.Configuration, options: CustomWebpackBrowserSche
       APP_VERSION: JSON.stringify(pkg.version),
       PROCESS_ENV: JSON.stringify(process.env),
     })
-  );
+  )
 
-  return config;
-};
+  return config
+}

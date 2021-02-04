@@ -10,10 +10,14 @@
     <div fxFlex="50" fxLayout="column">
       <h2>Fase 1: Indización</h2>
       <p>
-        Añade tantos descriptores como consideres adecuado para este documento.
+        Añade tantos términos como consideres adecuado para este documento.
       </p>
-      <app-descriptors #indexings [doc]="doc" [formConfig]="formConfigDescriptors" [removable]="!doc.completed">
-      </app-descriptors>
+      <app-terms #indexings
+        [doc]="doc"
+        [formConfig]="formConfigTerms"
+        [removable]="!doc.completed"
+      >
+      </app-terms>
       <button mat-raised-button [disabled]="doc.completed" color="primary"
         (click)="confirmDialogBeforeMark('complete')" fxFlexAlign="start" style="margin-top: 2em;">
         Completar indización
@@ -22,12 +26,16 @@
     <div fxFlex="50" fxLayout="column" *ngIf="doc.completed">
       <h2>Fase 2: Validación</h2>
       <p>
-        Acepta las sugerencias de otros indizadores dejando el descriptor en esta lista, o bien recházalas
-        eliminándolas. También puedes añadir descriptores adicionales.
+        Acepta las sugerencias de otros indizadores dejando el term en esta lista, o bien recházalas
+        eliminándolas. También puedes añadir términos adicionales.
       </p>
-      <app-descriptors #validations [doc]="doc" [formConfig]="formConfigValidations" [removable]="!doc.validated"
-        [validation]="true">
-      </app-descriptors>
+      <app-terms #validations
+        [doc]="doc"
+        [formConfig]="formConfigValidations"
+        [removable]="!doc.validated"
+        [validation]="true"
+      >
+      </app-terms>
       <button mat-raised-button [disabled]="doc.validated" color="accent"
         (click)="confirmDialogBeforeMark('validate')" fxFlexAlign="start" style="margin-top: 2em;">
         Validar indización

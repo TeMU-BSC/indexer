@@ -4,10 +4,9 @@ import { HttpClient } from '@angular/common/http'
 import { Router, CanActivate } from '@angular/router'
 import { MatDialog } from '@angular/material/dialog'
 import { Observable } from 'rxjs'
-
 import { environment } from 'src/environments/environment'
-import { User } from 'src/app/models/user'
 import { ApiService } from './api.service'
+import { User } from '../models/interfaces'
 
 
 @Injectable({

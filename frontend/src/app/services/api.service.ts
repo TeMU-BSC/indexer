@@ -1,16 +1,10 @@
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Observable, of } from 'rxjs'
-
-import { Papa } from 'ngx-papaparse'
-
+import { Observable } from 'rxjs'
 import { environment } from 'src/environments/environment'
 import * as PRECODED_DECS_CODES from 'src/assets/sourcedata/precoded_decs_codes.json'
 import { _sortByOrder } from 'src/app/helpers/functions'
-import { ApiResponse, Annotation, PaginatedResponse } from 'src/app/models/api'
-import { Doc, Descriptor } from 'src/app/models/decs'
-import { Assignment } from 'src/app/models/assignment'
-
+import { ApiResponse, Document, Indexing, Term } from 'src/app/models/interfaces'
 
 @Injectable({
   providedIn: 'root'
@@ -24,36 +18,17 @@ export class ApiService {
     headers: new HttpHeaders('Access-Control-Allow-Credentials'),
     withCredentials: true
   }
-  public allDescriptors: Descriptor[]
+  public terms: Term[]
   precodedDecsCodes: string[] = (PRECODED_DECS_CODES as any).default
 
   constructor(
     private http: HttpClient,
-    private papa: Papa
   ) {
-    this.getAllDescriptors()
+    this.getTerms()
   }
 
-  /**
-   * Get all descriptors from TSV file.
-   */
-  getAllDescriptors() {
-    this.papa.parse('assets/sourcedata/DeCS.2019.both.v5.tsv', {
-      download: true,
-      header: true,
-      delimiter: '\t',
-      skipEmptyLines: true,
-      quoteChar: '',
-      complete: results => this.allDescriptors = results.data
-    })
-  }
-
-  /**
-   * Find the most frequently used descriptors in document indexing, descendingly ordered by frequent use.
-   */
-  getPrecodedDescriptors(): Descriptor[] {
-    const precodedDescriptors = this.allDescriptors.filter(descriptor => this.precodedDecsCodes.includes(descriptor.decsCode))
-    return _sortByOrder(precodedDescriptors, this.precodedDecsCodes, 'decsCode')
+  getTerms() {
+    this.http.get<Term[]>(`${this.url}/term?multiple=true`).subscribe(response => this.terms = response)
   }
 
   getAssignedDocs(query: any): Observable<any> {
@@ -61,78 +36,44 @@ export class ApiService {
     return this.http.get<any>(`${this.url}/docs/${userEmail}`)
   }
 
-  assignDocsToUsers(assignments: Assignment[]): Observable<any> {
-    return this.http.post<Assignment>(`${this.url}/insert/assignments`, assignments)
+  addTermToDoc(indexing: Indexing): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.url}/indexing`, indexing)
   }
 
-  /**
-   * Send a new annotation to add to the backend.
-   */
-  addAnnotation(annotation: Annotation): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.url}/annotation/add`, annotation)
+  removeIndexing(indexing: Indexing): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.url}/indexing/remove`, indexing)
   }
 
-  /**
-   * Send an existing annotation to remove to the backend.
-   */
-  removeAnnotation(annotation: Annotation): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.url}/annotation/remove`, annotation)
+  markAsCompleted(docToMark: any): Observable<Document> {
+    return this.http.post<Document>(`${this.url}/mark_doc_as/completed`, docToMark)
   }
 
-  /**
-   * Mark an doc as completed by the current user in database.
-   */
-  markAsCompleted(docToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${this.url}/mark_doc_as/completed`, docToMark)
+  markAsUncompleted(docToMark: any): Observable<Document> {
+    return this.http.post<Document>(`${this.url}/mark_doc_as/uncompleted`, docToMark)
   }
 
-  /**
-   * Mark an doc as uncompleted by the current user in database.
-   */
-  markAsUncompleted(docToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${this.url}/mark_doc_as/uncompleted`, docToMark)
+  markAsValidated(docToMark: any): Observable<Document> {
+    return this.http.post<Document>(`${this.url}/mark_doc_as/validated`, docToMark)
   }
 
-  /**
-   * Mark an doc as validated by the current user in database.
-   */
-  markAsValidated(docToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${this.url}/mark_doc_as/validated`, docToMark)
+  markAsUnvalidated(dockToMark: any): Observable<Document> {
+    return this.http.post<Document>(`${this.url}/mark_doc_as/unvalidated`, dockToMark)
   }
 
-  /**
-   * Mark an doc as unvalidated by the current user in database.
-   */
-  markAsUnvalidated(dockToMark: any): Observable<Doc> {
-    return this.http.post<Doc>(`${this.url}/mark_doc_as/unvalidated`, dockToMark)
-  }
-
-  /**
-   * Get the decs codes for a specific document from other annotators that have marked as completed that same document.
-   */
   getSuggestions(docToCheck: any): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.url}/suggestions`, docToCheck)
   }
 
-  /**
-   * Save some validated annotations to be defenitely stored in database.
-   */
-  saveValidatedAnnotations(validatedAnnotations: any[]): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.url}/annotations_validated/add`, validatedAnnotations)
+  saveValidatedIndexings(validatedIndexings: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.url}/indexings_validated/add`, validatedIndexings)
   }
 
-  /**
-   * Get the validated decs codes for a specific document.
-   */
-  getValidatedDecsCodes(validatedAnnotations: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.url}/annotations_validated/get`, validatedAnnotations)
+  getValidatedDecsCodes(validatedIndexings: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.url}/indexings_validated/get`, validatedIndexings)
   }
 
-  /**
-   * Get a document by its id.
-   */
-  getDoc(id: string): Observable<Doc> {
-    return this.http.get<Doc>(`${this.url}/doc/${id}`)
+  getDoc(id: string): Observable<Document> {
+    return this.http.get<Document>(`${this.url}/doc/${id}`)
   }
 
 }

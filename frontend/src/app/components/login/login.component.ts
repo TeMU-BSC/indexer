@@ -1,6 +1,4 @@
-import { Component, Inject } from '@angular/core'
-import { User } from 'src/app/models/user'
-import { ApiService } from 'src/app/services/api.service'
+import { Component } from '@angular/core'
 import { AuthService } from 'src/app/services/auth.service'
 
 @Component({
