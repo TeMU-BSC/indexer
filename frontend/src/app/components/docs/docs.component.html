@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutGap="1em" style="padding: 1em;">
+<div fxLayout style="padding-top: 1rem;">
   <smc-simplemattable
     [data]="docs"
     [columns]="columns"
@@ -11,14 +11,16 @@
     [backendPagination]="true"
     (page)="refresh($event)"
     [rowClickable]="true"
-    (rowClick)="selectDoc($event)">
+    (rowClick)="selectDoc($event)"
+    fxFlex="66%"
+  >
   </smc-simplemattable>
-  <div fxLayout fxLayoutAlign="center">
-    <app-doc *ngIf="selectedDoc" fxFlex.gt-sm="75"
-      [doc]="selectedDoc"
-      (completed)="refresh()"
-      (validated)="refresh()"
-    >
-    </app-doc>
-  </div>
+  <app-doc
+    *ngIf="selectedDoc"
+    [doc]="selectedDoc"
+    (completed)="refresh()"
+    (validated)="refresh()"
+    fxFlex="33%"
+  >
+  </app-doc>
 </div>

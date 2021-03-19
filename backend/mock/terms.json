@@ -1,117 +1,117 @@
-[{
-  "code": 631,
-  "term": "sit",
-  "terminology": "hpo"
-},{
-  "code": 251,
-  "term": "pariatur",
-  "terminology": "decs"
-},{
-  "code": 304,
-  "term": "commodi",
-  "terminology": "snomedct"
-},{
-  "code": 765,
-  "term": "nobis",
-  "terminology": "hpo"
-},{
-  "code": 819,
-  "term": "dolores",
-  "terminology": "cie10"
-},{
-  "code": 913,
-  "term": "perspiciatis",
-  "terminology": "snomedct"
-},{
-  "code": 81,
-  "term": "esse",
-  "terminology": "snomedct"
-},{
-  "code": 905,
-  "term": "sequi",
-  "terminology": "cie10"
-},{
-  "code": 281,
-  "term": "voluptatum",
-  "terminology": "hpo"
-},{
-  "code": 238,
-  "term": "eaque",
-  "terminology": "decs"
-},{
-  "code": 668,
-  "term": "molestiae",
-  "terminology": "hpo"
-},{
-  "code": 275,
-  "term": "exercitationem",
-  "terminology": "decs"
-},{
-  "code": 365,
-  "term": "hic",
-  "terminology": "cie10"
-},{
-  "code": 514,
-  "term": "aspernatur",
-  "terminology": "decs"
-},{
-  "code": 17,
-  "term": "debitis",
-  "terminology": "snomedct"
-},{
-  "code": 694,
-  "term": "quis",
-  "terminology": "decs"
-},{
-  "code": 901,
-  "term": "deleniti",
-  "terminology": "hpo"
-},{
-  "code": 766,
-  "term": "iste",
-  "terminology": "cie10"
-},{
-  "code": 569,
-  "term": "nesciunt",
-  "terminology": "decs"
-},{
-  "code": 532,
-  "term": "tempore",
-  "terminology": "decs"
-},{
-  "code": 222,
-  "term": "fuga",
-  "terminology": "hpo"
-},{
-  "code": 879,
-  "term": "quasi",
-  "terminology": "decs"
-},{
-  "code": 325,
-  "term": "omnis",
-  "terminology": "snomedct"
-},{
-  "code": 238,
-  "term": "eius",
-  "terminology": "hpo"
-},{
-  "code": 456,
-  "term": "corrupti",
-  "terminology": "decs"
-},{
-  "code": 234,
-  "term": "facilis",
-  "terminology": "hpo"
-},{
-  "code": 20,
-  "term": "illo",
-  "terminology": "hpo"
-},{
-  "code": 49,
-  "term": "dignissimos",
-  "terminology": "decs"
-},{
-  "code": 995,
-  "term": "similique",
-  "terminology": "decs"
-}]
+[
+  {
+    "code": 482,
+    "term": "sit",
+    "terminology": "snomedct"
+  },
+  {
+    "code": 346,
+    "term": "quos",
+    "terminology": "cie10"
+  },
+  {
+    "code": 225,
+    "term": "ad",
+    "terminology": "cie10"
+  },
+  {
+    "code": 236,
+    "term": "quis",
+    "terminology": "decs"
+  },
+  {
+    "code": 585,
+    "term": "saepe",
+    "terminology": "decs"
+  },
+  {
+    "code": 167,
+    "term": "cum",
+    "terminology": "hpo"
+  },
+  {
+    "code": 323,
+    "term": "excepturi",
+    "terminology": "snomedct"
+  },
+  {
+    "code": 783,
+    "term": "illo",
+    "terminology": "cie10"
+  },
+  {
+    "code": 360,
+    "term": "aperiam",
+    "terminology": "hpo"
+  },
+  {
+    "code": 811,
+    "term": "corporis",
+    "terminology": "decs"
+  },
+  {
+    "code": 870,
+    "term": "consequatur",
+    "terminology": "cie10"
+  },
+  {
+    "code": 862,
+    "term": "ut",
+    "terminology": "snomedct"
+  },
+  {
+    "code": 843,
+    "term": "pariatur",
+    "terminology": "decs"
+  },
+  {
+    "code": 787,
+    "term": "sint",
+    "terminology": "snomedct"
+  },
+  {
+    "code": 841,
+    "term": "impedit",
+    "terminology": "decs"
+  },
+  {
+    "code": 925,
+    "term": "repellat",
+    "terminology": "snomedct"
+  },
+  {
+    "code": 930,
+    "term": "minus",
+    "terminology": "hpo"
+  },
+  {
+    "code": 904,
+    "term": "dolore",
+    "terminology": "hpo"
+  },
+  {
+    "code": 636,
+    "term": "quae",
+    "terminology": "cie10"
+  },
+  {
+    "code": 35,
+    "term": "necessitatibus",
+    "terminology": "decs"
+  },
+  {
+    "code": 545,
+    "term": "dolores",
+    "terminology": "hpo"
+  },
+  {
+    "code": 832,
+    "term": "odio",
+    "terminology": "cie10"
+  },
+  {
+    "code": 747,
+    "term": "consequuntur",
+    "terminology": "hpo"
+  }
+]

@@ -15,8 +15,6 @@ import { Document } from 'src/app/models/interfaces'
 export class DocComponent implements AfterViewInit {
 
   @Input() doc: Document
-  @ViewChild('indexings') indexings: TermsComponent
-  @ViewChild('validations') validations: TermsComponent
   @Output() completed = new EventEmitter<boolean>()
   @Output() validated = new EventEmitter<boolean>()
   formConfigTerms: FormConfig = {
@@ -78,10 +76,6 @@ export class DocComponent implements AfterViewInit {
       if (confirmation) {
         switch (action) {
           case 'complete':
-            if (this.indexings.doc.terms.length === 0) {
-              alert('Atención: no hay ningún código añadido.')
-              return
-            }
             this.doc.completed = true
             this.completed.emit(true)
             this.api.markAsCompleted({
@@ -90,10 +84,6 @@ export class DocComponent implements AfterViewInit {
             }).subscribe()
             break
           case 'validate':
-            if (this.validations.doc.terms.length === 0) {
-              alert('Atención: no hay ningún código añadido.')
-              return
-            }
             this.doc.validated = true
             this.validated.emit(true)
             this.api.markAsValidated({
@@ -101,13 +91,6 @@ export class DocComponent implements AfterViewInit {
               user_email: this.auth.getCurrentUser().email
             }).subscribe()
             const validatedIndexings = []
-            this.validations.doc.terms.forEach(chip => {
-              validatedIndexings.push({
-                document_identifier: this.doc.identifier,
-                user_email: this.auth.getCurrentUser().email,
-                term: chip,
-              })
-            })
             this.api.saveValidatedIndexings(validatedIndexings).subscribe()
             break
         }

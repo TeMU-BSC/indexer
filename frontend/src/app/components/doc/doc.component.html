@@ -1,56 +1,11 @@
-<div fxLayout="column" fxLayoutGap="1em">
-  <mat-card>
-    <mat-card-header class="bg-lightgrey card-padding higher-line">
-      <mat-card-title>
-        {{ doc.title }}
-        <span style="font-size: smaller; color: grey;">
-          ({{ doc.identifier }})
-        </span>
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content class="card-padding higher-line">{{ doc.abstract }}</mat-card-content>
-  </mat-card>
-
+<div style="max-width: 80ch; padding: 2rem;">
+  <h2>{{ doc.title }} <span style="font-size: smaller; color: grey;">({{ doc.identifier }})</span></h2>
+  <p>{{ doc.abstract }}</p>
   <app-terms [doc]="doc" [formConfig]="formConfigTerms" [removable]="!doc.completed"></app-terms>
-  <button mat-raised-button [disabled]="doc.completed" color="primary"
-    (click)="confirmDialogBeforeMark('complete')" fxFlexAlign="start" style="margin-top: 2em;">
-    Marcar como completado
+  <button mat-raised-button color="primary" [disabled]="doc.completed" (click)="confirmDialogBeforeMark('complete')"
+    fxFlexAlign="start">
+    <span *ngIf="!doc.completed">Marcar como completado</span>
+    <span *ngIf="doc.completed">Marcado como completado</span>
   </button>
 
-  <!-- <section fxLayout="column" fxLayout.gt-sm fxLayoutAlign="start" fxLayoutGap="2em" fxFlex.gt-sm="50">
-    <div fxFlex="50" fxLayout="column">
-      <h2>Fase 1: Indización</h2>
-      <p>
-        Añade tantos términos como consideres adecuado para este documento.
-      </p>
-      <app-terms #indexings
-        [doc]="doc"
-        [formConfig]="formConfigTerms"
-        [removable]="!doc.completed"
-      >
-      </app-terms>
-      <button mat-raised-button [disabled]="doc.completed" color="primary"
-        (click)="confirmDialogBeforeMark('complete')" fxFlexAlign="start" style="margin-top: 2em;">
-        Completar indización
-      </button>
-    </div>
-    <div fxFlex="50" fxLayout="column" *ngIf="doc.completed">
-      <h2>Fase 2: Validación</h2>
-      <p>
-        Acepta las sugerencias de otros indizadores dejando el term en esta lista, o bien recházalas
-        eliminándolas. También puedes añadir términos adicionales.
-      </p>
-      <app-terms #validations
-        [doc]="doc"
-        [formConfig]="formConfigValidations"
-        [removable]="!doc.validated"
-        [validation]="true"
-      >
-      </app-terms>
-      <button mat-raised-button [disabled]="doc.validated" color="accent"
-        (click)="confirmDialogBeforeMark('validate')" fxFlexAlign="start" style="margin-top: 2em;">
-        Validar indización
-      </button>
-    </div>
-  </section> -->
 </div>

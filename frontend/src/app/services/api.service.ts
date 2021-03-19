@@ -24,33 +24,33 @@ export class ApiService {
     })
   }
 
-  getAssignedDocs(query: any): Observable<Document[]> {
-    const { userEmail, pageIndex, pageSize } = query
-    return this.http.get<Document[]>(`${this.url}/docs/${userEmail}`)
+  getAssignedDocs(query: any): Observable<any[]> {
+    const { userEmail, pageSize, pageIndex } = query
+    return this.http.get<any[]>(`${this.url}/docs/${userEmail}?page_size=${pageSize}&page_index=${pageIndex}`)
   }
 
   addTermToDoc(indexing: Indexing): Observable<any> {
     return this.http.post<any>(`${this.url}/indexing`, indexing)
   }
 
-  removeIndexing(indexing: Indexing): Observable<any> {
+  removeTermFromDoc(indexing: Indexing): Observable<any> {
     return this.http.request<any>('delete', `${this.url}/indexing`, { body: indexing })
   }
 
   markAsCompleted(docToMark: any): Observable<Document> {
-    return this.http.post<Document>(`${this.url}/mark_doc_as/completed`, docToMark)
+    return this.http.post<Document>(`${this.url}/mark-doc-as/completed`, docToMark)
   }
 
   markAsUncompleted(docToMark: any): Observable<Document> {
-    return this.http.post<Document>(`${this.url}/mark_doc_as/uncompleted`, docToMark)
+    return this.http.post<Document>(`${this.url}/mark-doc-as/uncompleted`, docToMark)
   }
 
   markAsValidated(docToMark: any): Observable<Document> {
-    return this.http.post<Document>(`${this.url}/mark_doc_as/validated`, docToMark)
+    return this.http.post<Document>(`${this.url}/mark-doc-as/validated`, docToMark)
   }
 
   markAsUnvalidated(dockToMark: any): Observable<Document> {
-    return this.http.post<Document>(`${this.url}/mark_doc_as/unvalidated`, dockToMark)
+    return this.http.post<Document>(`${this.url}/mark-doc-as/unvalidated`, dockToMark)
   }
 
   getSuggestions(docToCheck: any): Observable<any> {

@@ -7,7 +7,5 @@ import { externalLink } from 'src/app/helpers/constants'
   styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent {
-
   link = externalLink
-
 }

@@ -57,12 +57,12 @@ export class DocsComponent implements OnInit {
     this.loading = true
     this.api.getAssignedDocs({
       userEmail: this.auth.getCurrentUser().email,
-      pageIndex: event?.pageIndex,
       pageSize: event?.pageSize,
+      pageIndex: event?.pageIndex,
     }).subscribe(
-      docs => {
-        this.docs = docs
-        this.paginatorLength = docs.length
+      response => {
+        this.docs = response['documents']
+        this.paginatorLength = response['total_document_count']
       },
       error => console.error(error),
       () => this.loading = false

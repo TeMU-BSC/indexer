@@ -7,7 +7,7 @@ export function removeAccents(text: string): string {
 }
 
 /**
- * Remove all the extra multi-whitespaces from the given text.
+ * Remove starting and ending whitespaces (trim) and replace double/multiple whitespaces by single whitespace.
  */
 export function removeConsecutiveSpaces(text: string): string {
   return text.trim().replace(/[ ]+(?= )/g, '')
