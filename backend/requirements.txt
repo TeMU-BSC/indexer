@@ -8,7 +8,7 @@ Flask-Cors==3.0.8
 flask-paginate==0.7.0
 Flask-PyMongo==2.3.0
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 MarkupSafe==1.1.1
 more-itertools==8.2.0
 NewlineJSON==1.0
