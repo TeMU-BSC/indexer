@@ -1,5 +1,4 @@
 flask
-flask-bcrypt
 flask-cors
 flask-paginate
 flask-pymongo

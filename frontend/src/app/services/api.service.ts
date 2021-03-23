@@ -18,6 +18,10 @@ export class ApiService {
     this.getTerms()
   }
 
+  addDocuments(documents: Document[]): Observable<ApiResponse> {
+    return this.http.request<ApiResponse>('post', `${this.url}/document`, { body: documents })
+  }
+
   getTerms() {
     this.http.get<Term[]>(`${this.url}/term?multiple=true`).subscribe(response => {
       this.terms = response.map(term => ({ code: term.code, term: term.term, terminology: term.terminology }))

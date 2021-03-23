@@ -32,8 +32,8 @@ from app import app
 
 
 # Flask config
-MONGO_URI = f"mongodb://{os.environ.get('MONGO_HOST')}/{os.environ.get('MONGO_DATABASE')}"
-MONGO_DATASETS_URI = f"mongodb://{os.environ.get('MONGO_HOST')}/{os.environ.get('MONGO_DATASETS')}"
+MONGO_URI = f"mongodb://{os.environ.get('PYMONGO_HOST')}/{os.environ.get('PYMONGO_DATABASE')}"
+MONGO_DATASETS_URI = f"mongodb://{os.environ.get('PYMONGO_HOST')}/{os.environ.get('MONGO_DATASETS')}"
 mongo = PyMongo(app, uri=MONGO_URI)
 mongo_datasets = PyMongo(app, uri=MONGO_DATASETS_URI)
 CORS(app)

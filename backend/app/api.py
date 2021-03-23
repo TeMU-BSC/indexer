@@ -21,7 +21,6 @@ from statistics import mean
 
 # Third parties.
 from flask import Flask, jsonify, request
-from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_paginate import Pagination, get_page_args
 from flask_pymongo import PyMongo
@@ -117,8 +116,10 @@ def create(item):
         documents = request.json
         insert_many_result = mongo.db[collection].insert_many(documents)
         success = insert_many_result.acknowledged
-    return jsonify(success=success)
-
+    else:
+        success = False
+        message = 'Something went wrong.'
+    return jsonify(success=success, message=message)
 
 @app.route('/<item>', methods=['GET'])
 def read(item):

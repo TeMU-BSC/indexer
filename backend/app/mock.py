@@ -4,9 +4,25 @@ import string
 
 from lorem_text import lorem
 
-sources = ['ibecs', 'lilacs', 'portal fis', 'reec', 'google patents']
-types = ['article', 'health research project', 'clinical study', 'patent']
-terminologies = ['decs', 'hpo', 'cie10', 'snomedct']
+sources = [
+    'ibecs',
+    'lilacs',
+    # 'portal fis',
+    'reec',
+    'google patents',
+]
+types = [
+    'article',
+    # 'health research project',
+    'clinical study',
+    'patent',
+    ]
+terminologies = [
+    'decs',
+    # 'hpo',
+    # 'cie10',
+    # 'snomedct',
+]
 mock_users = [
     {
         'fullname': 'Alice',
@@ -45,13 +61,14 @@ def generate_mock_items(item, amount: int) -> dict:
                 abstract=lorem.paragraph(),
                 source=random.choice(sources),
                 type=random.choice(types),
-                indexings=list()
             ))
     if item == 'term':
         for _ in range(amount):
             items.append(dict(
                 code=random.randint(1, 1000),
                 term=lorem.words(1),
-                terminology=random.choice(terminologies)
+                terminology=random.choice(terminologies),
+                description=lorem.words(random.randint(7, 13)),
+                synonyms=lorem.words(random.randint(2, 5)).split(' '),
             ))
     return items

@@ -1,8 +1,8 @@
-<div fxLayout="column" fxLayoutAlign="center start" fxLayoutGap="1em" style="padding: 3em;">
+<div fxLayout="column" fxLayoutAlign="center start" fxLayoutGap="1rem" style="padding: 3em;">
   <h1 style="margin-bottom: 2em;">Panel de Administrador</h1>
   <mat-form-field appearance="fill">
     <mat-label>Proyecto</mat-label>
-    <mat-select #project>
+    <mat-select #project [value]="projects[0]">
       <mat-option *ngFor="let project of projects" [value]="project">
         {{ project.name }}
       </mat-option>
@@ -16,11 +16,10 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
-
-  <!-- <div *ngIf="action.value">
+  <div *ngIf="action.value">
     <div *ngIf="action.value?.jsonSnippet">
-      <p>Estructura del fichero:</p>
-      <pre style="padding: 1.5em; background-color: black; color: lightgrey;">[{{ action.value.jsonSnippet | json }}, ...]</pre>
+      <p>Ejemplo de estructura del fichero JSON:</p>
+      <pre class="example-snippet">[{{ action.value.jsonSnippet | json }}, ...]</pre>
     </div>
     <form fxLayout="column" fxLayoutAlign="center start">
       <mat-form-field appearance="fill">
@@ -36,5 +35,5 @@
         {{ action.value?.name }}
       </button>
     </form>
-  </div> -->
+  </div>
 </div>

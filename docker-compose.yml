@@ -1,28 +1,20 @@
-version: '3.8'
 services:
-  # mongo:
-  #   image: mongo
-  #   container_name: indexer_mongo
-  #   restart: always
-  #   environment:
-  #     - MONGO_INITDB_ROOT_USERNAME=root
-  #     - MONGO_INITDB_ROOT_PASSWORD=example
-  #     - MONGO_INITDB_DATABASE=development
-  #   ports:
-  #     - 27017-27019:27017-27019
-  #   entrypoint: mongod --bind_ip_all
-  #   volumes:
-  #     - /var/lib/mongodb:/data/db
-  #     - ./database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+  mongo:
+    image: mongo:4.4.3-bionic
+    container_name: indexer_mongo
+    env_file:
+      - mongo.env
+    ports:
+      - 27018:27017
+    entrypoint: mongod --bind_ip_all
+    volumes:
+      - /var/lib/mongodb:/data/db
+      - ./database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
   flask:
     container_name: indexer_flask
-    # depends_on:
-    #   - mongo
+    depends_on:
+      - mongo
     build: ./backend
-    environment:
-      - FLASK_ENV=development
-      - MONGO_HOST=localhost
-      - MONGO_DATABASE=dev
     ports:
       - 5000:5000
     command: flask run --host 0.0.0.0

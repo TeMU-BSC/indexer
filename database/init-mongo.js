@@ -1,11 +1,11 @@
 db.createUser(
   {
-    user: "pingu",
+    user: "daboss",
     pwd: "s3crEt!",
     roles: [
       {
         role: "readWrite",
-        db: "dev"
+        db: "mesinesp2"
       }
     ]
   }
