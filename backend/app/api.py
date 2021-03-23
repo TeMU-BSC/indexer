@@ -102,12 +102,13 @@ def get_assigned_documents_to_user(email):
     return jsonify(documents=documents, total_document_count=total_document_count)
 
 
-# Shared CRUD (Create, Read, Update, Delete) routes for `user`, `document`, `term`, `indexing`.
+# CRUD (Create, Read, Update, Delete) routes for items `user`, `document`, `term`, `indexing`.
 
 
 @app.route('/<item>', methods=['POST'])
 def create(item):
     collection = f'{item}s'
+    success = False
     if isinstance(request.json, dict):
         document = request.json
         insertion_result = mongo.db[collection].insert_one(document)
@@ -116,10 +117,12 @@ def create(item):
         documents = request.json
         insert_many_result = mongo.db[collection].insert_many(documents)
         success = insert_many_result.acknowledged
+    if success:
+        message = f'{item}s inserted successfully'
     else:
-        success = False
-        message = 'Something went wrong.'
+        message = 'something went wrong'
     return jsonify(success=success, message=message)
+
 
 @app.route('/<item>', methods=['GET'])
 def read(item):

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs'
+import { environment } from 'src/environments/environment'
 import { _sortByOrder } from 'src/app/helpers/functions'
 import { ApiResponse, Document, Indexing, Term } from 'src/app/models/interfaces'
 
@@ -9,7 +10,7 @@ import { ApiResponse, Document, Indexing, Term } from 'src/app/models/interfaces
 })
 export class ApiService {
 
-  public url = 'http://localhost:5000'
+  url = environment.apiUrl
   public terms: Term[]
 
   constructor(

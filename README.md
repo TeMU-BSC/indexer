@@ -21,7 +21,7 @@ The main objective of indexing documents is to obtain a gold-standard set (i.e. 
 
 ## Implementation
 
-The technologies that build this tool are:
+This web tool has been built with the following technologies:
 
 - [MongoDB](https://www.mongodb.com/) for database
 - [Flask](https://flask.palletsprojects.com/en/1.1.x/) for backend
@@ -29,30 +29,35 @@ The technologies that build this tool are:
 - [NGINX](https://www.nginx.com/) for server and proxy
 - [Docker Compose](https://docs.docker.com/compose/) for development and production deployment
 
-## Development
+## Deployment
+
+In order to develop or deploy this application, docker-compose must be installed in your system.
+
+### Development
 
 ```bash
-# terminal 1
-docker run --name indexer_mongo --rm -p 27018:27017 -v "$(realpath ./database/mongodb)":/data/db mongo:4.4.3-bionic
-
-# terminal 2
-cd backend
-python3.8 -m venv venv
-source venv/bin/activate
-pip install flask flask-paginate flask-pymongo lorem-text
-export FLASK_APP=run
-export FLASK_ENV=development
-export MONGO_URI=mongodb://localhost:27018/indexer
-flask run
-
-# terminal 3
-cd frontend
-npm install
-npm run dev
+git checkout development
+git pull origin development
+docker-compose down
+docker-compose up
 ```
 
-## Production
+> If no input file (`-f`) is specified, docker-compose uses `docker-compose.yml` by default.
+
+### Staging (pre-production)
 
 ```bash
-docker-compose up --build -d
+git checkout staging
+git pull origin staging
+docker-compose -f staging.yml down
+docker-compose -f staging.yml up --build -d
+```
+
+### Production
+
+```bash
+git checkout master
+git pull origin master
+docker-compose -f production.yml down
+docker-compose -f production.yml up --build -d
 ```

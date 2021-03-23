@@ -3,7 +3,7 @@
 ### STAGE 1: Build ###
 
 # We label our stage as 'builder'
-FROM node:14.15.4-alpine as builder
+FROM node:14.16.0-alpine as builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 
@@ -21,7 +21,7 @@ RUN npm run build -- --prod --output-path=dist
 
 ### STAGE 2: Setup ###
 
-FROM nginx:1.19-alpine
+FROM nginx:1.19.8-alpine
 
 # Remove the default.conf and copy your nginx.conf
 RUN rm /etc/nginx/conf.d/default.conf

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ictusnet": {
+    "indexer": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -39,7 +39,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/ictusnet",
+            "outputPath": "dist/indexer",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -88,7 +88,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.stage.ts"
+                  "with": "src/environments/environment.staging.ts"
                 }
               ]
             }
@@ -97,21 +97,21 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ictusnet:build"
+            "browserTarget": "indexer:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ictusnet:build:production"
+              "browserTarget": "indexer:build:production"
             },
             "staging": {
-              "browserTarget": "ictusnet:build:staging"
+              "browserTarget": "indexer:build:staging"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ictusnet:build"
+            "browserTarget": "indexer:build"
           }
         },
         "test": {
@@ -149,18 +149,18 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "ictusnet:serve"
+            "devServerTarget": "indexer:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "ictusnet:serve:production"
+              "devServerTarget": "indexer:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "ictusnet",
+  "defaultProject": "indexer",
   "cli": {
     "analytics": false
   }
