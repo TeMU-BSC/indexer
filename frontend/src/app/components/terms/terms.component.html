@@ -10,7 +10,7 @@
     </mat-chip>
     <input #chipInput matInput
       [formControl]="autocompleteChipList"
-      [placeholder]="removable ? 'Busca términos' : ''"
+      [placeholder]="removable ? 'Busca y añade términos...' : ''"
       [readonly]="!removable"
       [matChipInputFor]="chipList"
       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"

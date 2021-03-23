@@ -1,4 +1,4 @@
-<div fxLayout style="padding-top: 1rem;">
+<div fxLayout="column" style="padding-top: 1rem;">
   <smc-simplemattable
     [data]="docs"
     [columns]="columns"
@@ -12,7 +12,6 @@
     (page)="refresh($event)"
     [rowClickable]="true"
     (rowClick)="selectDoc($event)"
-    fxFlex="66%"
   >
   </smc-simplemattable>
   <app-doc
@@ -20,7 +19,8 @@
     [doc]="selectedDoc"
     (completed)="refresh()"
     (validated)="refresh()"
-    fxFlex="33%"
-  >
+    fxFlexAlign="center"
+    style="padding: 2rem 0;"
+    >
   </app-doc>
 </div>
