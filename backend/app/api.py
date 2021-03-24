@@ -154,10 +154,18 @@ def update_one(item, _id):
 
 
 @app.route('/<item>', methods=['DELETE'])
-def delete_one(item):
+def delete_many(item):
     collection = f'{item}s'
-    query_filter = request.json
-    deletion_result = mongo.db[collection].delete_one(query_filter)
+    documents = request.json
+    identifiers = [document.get('identifier') for document in documents]
+    success = False
+    if isinstance(request.json, list):
+        deletion_result = mongo.db[collection].delete_many({'identifier': {'$in': identifiers}})
+        success = deletion_result.acknowledged
+    if success:
+        message = f'{item}s deleted successfully'
+    else:
+        message = 'something went wrong'
     return jsonify(success=deletion_result.acknowledged)
 
 

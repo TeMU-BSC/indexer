@@ -2,6 +2,7 @@ import { Component } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import * as EXAMPLE_USER from 'src/assets/examples/user.json'
 import * as EXAMPLE_DOCUMENT from 'src/assets/examples/document.json'
+import * as EXAMPLE_DOCUMENT_DELETE from 'src/assets/examples/delete-documents.json'
 import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
@@ -27,7 +28,8 @@ export class AdminComponent {
     { name: 'mesinesp2', db: 'mesinesp2' },
   ]
   actions: Action[] = [
-    { name: 'añadir documentos', method: this.insertDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT as any).default },
+    { name: 'Añadir documentos', method: this.insertDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT as any).default },
+    { name: 'Eliminar documentos', method: this.deleteDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT_DELETE as any).default },
     // { name: 'registrar usuarios', method: this.registerUsers.bind(this), jsonSnippet: (EXAMPLE_USER as any).default },
     // { name: 'asignar documentos a usuarios', method: this.assignDocsToUsers.bind(this), jsonSnippet: (EXAMPLE_ASSIGNMENT as any).default },
   ]
@@ -93,5 +95,21 @@ export class AdminComponent {
       }
     )
   }
+
+
+  deleteDocs() {
+    this.api.deleteDocuments(this.dataFromFile as Document[]).subscribe(
+      response => this.response = response,
+      error => console.error(error),
+      () => {
+        if (this.response.success) {
+          this.snackBar.open(`Documentos eliminados correctamente.`, 'Vale')
+        } else {
+          this.snackBar.open(`Error: ${this.response.message}. Por favor, revisa el formato JSON del fichero.`, 'Vale')
+        }
+      }
+    )
+  }
+
 
 }
