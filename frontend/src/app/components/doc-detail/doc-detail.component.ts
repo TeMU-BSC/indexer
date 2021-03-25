@@ -22,7 +22,7 @@ export class DocDetailComponent implements OnInit {
   ngOnInit(): void {
     this.doc$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) =>
-        this.api.getDoc(params.get('id')))
+        this.api.getDoc(params.get("id")))
     )
   }
 

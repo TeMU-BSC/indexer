@@ -37,7 +37,7 @@ export class AuthService implements CanActivate {
   }
 
   public registerUsers(users: User[]): Observable<any> {
-    return this.http.request<User[]>('post', `${this.api.url}/insert/user`, { body: users })
+    return this.http.request<User[]>('POST', `${this.api.url}/user`, { body: users })
   }
 
   public deleteUser(user: User): Observable<any> {

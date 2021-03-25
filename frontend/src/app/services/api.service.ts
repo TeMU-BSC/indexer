@@ -11,13 +11,10 @@ import { ApiResponse, Document, Indexing, Term } from 'src/app/models/interfaces
 export class ApiService {
 
   url = environment.apiUrl
-  public terms: Term[]
 
   constructor(
     private http: HttpClient,
-  ) {
-    this.getTerms()
-  }
+  ) { }
 
   addDocuments(documents: Document[]): Observable<ApiResponse> {
     return this.http.request<ApiResponse>('post', `${this.url}/document`, { body: documents })
@@ -27,11 +24,12 @@ export class ApiService {
     return this.http.request<ApiResponse>('delete', `${this.url}/document`, { body: documents })
   }
 
+  addTerms(terms: Term[]): Observable<ApiResponse> {
+    return this.http.request<ApiResponse>('post', `${this.url}/term`, { body: terms })
+  }
 
-  getTerms() {
-    this.http.get<Term[]>(`${this.url}/term?multiple=true`).subscribe(response => {
-      this.terms = response.map(term => ({ code: term.code, term: term.term, terminology: term.terminology }))
-    })
+  getTerms(): Observable<Term[]> {
+    return this.http.get<Term[]>(`${this.url}/term?multiple=true`)
   }
 
   getAssignedDocs(query: any): Observable<any[]> {

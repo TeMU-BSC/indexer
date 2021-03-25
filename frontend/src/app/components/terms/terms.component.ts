@@ -38,7 +38,6 @@ export class TermsComponent implements OnChanges {
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
   ) {
-    this.options = this.api.terms
     this.filteredOptions = this.filterTermsAsUserTypes()
   }
 
@@ -49,6 +48,7 @@ export class TermsComponent implements OnChanges {
     const validatedIndexings: any = {
       document_identifier: this.doc.identifier,
       user_email: this.auth.getCurrentUser().email,
+
     }
 
     // If initial view (not validation phase), early exit.
@@ -79,9 +79,9 @@ export class TermsComponent implements OnChanges {
 
   filterTermsAsUserTypes() {
     return this.autocompleteChipList.valueChanges.pipe(
-      debounceTime(100),
+      debounceTime(1000),
       startWith(''),
-      map((value: string | null) => this.customFilter(value, 'term', ['term']))
+      map((value: string | null) => this.customFilter(value, 'name', ['name']))
     )
   }
 
@@ -91,16 +91,27 @@ export class TermsComponent implements OnChanges {
    * Return the filtered terms by a custom sorting.
    */
   customFilter(inputText: string, sortingKey: string, filterKeys: string[]): Term[] {
-    const searchCriteria = removeConsecutiveSpaces(inputText)
-    const isNumeric = !isNaN(Number(searchCriteria))
-    const atLeastTwoDigits = isNumeric && searchCriteria.length >= 2
-    if (atLeastTwoDigits) {
-      const filteredTerms = this.api.terms.filter(term => term.code.startsWith(searchCriteria) && !this.doc.terms.includes(term))
-      return customSort(filteredTerms, searchCriteria, 'code')
-    }
-    const alreadyAddedToDocument = (term: Term) => this.doc.terms.some(chip => chip.code === term.code)
-    const remainingTerms = this.api.terms.filter(term => !alreadyAddedToDocument(term))
-    const filteredTerms = remainingTerms.filter(term => filterKeys.some(key => inputIncludedInValue(searchCriteria, term, key)))
+    let searchCriteria
+    let isNumeric
+    let remainingTerms;
+    let filteredTerms;
+    this.api.getTerms().subscribe(
+      response => this.options = response,
+      error => console.error(error),
+      () => {
+        searchCriteria = removeConsecutiveSpaces(inputText)
+        isNumeric = !isNaN(Number(searchCriteria))
+        const atLeastTwoDigits = isNumeric && searchCriteria.length >= 2
+        if (atLeastTwoDigits) {
+          const filteredTerms = this.options.filter(term => term.code.startsWith(searchCriteria) && !this.doc.terms.includes(term))
+          return customSort(filteredTerms, searchCriteria, 'code')
+        }
+        const alreadyAddedToDocument = (term: Term) => this.doc.terms.some(chip => chip.code === term.code)
+        remainingTerms = this.options.filter(term => !alreadyAddedToDocument(term))
+        filteredTerms = remainingTerms.filter(term => filterKeys.some(key => inputIncludedInValue(searchCriteria, term, key)))
+        console.log(filteredTerms);
+      });
+      
     return customSort(filteredTerms, searchCriteria, sortingKey)
   }
 
@@ -156,7 +167,7 @@ export class TermsComponent implements OnChanges {
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '500px',
       data: {
-        title: `${term.term} (${term.code})`,
+        title: `${term.name} (${term.code})`,
         content: '¿Quieres borrar esta anotación?',
         cancel: 'Cancelar',
         buttonName: 'Borrar',

@@ -16,10 +16,12 @@ export interface Document {
   validated?: Boolean
 }
 export interface Term {
+  
   code: string
-  term: string
-  definition?: string
+  name: string;
+  description?: string
   terminology: string
+  synonyms?: string[]
 }
 
 export interface Indexing {

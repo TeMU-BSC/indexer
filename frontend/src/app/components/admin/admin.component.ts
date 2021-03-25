@@ -4,6 +4,7 @@ import * as EXAMPLE_USER from 'src/assets/examples/user.json'
 import * as EXAMPLE_DOCUMENT from 'src/assets/examples/document.json'
 import * as EXAMPLE_DOCUMENT_DELETE from 'src/assets/examples/delete-documents.json'
 import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'
+import * as EXAMPLE_TERM from 'src/assets/examples/term.json'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { ApiResponse, Document, Term, User } from 'src/app/models/interfaces'
@@ -30,7 +31,8 @@ export class AdminComponent {
   actions: Action[] = [
     { name: 'Añadir documentos', method: this.insertDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT as any).default },
     { name: 'Eliminar documentos', method: this.deleteDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT_DELETE as any).default },
-    // { name: 'registrar usuarios', method: this.registerUsers.bind(this), jsonSnippet: (EXAMPLE_USER as any).default },
+    { name: 'Registrar terminos', method: this.insertTerms.bind(this), jsonSnippet: (EXAMPLE_TERM as any).default },
+    { name: 'Registrar usuarios', method: this.registerUsers.bind(this), jsonSnippet: (EXAMPLE_USER as any).default}
     // { name: 'asignar documentos a usuarios', method: this.assignDocsToUsers.bind(this), jsonSnippet: (EXAMPLE_ASSIGNMENT as any).default },
   ]
   selectedProject: any
@@ -104,6 +106,20 @@ export class AdminComponent {
       () => {
         if (this.response.success) {
           this.snackBar.open(`Documentos eliminados correctamente.`, 'Vale')
+        } else {
+          this.snackBar.open(`Error: ${this.response.message}. Por favor, revisa el formato JSON del fichero.`, 'Vale')
+        }
+      }
+    )
+  }
+
+  insertTerms() {
+    this.api.addTerms(this.dataFromFile as Term[]).subscribe(
+      response => this.response = response,
+      error => console.error(error),
+      () => {
+        if (this.response.success) {
+          this.snackBar.open(`Terminos añadidos correctamente.`, 'Vale')
         } else {
           this.snackBar.open(`Error: ${this.response.message}. Por favor, revisa el formato JSON del fichero.`, 'Vale')
         }
