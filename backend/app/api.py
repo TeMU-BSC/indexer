@@ -97,12 +97,12 @@ def get_assigned_documents_to_user(email):
     documents = list(found_documents.skip(skip).limit(limit))
     total_document_count = found_documents.count()
     for document in documents:
-        terms = mongo.db.indexings.distinct('term', {'document_identifier': document.get('identifier'), 'user_email': email})
+        terms = mongo.db.annotations.distinct('term', {'document_identifier': document.get('identifier'), 'user_email': email})
         document['terms'] = terms
     return jsonify(documents=documents, total_document_count=total_document_count)
 
 
-# CRUD (Create, Read, Update, Delete) routes for items `user`, `document`, `term`, `indexing`.
+# CRUD (Create, Read, Update, Delete) routes for items `user`, `document`, `term`, `annotation`.
 
 
 @app.route('/<item>', methods=['POST'])

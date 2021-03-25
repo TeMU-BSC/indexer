@@ -3,7 +3,7 @@
  * https://stackoverflow.com/a/37511463
  */
 export function removeAccents(text: string): string {
-  return text?.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
 /**
@@ -25,10 +25,10 @@ export function _sortByOrder(items: any[], order: string[], key: string): any[] 
  * Check if the value for the given key of the given object includes the given input.
  * The comparison is made with lowercased and accents removed from both input and object value.
  */
-export function inputIncludedInValue(input: string, obj: object, key: string): boolean {
-  const normalizedInput = removeAccents(input)?.toLowerCase()
-  const normalizedValue = removeAccents(obj[key])?.toLowerCase()
-  return normalizedValue?.includes(normalizedInput)
+export function isInputIncludedInValueOfObjectKey(input: string, obj: object, key: string): boolean {
+  const normalizedInput = removeAccents(input).toLowerCase()
+  const normalizedValue = removeAccents(obj[key]).toLowerCase()
+  return normalizedValue.includes(normalizedInput)
 }
 
 /**

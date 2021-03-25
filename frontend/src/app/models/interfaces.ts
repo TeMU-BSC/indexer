@@ -1,8 +1,9 @@
 export interface User {
   fullname: string
   email: string
-  role: string
+  role: 'annotator' | 'admin'
   password: string
+  assigned_document_identifiers?: string[]
 }
 
 export interface Document {
@@ -16,15 +17,14 @@ export interface Document {
   validated?: Boolean
 }
 export interface Term {
-  
-  code: string
-  name: string;
-  description?: string
   terminology: string
-  synonyms?: string[]
+  code: string
+  name: string
+  description: string
+  synonyms: string[]
 }
 
-export interface Indexing {
+export interface Annotation {
   document_identifier: Document['identifier']
   user_email: User['email']
   term: Term

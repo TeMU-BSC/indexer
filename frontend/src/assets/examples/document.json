@@ -1,9 +1,0 @@
-[
-  {
-    "identifier": "identificador-del-documento",
-    "title": "Título del documento",
-    "abstract": "Abstract del documento.",
-    "source": "ibecs | lilacs | reec | google patents",
-    "type": "article | clinical study | patent"
-  }
-]

@@ -93,8 +93,8 @@ export class DocComponent implements AfterViewInit {
               document_identifier: this.doc.identifier,
               user_email: this.auth.getCurrentUser().email
             }).subscribe()
-            const validatedIndexings = []
-            this.api.saveValidatedIndexings(validatedIndexings).subscribe()
+            const validatedAnnotations = []
+            this.api.saveValidatedAnnotations(validatedAnnotations).subscribe()
             break
         }
       }

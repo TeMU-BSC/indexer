@@ -11,7 +11,7 @@
         </button>
       </div>
       <div *ngIf="auth.isLoggedIn()" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="1em" class="buttons">
-        <button *ngIf="auth.getCurrentUser().role === 'indexer'" mat-raised-button routerLink="/docs">
+        <button *ngIf="auth.getCurrentUser().role === 'annotator'" mat-raised-button routerLink="/docs">
           Ver mis documentos asignados
         </button>
         <button *ngIf="auth.getCurrentUser().role === 'admin'" mat-raised-button color="warn" routerLink="/admin">

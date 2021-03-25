@@ -1,9 +1,8 @@
 import { Component } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import * as EXAMPLE_USER from 'src/assets/examples/user.json'
-import * as EXAMPLE_DOCUMENT from 'src/assets/examples/document.json'
-import * as EXAMPLE_DOCUMENT_DELETE from 'src/assets/examples/delete-documents.json'
-import * as EXAMPLE_ASSIGNMENT from 'src/assets/examples/assignment.json'
+import * as EXAMPLE_DOCUMENT_CREATE from 'src/assets/examples/document-create.json'
+import * as EXAMPLE_DOCUMENT_DELETE from 'src/assets/examples/document-delete.json'
 import * as EXAMPLE_TERM from 'src/assets/examples/term.json'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
@@ -29,11 +28,10 @@ export class AdminComponent {
     { name: 'mesinesp2', db: 'mesinesp2' },
   ]
   actions: Action[] = [
-    { name: 'Añadir documentos', method: this.insertDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT as any).default },
+    { name: 'Añadir documentos', method: this.insertDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT_CREATE as any).default },
     { name: 'Eliminar documentos', method: this.deleteDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT_DELETE as any).default },
-    { name: 'Registrar terminos', method: this.insertTerms.bind(this), jsonSnippet: (EXAMPLE_TERM as any).default },
-    { name: 'Registrar usuarios', method: this.registerUsers.bind(this), jsonSnippet: (EXAMPLE_USER as any).default}
-    // { name: 'asignar documentos a usuarios', method: this.assignDocsToUsers.bind(this), jsonSnippet: (EXAMPLE_ASSIGNMENT as any).default },
+    { name: 'Añadir términos', method: this.insertTerms.bind(this), jsonSnippet: (EXAMPLE_TERM as any).default },
+    { name: 'Añadir usuarios', method: this.registerUsers.bind(this), jsonSnippet: (EXAMPLE_USER as any).default },
   ]
   selectedProject: any
   selectedAction: Action
@@ -62,27 +60,13 @@ export class AdminComponent {
       error => console.error(error),
       () => {
         if (this.response.success) {
-          this.snackBar.open(`Usuarios registrados: ${this.response.success}`, 'OK')
+          this.snackBar.open(`Usuarios añadidoscorrectamente`, 'Vale')
         } else {
-          this.snackBar.open(`Error: ${this.response.message}`, 'REVISAR FICHERO')
+          this.snackBar.open(`Error: ${this.response.message}. Por favor, revisa el formato JSON del fichero.`, 'Vale')
         }
       }
     )
   }
-
-  // assignDocsToUsers() {
-  //   this.api.assignDocsToUsers(this.dataFromFile).subscribe(
-  //     response => this.response = response,
-  //     error => console.error(error),
-  //     () => {
-  //       if (this.response.success) {
-  //         this.snackBar.open(`Documentos asignados a usuarios correctamente.`, 'OK')
-  //       } else {
-  //         this.snackBar.open(`Error al asignar documentos a usuarios.`, 'REVISAR FICHERO')
-  //       }
-  //     }
-  //   )
-  // }
 
   insertDocs() {
     this.api.addDocuments(this.dataFromFile as Document[]).subscribe(
@@ -91,21 +75,6 @@ export class AdminComponent {
       () => {
         if (this.response.success) {
           this.snackBar.open(`Documentos añadidos correctamente.`, 'Vale')
-        } else {
-          this.snackBar.open(`Error: ${this.response.message}. Por favor, revisa el formato JSON del fichero.`, 'Vale')
-        }
-      }
-    )
-  }
-
-
-  deleteDocs() {
-    this.api.deleteDocuments(this.dataFromFile as Document[]).subscribe(
-      response => this.response = response,
-      error => console.error(error),
-      () => {
-        if (this.response.success) {
-          this.snackBar.open(`Documentos eliminados correctamente.`, 'Vale')
         } else {
           this.snackBar.open(`Error: ${this.response.message}. Por favor, revisa el formato JSON del fichero.`, 'Vale')
         }
@@ -127,5 +96,18 @@ export class AdminComponent {
     )
   }
 
+  deleteDocs() {
+    this.api.deleteDocuments(this.dataFromFile as Document[]).subscribe(
+      response => this.response = response,
+      error => console.error(error),
+      () => {
+        if (this.response.success) {
+          this.snackBar.open(`Documentos eliminados correctamente.`, 'Vale')
+        } else {
+          this.snackBar.open(`Error: ${this.response.message}. Por favor, revisa el formato JSON del fichero.`, 'Vale')
+        }
+      }
+    )
+  }
 
 }

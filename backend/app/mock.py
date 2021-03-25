@@ -66,7 +66,7 @@ def generate_mock_items(item, amount: int) -> dict:
         for _ in range(amount):
             items.append(dict(
                 code=random.randint(1, 1000),
-                term=lorem.words(1),
+                name=lorem.words(1),
                 terminology=random.choice(terminologies),
                 description=lorem.words(random.randint(7, 13)),
                 synonyms=lorem.words(random.randint(2, 5)).split(' '),
