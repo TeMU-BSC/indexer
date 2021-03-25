@@ -7,11 +7,11 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable } from 'rxjs'
 import { debounceTime, map, startWith } from 'rxjs/operators'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
-import { Document, Indexing, Term } from 'src/app/models/interfaces'
+import { Document, Annotation, Term } from 'src/app/models/interfaces'
 import { FormConfig } from 'src/app/models/interfaces'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { customSort, inputIncludedInValue, removeConsecutiveSpaces } from 'src/app/helpers/functions'
+import { customSort, isInputIncludedInValueOfObjectKey, removeConsecutiveSpaces } from 'src/app/helpers/functions'
 
 @Component({
   selector: 'app-terms',
@@ -46,7 +46,7 @@ export class TermsComponent implements OnChanges {
    * This component implements OnChanges method so it can react to parent changes on its '@Input() doc' property.
    */
   ngOnChanges() {
-    const validatedIndexings: any = {
+    const validatedAnnotations: any = {
       document_identifier: this.doc.identifier,
       user_email: this.auth.getCurrentUser().email,
     }
@@ -54,16 +54,16 @@ export class TermsComponent implements OnChanges {
     // If initial view (not validation phase), early exit.
     if (!this.validation) { return }
 
-    // If doc is validated, get the finished validated indexings, early exit.
+    // If doc is validated, get the finished validated annotations, early exit.
     if (this.doc.validated) {
-      this.api.getValidatedDecsCodes(validatedIndexings).subscribe(response =>
+      this.api.getValidatedDecsCodes(validatedAnnotations).subscribe(response =>
         this.doc.terms = this.options.filter(term => response.validatedTermCodes.includes(term.code))
       )
       return
     }
 
     // Otherwise it's validation mode, add suggestions to chips list.
-    this.api.getSuggestions(validatedIndexings).subscribe(response => {
+    this.api.getSuggestions(validatedAnnotations).subscribe(response => {
 
       // Get suggestions from other users.
       const suggestions = this.options.filter(term => response.suggestions.includes(term.code))
@@ -81,7 +81,7 @@ export class TermsComponent implements OnChanges {
     return this.autocompleteChipList.valueChanges.pipe(
       debounceTime(100),
       startWith(''),
-      map((value: string | null) => this.customFilter(value, 'term', ['term']))
+      map((value: string | null) => this.customFilter(value, 'name', ['name']))
     )
   }
 
@@ -100,7 +100,7 @@ export class TermsComponent implements OnChanges {
     }
     const alreadyAddedToDocument = (term: Term) => this.doc.terms.some(chip => chip.code === term.code)
     const remainingTerms = this.api.terms.filter(term => !alreadyAddedToDocument(term))
-    const filteredTerms = remainingTerms.filter(term => filterKeys.some(key => inputIncludedInValue(searchCriteria, term, key)))
+    const filteredTerms = remainingTerms.filter(term => filterKeys.some(key => isInputIncludedInValueOfObjectKey(searchCriteria, term, key)))
     return customSort(filteredTerms, searchCriteria, sortingKey)
   }
 
@@ -109,12 +109,12 @@ export class TermsComponent implements OnChanges {
     this.doc.terms.push(term)
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
-    const indexing: Indexing = {
+    const annotation: Annotation = {
       document_identifier: this.doc.identifier,
       user_email: this.auth.getCurrentUser().email,
       term: term,
     }
-    this.api.addTermToDoc(indexing).subscribe()
+    this.api.addAnnotation(annotation).subscribe()
   }
 
   removeTerm(term: Term): void {
@@ -138,13 +138,13 @@ export class TermsComponent implements OnChanges {
     snackBarRef.afterDismissed().subscribe(info => {
       if (!info.dismissedByAction) {
 
-        // Remove the indexing from database.
-        const indexing: Indexing = {
+        // Remove the annotation from database.
+        const annotation: Annotation = {
           document_identifier: this.doc.identifier,
           user_email: this.auth.getCurrentUser().email,
           term: term,
         }
-        this.api.removeTermFromDoc(indexing).subscribe()
+        this.api.removeAnnotation(annotation).subscribe()
       }
     })
   }
@@ -156,7 +156,7 @@ export class TermsComponent implements OnChanges {
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '500px',
       data: {
-        title: `${term.term} (${term.code})`,
+        title: `${term.name} (${term.code})`,
         content: '¿Quieres borrar esta anotación?',
         cancel: 'Cancelar',
         buttonName: 'Borrar',

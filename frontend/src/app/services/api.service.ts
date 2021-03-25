@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs'
 import { environment } from 'src/environments/environment'
 import { _sortByOrder } from 'src/app/helpers/functions'
-import { ApiResponse, Document, Indexing, Term } from 'src/app/models/interfaces'
+import { ApiResponse, Document, Annotation, Term } from 'src/app/models/interfaces'
 
 @Injectable({
   providedIn: 'root'
@@ -16,22 +16,23 @@ export class ApiService {
   constructor(
     private http: HttpClient,
   ) {
-    this.getTerms()
+    this.getAndExposeTerms()
+  }
+
+  getAndExposeTerms() {
+    this.http.get<Term[]>(`${this.url}/term?multiple=true`).subscribe(response => { this.terms = response })
   }
 
   addDocuments(documents: Document[]): Observable<ApiResponse> {
     return this.http.request<ApiResponse>('post', `${this.url}/document`, { body: documents })
   }
 
-  deleteDocuments(documents: Document[]): Observable<ApiResponse> {
-    return this.http.request<ApiResponse>('delete', `${this.url}/document`, { body: documents })
+  addTerms(terms: Term[]): Observable<ApiResponse> {
+    return this.http.request<ApiResponse>('post', `${this.url}/term`, { body: terms })
   }
 
-
-  getTerms() {
-    this.http.get<Term[]>(`${this.url}/term?multiple=true`).subscribe(response => {
-      this.terms = response.map(term => ({ code: term.code, term: term.term, terminology: term.terminology }))
-    })
+  deleteDocuments(documents: Document[]): Observable<ApiResponse> {
+    return this.http.request<ApiResponse>('delete', `${this.url}/document`, { body: documents })
   }
 
   getAssignedDocs(query: any): Observable<any[]> {
@@ -39,12 +40,14 @@ export class ApiService {
     return this.http.get<any[]>(`${this.url}/docs/${userEmail}?page_size=${pageSize}&page_index=${pageIndex}`)
   }
 
-  addTermToDoc(indexing: Indexing): Observable<any> {
-    return this.http.post<any>(`${this.url}/indexing`, indexing)
+  addAnnotation(annotation: Annotation): Observable<any> {
+    delete annotation.term['_id']
+    delete annotation.term['generation_time']
+    return this.http.post<any>(`${this.url}/annotation`, annotation)
   }
 
-  removeTermFromDoc(indexing: Indexing): Observable<any> {
-    return this.http.request<any>('delete', `${this.url}/indexing`, { body: indexing })
+  removeAnnotation(annotation: Annotation): Observable<any> {
+    return this.http.request<any>('delete', `${this.url}/annotation`, { body: [annotation] })
   }
 
   markAsCompleted(docToMark: any): Observable<Document> {
@@ -67,12 +70,12 @@ export class ApiService {
     return this.http.post<any>(`${this.url}/suggestions`, docToCheck)
   }
 
-  saveValidatedIndexings(validatedIndexings: any[]): Observable<any> {
-    return this.http.post<any>(`${this.url}/indexings_validated/add`, validatedIndexings)
+  saveValidatedAnnotations(validatedAnnotations: any[]): Observable<any> {
+    return this.http.post<any>(`${this.url}/annotations_validated/add`, validatedAnnotations)
   }
 
-  getValidatedDecsCodes(validatedIndexings: any): Observable<any> {
-    return this.http.post<any>(`${this.url}/indexings_validated/get`, validatedIndexings)
+  getValidatedDecsCodes(validatedAnnotations: any): Observable<any> {
+    return this.http.post<any>(`${this.url}/annotations_validated/get`, validatedAnnotations)
   }
 
   getDoc(id: string): Observable<Document> {

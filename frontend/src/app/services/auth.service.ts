@@ -4,9 +4,8 @@ import { HttpClient } from '@angular/common/http'
 import { Router, CanActivate } from '@angular/router'
 import { MatDialog } from '@angular/material/dialog'
 import { Observable } from 'rxjs'
-import { environment } from 'src/environments/environment'
 import { ApiService } from './api.service'
-import { User } from '../models/interfaces'
+import { ApiResponse, User } from '../models/interfaces'
 
 
 @Injectable({
@@ -14,7 +13,7 @@ import { User } from '../models/interfaces'
 })
 export class AuthService implements CanActivate {
 
-  browserStorageKey = 'indexer_logged_user'
+  browserStorageKey = 'temu_logged_annotator'
   user: User
 
   constructor(
@@ -37,15 +36,11 @@ export class AuthService implements CanActivate {
   }
 
   public registerUsers(users: User[]): Observable<any> {
-    return this.http.request<User[]>('post', `${this.api.url}/insert/user`, { body: users })
+    return this.http.request<User[]>('post', `${this.api.url}/user`, { body: users })
   }
 
-  public deleteUser(user: User): Observable<any> {
-    return this.http.request<any>('delete', `${this.api.url}/delete/user`, { body: user })
-  }
-
-  public registerManyUsers(users: User[]): Observable<any> {
-    return this.http.post<any>(`${this.api.url}/insert/users`, users)
+  public deleteUsers(users: User[]): Observable<ApiResponse> {
+    return this.http.request<ApiResponse>('delete', `${this.api.url}/user`, { body: users })
   }
 
   public login(email: string, password: string): void {

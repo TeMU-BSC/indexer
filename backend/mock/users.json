@@ -2,7 +2,7 @@
   {
     "fullname": "Alice",
     "email": "alice@indexer.app",
-    "role": "indexer",
+    "role": "annotator",
     "password": "passwd0fAl1c3",
     "assigned_document_identifiers": [
       "G4BWDV",
@@ -27,7 +27,7 @@
   {
     "fullname": "Bob",
     "email": "bob@indexer.app",
-    "role": "indexer",
+    "role": "annotator",
     "password": "passwd0fB0b",
     "assigned_document_identifiers": [
       "G4BWDV",

@@ -2,10 +2,10 @@
   <mat-label>{{ formConfig.label }}</mat-label>
   <mat-chip-list #chipList>
     <mat-chip *ngFor="let term of doc.terms"
-      [matTooltip]="term.terminology + ': ' + term.code"
+      [matTooltip]="term.terminology + ': ' + term.code + ' - ' + term.description"
       [removable]="removable"
       (removed)="removeTerm(term)"
-    >{{ term.term }}
+    >{{ term.name }}
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
     <input #chipInput matInput
@@ -17,15 +17,16 @@
       [matChipInputAddOnBlur]="true"
       [matAutocomplete]="auto"
       [matAutocompletePosition]="'below'"
+      value=""
     >
   </mat-chip-list>
   <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="addTerm($event)">
     <mat-option *ngFor="let i = index; let option of filteredOptions | async | slice : 0 : 5"
       [value]="option"
-      [matTooltip]="option.terminology + ': ' + option.code"
+      [matTooltip]="option.terminology + ': ' + option.code + ' - ' + option.description"
       [matTooltipShowDelay]="500"
       class="multiline-auto-complete-options"
-    >{{ option.term }}
+    >{{ option.name }}
     </mat-option>
   </mat-autocomplete>
   <mat-hint>{{ formConfig.hint }}</mat-hint>
