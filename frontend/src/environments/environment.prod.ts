@@ -1,5 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:5000'
-  // apiUrl: 'http://bsccnio01.bsc.es/api'
+  apiUrl: 'http://bsccnio01.bsc.es:5000'
 }
