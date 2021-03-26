@@ -1,15 +1,5 @@
 services:
 
-  mongo:
-    container_name: indexer_mongo
-    image: mongo:4.4.4-bionic
-    ports:
-      - 27018:27017
-    entrypoint: mongod --bind_ip_all
-    volumes:
-      - /data/mongodb:/data/db
-    restart: always
-
   flask:
     container_name: indexer_flask
     build: ./backend
