@@ -109,6 +109,7 @@ def get_assigned_documents_to_user(email):
 def create(item):
     collection = f'{item}s'
     success = False
+    
     if isinstance(request.json, dict):
         document = request.json
         insertion_result = mongo.db[collection].insert_one(document)
@@ -176,24 +177,24 @@ def mark_doc_as(status):
     result = None
     if status == 'completed':
         result = mongo.db.completions.update_one(
-            {'user': doc_to_mark['user']},
-            {'$push': {'docs': request.json['doc']}},
+            {'user': doc_to_mark['user_email']},
+            {'$push': {'docs': request.json['document_identifier']}},
             upsert=True
         )
     if status == 'uncompleted':
         result = mongo.db.completions.update_one(
-            {'user': doc_to_mark['user']},
-            {'$pull': {'docs': doc_to_mark['doc']}}
+            {'user': doc_to_mark['user_email']},
+            {'$pull': {'docs': doc_to_mark['document_identifier']}}
         )
     if status == 'validated':
         result = mongo.db.validations.update_one(
-            {'user': doc_to_mark['user']},
-            {'$push': {'docs': request.json['doc']}},
+            {'user': doc_to_mark['user_email']},
+            {'$push': {'docs': request.json['document_identifier']}},
             upsert=True
         )
     if status == 'unvalidated':
         result = mongo.db.validations.update_one(
-            {'user': doc_to_mark['user']},
-            {'$pull': {'docs': doc_to_mark['doc']}}
+            {'user': doc_to_mark['user_email']},
+            {'$pull': {'docs': doc_to_mark['document_identifier']}}
         )
     return jsonify({'success': result.acknowledged})

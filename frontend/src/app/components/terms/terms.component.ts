@@ -108,10 +108,13 @@ export class TermsComponent implements OnChanges {
     this.doc.terms.push(term)
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
+    const termCode = term['code']
+   
     const annotation: Annotation = {
       document_identifier: this.doc.identifier,
+      identifier: this.doc.identifier  + termCode,
       user_email: this.auth.getCurrentUser().email,
-      term: term,
+      term: termCode,
     }
     this.api.addAnnotation(annotation).subscribe()
   }
@@ -136,12 +139,13 @@ export class TermsComponent implements OnChanges {
     // Otherwise, if the the the snackbar is closed by timeout, the term is sent to the backend to be deleted.
     snackBarRef.afterDismissed().subscribe(info => {
       if (!info.dismissedByAction) {
-
+        const termCode = term['code']
         // Remove the annotation from database.
         const annotation: Annotation = {
           document_identifier: this.doc.identifier,
+          identifier: this.doc.identifier + termCode,
           user_email: this.auth.getCurrentUser().email,
-          term: term,
+          term: termCode,
         }
         this.api.removeAnnotation(annotation).subscribe()
       }
