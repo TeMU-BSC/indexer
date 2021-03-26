@@ -11,16 +11,13 @@ import { ApiResponse, Document, Annotation, Term } from 'src/app/models/interfac
 export class ApiService {
 
   url = environment.apiUrl
-  public terms: Term[]
 
   constructor(
     private http: HttpClient,
-  ) {
-    this.getAndExposeTerms()
-  }
+  ) { }
 
-  getAndExposeTerms() {
-    this.http.get<Term[]>(`${this.url}/term?multiple=true`).subscribe(response => { this.terms = response })
+  getTerms(): Observable<Term[]> {
+    return this.http.get<Term[]>(`${this.url}/term?multiple=true`)
   }
 
   addDocuments(documents: Document[]): Observable<ApiResponse> {
@@ -41,8 +38,6 @@ export class ApiService {
   }
 
   addAnnotation(annotation: Annotation): Observable<any> {
-    delete annotation.term['_id']
-    delete annotation.term['generation_time']
     return this.http.post<any>(`${this.url}/annotation`, annotation)
   }
 

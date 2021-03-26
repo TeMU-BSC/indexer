@@ -95,10 +95,20 @@ def get_assigned_documents_to_user(email):
         skip = 0
     found_documents = mongo.db.documents.find({'identifier': {'$in': identifiers}}, {'_id': 0})
     documents = list(found_documents.skip(skip).limit(limit))
+    user_completions = mongo.db.completions.find_one({'user_email': email})
+    completed_document_ids = list()
+    if user_completions:
+        completed_document_ids = user_completions.get('document_identifiers')
     total_document_count = found_documents.count()
     for document in documents:
-        terms = mongo.db.annotations.distinct('term', {'document_identifier': document.get('identifier'), 'user_email': email})
-        document['terms'] = terms
+        term_codes = mongo.db.annotations.distinct('term_code', {'document_identifier': document.get('identifier'), 'user_email': email})
+        terms = mongo.db.terms.find({'code': {'$in': term_codes}})
+        terms_with_str_ids = list()
+        for term in terms:
+            term['_id'] = str(term['_id'])
+            terms_with_str_ids.append(term)
+        document['terms'] = terms_with_str_ids
+        document['completed'] = document.get('identifier') in completed_document_ids
     return jsonify(documents=documents, total_document_count=total_document_count)
 
 
@@ -109,7 +119,6 @@ def get_assigned_documents_to_user(email):
 def create(item):
     collection = f'{item}s'
     success = False
-    
     if isinstance(request.json, dict):
         document = request.json
         insertion_result = mongo.db[collection].insert_one(document)
@@ -167,7 +176,7 @@ def delete_many(item):
         message = f'{item}s deleted successfully'
     else:
         message = 'something went wrong'
-    return jsonify(success=deletion_result.acknowledged)
+    return jsonify(success=deletion_result.acknowledged, message=message)
 
 
 @app.route('/mark-doc-as/<status>', methods=['POST'])
@@ -177,24 +186,24 @@ def mark_doc_as(status):
     result = None
     if status == 'completed':
         result = mongo.db.completions.update_one(
-            {'user': doc_to_mark['user_email']},
-            {'$push': {'docs': request.json['document_identifier']}},
+            {'user_email': doc_to_mark['user_email']},
+            {'$push': {'document_identifiers': request.json['document_identifier']}},
             upsert=True
         )
     if status == 'uncompleted':
         result = mongo.db.completions.update_one(
-            {'user': doc_to_mark['user_email']},
-            {'$pull': {'docs': doc_to_mark['document_identifier']}}
+            {'user_email': doc_to_mark['user_email']},
+            {'$pull': {'document_identifiers': doc_to_mark['document_identifier']}}
         )
     if status == 'validated':
         result = mongo.db.validations.update_one(
-            {'user': doc_to_mark['user_email']},
-            {'$push': {'docs': request.json['document_identifier']}},
+            {'user_email': doc_to_mark['user_email']},
+            {'$push': {'document_identifiers': request.json['document_identifier']}},
             upsert=True
         )
     if status == 'unvalidated':
         result = mongo.db.validations.update_one(
-            {'user': doc_to_mark['user_email']},
-            {'$pull': {'docs': doc_to_mark['document_identifier']}}
+            {'user_email': doc_to_mark['user_email']},
+            {'$pull': {'document_identifiers': doc_to_mark['document_identifier']}}
         )
     return jsonify({'success': result.acknowledged})

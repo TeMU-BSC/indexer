@@ -28,7 +28,7 @@ export interface Annotation {
   document_identifier: Document['identifier']
   identifier: string
   user_email: User['email']
-  term: string
+  term_code: string
 }
 
 export interface FormConfig {

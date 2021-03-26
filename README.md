@@ -38,6 +38,7 @@ In order to develop or deploy this application, docker-compose must be installed
 ```bash
 git checkout development
 git pull origin development
+cd frontend && npm install && cd ..
 docker-compose down
 docker-compose up
 ```

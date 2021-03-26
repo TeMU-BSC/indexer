@@ -60,7 +60,7 @@ export class AdminComponent {
       error => console.error(error),
       () => {
         if (this.response.success) {
-          this.snackBar.open(`Usuarios añadidoscorrectamente`, 'Vale')
+          this.snackBar.open(`Usuarios añadidos correctamente`, 'Vale')
         } else {
           this.snackBar.open(`Error: ${this.response.message}. Por favor, revisa el formato JSON del fichero.`, 'Vale')
         }

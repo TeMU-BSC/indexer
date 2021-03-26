@@ -1,5 +1,5 @@
 import { ENTER } from '@angular/cdk/keycodes'
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core'
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core'
 import { FormControl } from '@angular/forms'
 import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete'
 import { MatDialog } from '@angular/material/dialog'
@@ -37,14 +37,16 @@ export class TermsComponent implements OnChanges {
     public auth: AuthService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
-  ) {
-    this.filteredOptions = this.filterTermsAsUserTypes()
-  }
+  ) { }
 
   /**
    * This component implements OnChanges method so it can react to parent changes on its '@Input() doc' property.
    */
   ngOnChanges() {
+    this.api.getTerms().subscribe(response => {
+      this.options = response
+      this.filteredOptions = this.filterTermsAsUserTypes()
+    })
     const validatedAnnotations: any = {
       document_identifier: this.doc.identifier,
       user_email: this.auth.getCurrentUser().email,
@@ -78,7 +80,7 @@ export class TermsComponent implements OnChanges {
 
   filterTermsAsUserTypes() {
     return this.autocompleteChipList.valueChanges.pipe(
-      debounceTime(1000),
+      debounceTime(100),
       startWith(''),
       map((value: string | null) => this.customFilter(value, 'name', ['name']))
     )
@@ -94,11 +96,11 @@ export class TermsComponent implements OnChanges {
     const isNumeric = !isNaN(Number(searchCriteria))
     const atLeastTwoDigits = isNumeric && searchCriteria.length >= 2
     if (atLeastTwoDigits) {
-      const filteredTerms = this.api.terms.filter(term => term.code.startsWith(searchCriteria) && !this.doc.terms.includes(term))
+      const filteredTerms = this.options.filter(term => term.code.startsWith(searchCriteria) && !this.doc.terms.includes(term))
       return customSort(filteredTerms, searchCriteria, 'code')
     }
     const alreadyAddedToDocument = (term: Term) => this.doc.terms.some(chip => chip.code === term.code)
-    const remainingTerms = this.api.terms.filter(term => !alreadyAddedToDocument(term))
+    const remainingTerms = this.options.filter(term => !alreadyAddedToDocument(term))
     const filteredTerms = remainingTerms.filter(term => filterKeys.some(key => isInputIncludedInValueOfObjectKey(searchCriteria, term, key)))
     return customSort(filteredTerms, searchCriteria, sortingKey)
   }
@@ -109,12 +111,11 @@ export class TermsComponent implements OnChanges {
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
     const termCode = term['code']
-   
     const annotation: Annotation = {
       document_identifier: this.doc.identifier,
       identifier: this.doc.identifier  + termCode,
       user_email: this.auth.getCurrentUser().email,
-      term: termCode,
+      term_code: termCode,
     }
     this.api.addAnnotation(annotation).subscribe()
   }
@@ -145,7 +146,7 @@ export class TermsComponent implements OnChanges {
           document_identifier: this.doc.identifier,
           identifier: this.doc.identifier + termCode,
           user_email: this.auth.getCurrentUser().email,
-          term: termCode,
+          term_code: termCode,
         }
         this.api.removeAnnotation(annotation).subscribe()
       }
