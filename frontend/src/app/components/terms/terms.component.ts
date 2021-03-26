@@ -107,14 +107,15 @@ export class TermsComponent implements OnChanges {
 
   addTerm(event: MatAutocompleteSelectedEvent): void {
     const term = event.option.value as Term
+    const email = this.auth.getCurrentUser().email
     this.doc.terms.push(term)
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
     const termCode = term['code']
     const annotation: Annotation = {
       document_identifier: this.doc.identifier,
-      identifier: this.doc.identifier  + termCode,
-      user_email: this.auth.getCurrentUser().email,
+      identifier: `${this.doc.identifier}-${termCode}-${email}`,
+      user_email: email,
       term_code: termCode,
     }
     this.api.addAnnotation(annotation).subscribe()
@@ -141,11 +142,13 @@ export class TermsComponent implements OnChanges {
     snackBarRef.afterDismissed().subscribe(info => {
       if (!info.dismissedByAction) {
         const termCode = term['code']
+        const email = this.auth.getCurrentUser().email
+
         // Remove the annotation from database.
         const annotation: Annotation = {
           document_identifier: this.doc.identifier,
-          identifier: this.doc.identifier + termCode,
-          user_email: this.auth.getCurrentUser().email,
+          identifier: `${this.doc.identifier}-${termCode}-${email}`,
+          user_email: email,
           term_code: termCode,
         }
         this.api.removeAnnotation(annotation).subscribe()

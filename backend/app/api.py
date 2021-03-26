@@ -95,10 +95,7 @@ def get_assigned_documents_to_user(email):
         skip = 0
     found_documents = mongo.db.documents.find({'identifier': {'$in': identifiers}}, {'_id': 0})
     documents = list(found_documents.skip(skip).limit(limit))
-    user_completions = mongo.db.completions.find_one({'user_email': email})
-    completed_document_ids = list()
-    if user_completions:
-        completed_document_ids = user_completions.get('document_identifiers')
+    completed_document_ids = mongo.db.completions.distinct('document_identifiers', {'user_email': email})
     total_document_count = found_documents.count()
     for document in documents:
         term_codes = mongo.db.annotations.distinct('term_code', {'document_identifier': document.get('identifier'), 'user_email': email})
