@@ -9,7 +9,7 @@
     [paginatorPageSizeOptions]="[10, 15, 20, 25, 50, 100]"
     [paginatorLength]="paginatorLength"
     [backendPagination]="true"
-    (page)="refresh($event)"
+    (page)="refreshPage($event)"
     [rowClickable]="true"
     (rowClick)="selectDoc($event)"
   >
@@ -17,10 +17,9 @@
   <app-doc
     *ngIf="selectedDoc"
     [doc]="selectedDoc"
-    (completed)="refresh()"
-    (validated)="refresh()"
     fxFlexAlign="center"
     style="padding: 2rem 0;"
+    (completed)="refreshDoc()"
     >
   </app-doc>
 </div>

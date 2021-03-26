@@ -50,19 +50,30 @@ export class DocsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.refresh()
   }
 
-  refresh(event?: PageEvent) {
+  refreshPage(event: PageEvent) {
     this.loading = true
     this.api.getAssignedDocs({
       userEmail: this.auth.getCurrentUser().email,
-      pageSize: event?.pageSize,
-      pageIndex: event?.pageIndex,
+      pageSize: event.pageSize,
+      pageIndex: event.pageIndex,
     }).subscribe(
       response => {
         this.docs = response['documents']
         this.paginatorLength = response['total_document_count']
+      },
+      error => console.error(error),
+      () => this.loading = false
+    )
+  }
+
+  refreshDoc() {
+    this.loading = true
+    this.api.getDoc(this.selectedDoc.identifier).subscribe(
+      response => {
+        const docIndex = this.docs.indexOf(this.selectedDoc)
+        this.docs.splice(docIndex, 1, response)
       },
       error => console.error(error),
       () => this.loading = false

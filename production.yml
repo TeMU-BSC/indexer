@@ -7,31 +7,25 @@ services:
       - 27018:27017
     entrypoint: mongod --bind_ip_all
     volumes:
-      - ./database/mongodb:/data/db
-      # - /data/mongodb:/data/db
+      - /data/mongodb:/data/db
+    restart: always
 
   flask:
     container_name: indexer_flask
     build: ./backend
     env_file:
-      - .env/flask.env
+      - .env/flask.production.env
     ports:
       - 5000:5000
     command: flask run --host 0.0.0.0
-    volumes:
-      - ./backend:/app
-    # env_file:
-    #   - .env/flask.production.env
     # ports:
     #   - 8080:8080
     # command: uwsgi app.ini
-    # restart: always
+    restart: always
 
   angular:
-    container_name: indexer_angular_production
+    container_name: indexer_angular
     build: ./frontend
-    depends_on:
-      - flask
     ports:
       - 80:80
     restart: always
