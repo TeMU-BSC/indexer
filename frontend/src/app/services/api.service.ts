@@ -37,6 +37,12 @@ export class ApiService {
     return this.http.get<any[]>(`${this.url}/docs/${userEmail}?page_size=${pageSize}&page_index=${pageIndex}`)
   }
 
+  getAssignedUsers(query: any): Observable<any[]> {
+    const { userEmail, pageSize, pageIndex } = query
+    return this.http.get<any[]>(`${this.url}/docs/validate/${userEmail}?page_size=${pageSize}&page_index=${pageIndex}`)
+  }
+
+
   addAnnotation(annotation: Annotation): Observable<any> {
     return this.http.post<any>(`${this.url}/annotation`, annotation)
   }
