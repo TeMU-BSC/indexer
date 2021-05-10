@@ -1,7 +1,7 @@
 export interface User {
   fullname: string
   email: string
-  role: 'annotator' | 'admin'
+  role: 'annotator' | 'admin' | 'validator'
   password: string
   assigned_document_identifiers?: string[]
 }
