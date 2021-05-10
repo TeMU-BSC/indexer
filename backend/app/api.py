@@ -17,6 +17,7 @@ import json
 import os
 import random
 import re
+import sys
 from statistics import mean
 
 # Third parties.
@@ -24,6 +25,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_paginate import Pagination, get_page_args
 from flask_pymongo import PyMongo
+from bson.json_util import dumps
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 # Private modules.
@@ -108,6 +110,44 @@ def get_assigned_documents_to_user(email):
         document['completed'] = document.get('identifier') in completed_document_ids
     return jsonify(documents=documents, total_document_count=total_document_count)
 
+
+@app.route('/docs/validate/<email>', methods=['GET'])
+def get_assigned_users(email):
+    user = mongo.db.users.find_one({'email': email})
+    users = user.get('assigned_users')
+   # identifiers = user.get('assigned_document_identifiers')
+    try:
+        limit = int(request.args.get('page_size'))
+    except:
+        limit = 0
+    try:
+        skip = int(request.args.get('page_index')) * limit
+    except:
+        skip = 0
+    all_documents = list()
+    completed_document_ids = list()
+    validated_document_ids = mongo.db.validations.distinct('document_identifiers', {'user_email': email})
+    
+    for user in users:
+        user_email = user.get('email')
+        user_completions = mongo.db.completions.find_one({'user_email': user_email})
+        if user_completions:
+            completed_document_ids = user_completions.get('document_identifiers')
+        found_documents = mongo.db.documents.find({'identifier': {'$in': completed_document_ids}}, {'_id': 0})
+        documents = list(found_documents)
+        for document in documents:
+            document['user_email'] = user_email
+            term_codes = mongo.db.annotations.distinct('term_code', {'document_identifier': document.get('identifier'), 'user_email': user_email})
+            terms = mongo.db.terms.find({'code': {'$in': term_codes}})
+            terms_with_str_ids = list()
+            for term in terms:
+                term['_id'] = str(term['_id'])
+                terms_with_str_ids.append(term)
+            document['terms'] = terms_with_str_ids
+            document['validated'] = document.get('identifier')+"-"+user_email in validated_document_ids
+            all_documents.append(document)
+    
+    return jsonify(documents=all_documents)
 
 @app.route('/mark-doc-as/<status>', methods=['POST'])
 def mark_doc_as(status):

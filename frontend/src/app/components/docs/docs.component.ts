@@ -53,19 +53,45 @@ export class DocsComponent implements OnInit {
   }
 
   refreshPage(event: PageEvent) {
+
     this.loading = true
-    this.api.getAssignedDocs({
-      userEmail: this.auth.getCurrentUser().email,
-      pageSize: event.pageSize,
-      pageIndex: event.pageIndex,
-    }).subscribe(
-      response => {
-        this.docs = response['documents']
-        this.paginatorLength = response['total_document_count']
-      },
-      error => console.error(error),
-      () => this.loading = false
-    )
+
+    if(this.auth.getCurrentUser().role === 'validator'){
+      this.api.getAssignedUsers({
+        userEmail: this.auth.getCurrentUser().email,
+        pageSize: event.pageSize,
+        pageIndex: event.pageIndex,
+      }).subscribe(
+        response => {
+
+           this.docs = response['documents']
+           this.paginatorLength = response['total_document_count']
+        },
+        error => console.error(error),
+        () => this.loading = false
+      )
+
+
+    }else{
+      this.api.getAssignedDocs({
+        userEmail: this.auth.getCurrentUser().email,
+        pageSize: event.pageSize,
+        pageIndex: event.pageIndex,
+      }).subscribe(
+        response => {
+          console.log(response['documents']);
+          this.docs = response['documents']
+          this.paginatorLength = response['total_document_count']
+        },
+        error => console.error(error),
+        () => this.loading = false
+      )
+
+    }
+
+
+
+
   }
 
   refreshDoc() {
