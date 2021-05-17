@@ -124,7 +124,7 @@ export class DocsComponent implements OnInit {
   }
 
   refreshDoc() {
-    window.location.reload();
+    setTimeout(function(){window.location.reload()},500);
     this.loading = true
     this.api.getDoc(this.selectedDoc.identifier).subscribe(
       response => {
