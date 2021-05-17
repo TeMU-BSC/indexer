@@ -15,6 +15,7 @@ export interface Document {
   terms?: Term[]
   completed?: Boolean
   validated?: Boolean
+  user_email?: User['email']
 }
 export interface Term {
   terminology: string
@@ -28,6 +29,14 @@ export interface Annotation {
   document_identifier: Document['identifier']
   identifier: string
   user_email: User['email']
+  term_code: string
+}
+
+export interface Validation {
+  document_identifier: Document['identifier']
+  identifier: string
+  user_email: User['email']
+  validator_email: User['email']
   term_code: string
 }
 

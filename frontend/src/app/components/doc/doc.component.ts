@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core'
+import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, OnInit, OnChanges } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { TermsComponent } from 'src/app/components/terms/terms.component'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
@@ -12,11 +12,13 @@ import { Document } from 'src/app/models/interfaces'
   templateUrl: './doc.component.html',
   styleUrls: ['./doc.component.scss']
 })
-export class DocComponent implements AfterViewInit {
+export class DocComponent implements AfterViewInit, OnChanges {
 
   @Input() doc: Document
   @Output() completed = new EventEmitter<boolean>()
   @Output() validated = new EventEmitter<boolean>()
+  complete = this.auth.getCurrentUser().role === "validator"? "validate":"complete";
+  documentFinished: Boolean;
   formConfigTerms: FormConfig = {
     label: 'Términos',
     hint: ``,
@@ -38,10 +40,15 @@ export class DocComponent implements AfterViewInit {
     public dialog: MatDialog,
   ) { }
 
-  ngAfterViewInit() { }
+  ngOnChanges(){
+    this.documentFinished = this.auth.getCurrentUser().role === "validator"? this.doc.validated : this.doc.completed;
+  }
+  ngAfterViewInit() {
+
+   }
 
     printDoc(){
-      console.log(this.doc);
+
     }
   /**
    * Open a confirmation dialog before mark a document as completed/validated and apply changes to backend.
@@ -88,13 +95,11 @@ export class DocComponent implements AfterViewInit {
             break
           case 'validate':
             this.doc.validated = true
-            this.validated.emit(true)
+            this.completed.emit(true)
             this.api.markAsValidated({
-              document_identifier: this.doc.identifier,
+              document_identifier: this.doc.identifier+"-"+this.doc.user_email,
               user_email: this.auth.getCurrentUser().email
             }).subscribe()
-            const validatedAnnotations = []
-            this.api.saveValidatedAnnotations(validatedAnnotations).subscribe()
             break
         }
       }

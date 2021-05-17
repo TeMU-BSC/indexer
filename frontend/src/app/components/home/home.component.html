@@ -17,7 +17,7 @@
         <button *ngIf="auth.getCurrentUser().role === 'admin'" mat-raised-button color="warn" routerLink="/admin">
           Ir al panel de administración
         </button>
-        <button *ngIf="auth.getCurrentUser().role === 'validator'" mat-raised-button color="warn" routerLink="/admin">
+        <button *ngIf="auth.getCurrentUser().role === 'validator'" mat-raised-button color="warn" routerLink="/docs">
           Ver mis mis documentos a validar
         </button>
       </div>

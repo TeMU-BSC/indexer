@@ -23,33 +23,64 @@ export class DocsComponent implements OnInit {
     private api: ApiService,
     public auth: AuthService
   ) {
-    this.columns = [
-      new TableColumn<Document, 'identifier'>('Identificador', 'identifier')
-        .withColFilter().withColFilterLabel('Filtrar'),
-      new TableColumn<Document, 'title'>('Título', 'title')
-        .isHiddenXs(true)
-        .withWidth(Width.pct(75))
-        .withColFilter().withColFilterLabel('Filtrar'),
-      new TableColumn<Document, 'source'>('Fuente', 'source')
-        .isHiddenXs(true)
-        .withWidth(Width.pct(75))
-        .withColFilter().withColFilterLabel('Filtrar'),
-      new TableColumn<Document, 'type'>('Tipo', 'type')
-        .isHiddenXs(true)
-        .withWidth(Width.pct(75))
-        .withColFilter().withColFilterLabel('Filtrar'),
-      new TableColumn<Document, 'completed'>('Completado', 'completed')
-        .withColFilter().withColFilterLabel('Filtrar')
-        .withTransform(completed => completed ? 'Sí' : 'No')
-        .withNgStyle(completed => ({ color: completed ? 'green' : 'red' })),
-      // new TableColumn<Document, 'validated'>('Validado', 'validated')
-      //   .withColFilter().withColFilterLabel('Filtrar')
-      //   .withTransform(validated => validated ? 'Sí' : 'No')
-      //   .withNgStyle(validated => ({ color: validated ? 'green' : 'red' })),
-    ]
+
+
+    if(this.auth.getCurrentUser().role === "validator"){
+      this.columns = [
+        new TableColumn<Document, 'identifier'>('Identificador', 'identifier')
+          .withColFilter().withColFilterLabel('Filtrar'),
+        new TableColumn<Document, 'title'>('Título', 'title')
+          .isHiddenXs(true)
+          .withWidth(Width.pct(75))
+          .withColFilter().withColFilterLabel('Filtrar'),
+        new TableColumn<Document, 'source'>('Fuente', 'source')
+          .isHiddenXs(true)
+          .withWidth(Width.pct(75))
+          .withColFilter().withColFilterLabel('Filtrar'),
+        new TableColumn<Document, 'type'>('Tipo', 'type')
+          .isHiddenXs(true)
+          .withWidth(Width.pct(75))
+          .withColFilter().withColFilterLabel('Filtrar'),
+        // new TableColumn<Document, 'completed'>('Completado', 'completed')
+        //   .withColFilter().withColFilterLabel('Filtrar')
+        //   .withTransform(completed => completed ? 'Sí' : 'No')
+        //   .withNgStyle(completed => ({ color: completed ? 'green' : 'red' })),
+        new TableColumn<Document, 'validated'>('Validado', 'validated')
+          .withColFilter().withColFilterLabel('Filtrar')
+          .withTransform(validated => validated ? 'Sí' : 'No')
+          .withNgStyle(validated => ({ color: validated ? 'green' : 'red' })),
+      ]
+    }else{
+      this.columns = [
+        new TableColumn<Document, 'identifier'>('Identificador', 'identifier')
+          .withColFilter().withColFilterLabel('Filtrar'),
+        new TableColumn<Document, 'title'>('Título', 'title')
+          .isHiddenXs(true)
+          .withWidth(Width.pct(75))
+          .withColFilter().withColFilterLabel('Filtrar'),
+        new TableColumn<Document, 'source'>('Fuente', 'source')
+          .isHiddenXs(true)
+          .withWidth(Width.pct(75))
+          .withColFilter().withColFilterLabel('Filtrar'),
+        new TableColumn<Document, 'type'>('Tipo', 'type')
+          .isHiddenXs(true)
+          .withWidth(Width.pct(75))
+          .withColFilter().withColFilterLabel('Filtrar'),
+        new TableColumn<Document, 'completed'>('Completado', 'completed')
+          .withColFilter().withColFilterLabel('Filtrar')
+          .withTransform(completed => completed ? 'Sí' : 'No')
+          .withNgStyle(completed => ({ color: completed ? 'green' : 'red' })),
+        // new TableColumn<Document, 'validated'>('Validado', 'validated')
+        //   .withColFilter().withColFilterLabel('Filtrar')
+        //   .withTransform(validated => validated ? 'Sí' : 'No')
+        //   .withNgStyle(validated => ({ color: validated ? 'green' : 'red' })),
+      ]
+    }
+
   }
 
   ngOnInit() {
+
   }
 
   refreshPage(event: PageEvent) {
@@ -61,17 +92,15 @@ export class DocsComponent implements OnInit {
         userEmail: this.auth.getCurrentUser().email,
         pageSize: event.pageSize,
         pageIndex: event.pageIndex,
+
       }).subscribe(
         response => {
-
            this.docs = response['documents']
            this.paginatorLength = response['total_document_count']
         },
         error => console.error(error),
         () => this.loading = false
       )
-
-
     }else{
       this.api.getAssignedDocs({
         userEmail: this.auth.getCurrentUser().email,
@@ -79,7 +108,7 @@ export class DocsComponent implements OnInit {
         pageIndex: event.pageIndex,
       }).subscribe(
         response => {
-          console.log(response['documents']);
+
           this.docs = response['documents']
           this.paginatorLength = response['total_document_count']
         },
@@ -95,6 +124,7 @@ export class DocsComponent implements OnInit {
   }
 
   refreshDoc() {
+    window.location.reload();
     this.loading = true
     this.api.getDoc(this.selectedDoc.identifier).subscribe(
       response => {

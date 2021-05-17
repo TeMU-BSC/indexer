@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable } from 'rxjs'
 import { debounceTime, map, startWith } from 'rxjs/operators'
 import { DialogComponent } from 'src/app/components/dialog/dialog.component'
-import { Document, Annotation, Term } from 'src/app/models/interfaces'
+import { Document, Annotation, Term, Validation } from 'src/app/models/interfaces'
 import { FormConfig } from 'src/app/models/interfaces'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
@@ -18,7 +18,7 @@ import { customSort, isInputIncludedInValueOfObjectKey, removeConsecutiveSpaces 
   templateUrl: './terms.component.html',
   styleUrls: ['./terms.component.scss']
 })
-export class TermsComponent implements OnChanges {
+export class TermsComponent implements OnChanges,OnInit {
 
   @Input() doc: Document
   @Input() formConfig: FormConfig
@@ -31,6 +31,9 @@ export class TermsComponent implements OnChanges {
   separatorKeysCodes: number[] = [ENTER]
   options: Term[]
   filteredOptions: Observable<Term[]>
+  showTerms: Term[]
+  validations: Validation[]  = []
+  firstTime: boolean
 
   constructor(
     public api: ApiService,
@@ -42,7 +45,20 @@ export class TermsComponent implements OnChanges {
   /**
    * This component implements OnChanges method so it can react to parent changes on its '@Input() doc' property.
    */
+  ngOnInit(){
+    this.showTerms = this.doc.terms
+
+
+  }
   ngOnChanges() {
+    if(this.auth.getCurrentUser().role === "validator"){
+      this.firstTimeValidation()
+      this.getTermsValidatorAnnoation()
+    }else{
+
+      this.showTerms = this.doc.terms
+    }
+
     this.api.getTerms().subscribe(response => {
       this.options = response
       this.filteredOptions = this.filterTermsAsUserTypes()
@@ -78,6 +94,56 @@ export class TermsComponent implements OnChanges {
     )
   }
 
+  firstTimeValidation(){
+    const FirstTimeValidation: Validation = {
+      document_identifier: this.doc.identifier,
+      user_email: this.doc.user_email,
+      validator_email: this.auth.getCurrentUser().email,
+      term_code: "",
+      identifier: ""
+  }
+    this.api.getFirstTimeValidation(FirstTimeValidation).subscribe(response => {
+      this.firstTime = response.firsttime
+    },
+    error => {},
+    () =>{
+      this.loadTermsToValidatorAnnotation()
+    })
+  }
+
+  loadTermsToValidatorAnnotation(){
+    let terms = this.doc.terms
+    const email = this.auth.getCurrentUser().email
+    let Validations = []
+    if(this.firstTime){
+      terms.forEach(term => {
+        const validation: Validation = {
+          document_identifier: this.doc.identifier,
+          identifier: `${this.doc.identifier}-${term.code}-${email}-${this.doc.user_email}`,
+          user_email: this.doc.user_email,
+          validator_email: email,
+          term_code: term.code
+        }
+        Validations.push(validation)
+      });
+      this.api.addAnnotationValidator(Validations).subscribe(response => {
+      },error => {},() => this.getTermsValidatorAnnoation)
+    }
+  }
+
+  getTermsValidatorAnnoation(){
+    const ValidationMock: Validation = {
+      document_identifier: this.doc.identifier,
+      user_email: this.doc.user_email,
+      validator_email: this.auth.getCurrentUser().email,
+      term_code: "",
+      identifier: ""
+  }
+    this.api.getTermsAnnotationValidator(ValidationMock).subscribe(response => {
+      this.showTerms = response.success.terms
+    })
+  }
+
   filterTermsAsUserTypes() {
     return this.autocompleteChipList.valueChanges.pipe(
       debounceTime(100),
@@ -105,37 +171,50 @@ export class TermsComponent implements OnChanges {
     return customSort(filteredTerms, searchCriteria, sortingKey)
   }
 
-  addTerm(event: MatAutocompleteSelectedEvent): void {
+  addTerm(event?: MatAutocompleteSelectedEvent): void {
     const term = event.option.value as Term
     const email = this.auth.getCurrentUser().email
-    this.doc.terms.push(term)
+    this.showTerms.push(term)
     this.chipInput.nativeElement.value = ''
     this.autocompleteChipList.setValue('')
     const termCode = term['code']
-    const annotation: Annotation = {
-      document_identifier: this.doc.identifier,
-      identifier: `${this.doc.identifier}-${termCode}-${email}`,
-      user_email: email,
-      term_code: termCode,
+
+    if(this.auth.getCurrentUser().role === "validator"){
+      const validation: Validation = {
+        document_identifier: this.doc.identifier,
+        identifier: `${this.doc.identifier}-${term.code}-${email}-${this.doc.user_email}`,
+        user_email: this.doc.user_email,
+        validator_email: this.auth.getCurrentUser().email,
+        term_code: termCode,
+      }
+      this.api.addAnnotationValidator(validation).subscribe()
+    }else{
+      const annotation: Annotation = {
+        document_identifier: this.doc.identifier,
+        identifier: `${this.doc.identifier}-${termCode}-${email}`,
+        user_email: email,
+        term_code: termCode,
+      }
+      this.api.addAnnotation(annotation).subscribe()
     }
-    this.api.addAnnotation(annotation).subscribe()
+
   }
 
   removeTerm(term: Term): void {
 
     // Remove the chip visually.
-    const index = this.doc.terms.indexOf(term)
+    const index = this.showTerms.indexOf(term)
     if (index >= 0) {
-      this.doc.terms.splice(index, 1)
+      this.showTerms.splice(index, 1)
     }
 
     // Emulate term removal.
-    const snackBarRef = this.snackBar.open('Término borrado del documento.', 'Deshacer')
+    const snackBarRef = this.snackBar.open('Término borrado del documento.', 'Deshacer', { duration: 1000 })
 
     // If the action button of snackbar is clicked, the term is not removed.
     snackBarRef.onAction().subscribe(() => {
-      this.doc.terms.splice(index, 0, term)
-      this.snackBar.open('El término no ha sido borrado.', 'Vale', { duration: 5000 })
+      this.showTerms.splice(index, 0, term)
+      this.snackBar.open('El término no ha sido borrado.', 'Vale', { duration: 1000 })
     })
 
     // Otherwise, if the the the snackbar is closed by timeout, the term is sent to the backend to be deleted.
@@ -144,7 +223,18 @@ export class TermsComponent implements OnChanges {
         const termCode = term['code']
         const email = this.auth.getCurrentUser().email
 
-        // Remove the annotation from database.
+        if(this.auth.getCurrentUser().role === "validator"){
+          const annotationValidator: Annotation = {
+            document_identifier: this.doc.identifier,
+            identifier: `${this.doc.identifier}-${term.code}-${email}-${this.doc.user_email}`,
+            user_email: email,
+            term_code: termCode,
+          }
+
+          this.api.removeValidation(annotationValidator).subscribe()
+        }else{
+
+           // Remove the annotation from database.
         const annotation: Annotation = {
           document_identifier: this.doc.identifier,
           identifier: `${this.doc.identifier}-${termCode}-${email}`,
@@ -152,6 +242,9 @@ export class TermsComponent implements OnChanges {
           term_code: termCode,
         }
         this.api.removeAnnotation(annotation).subscribe()
+
+        }
+
       }
     })
   }

@@ -126,28 +126,32 @@ def get_assigned_users(email):
         skip = 0
     all_documents = list()
     completed_document_ids = list()
-    validated_document_ids = mongo.db.validations.distinct('document_identifiers', {'user_email': email})
+    validated_document_ids = mongo.db.completeValidations.distinct('document_identifiers', {'user_email': email})
     
     for user in users:
         user_email = user.get('email')
         user_completions = mongo.db.completions.find_one({'user_email': user_email})
         if user_completions:
             completed_document_ids = user_completions.get('document_identifiers')
-        found_documents = mongo.db.documents.find({'identifier': {'$in': completed_document_ids}}, {'_id': 0})
-        documents = list(found_documents)
-        for document in documents:
-            document['user_email'] = user_email
-            term_codes = mongo.db.annotations.distinct('term_code', {'document_identifier': document.get('identifier'), 'user_email': user_email})
-            terms = mongo.db.terms.find({'code': {'$in': term_codes}})
-            terms_with_str_ids = list()
-            for term in terms:
-                term['_id'] = str(term['_id'])
-                terms_with_str_ids.append(term)
-            document['terms'] = terms_with_str_ids
-            document['validated'] = document.get('identifier')+"-"+user_email in validated_document_ids
-            all_documents.append(document)
+            found_documents = mongo.db.documents.find({'identifier': {'$in': completed_document_ids}}, {'_id': 0})
+            documents = list(found_documents)
+            for document in documents:
+                document['user_email'] = user_email
+                term_codes = mongo.db.annotations.distinct('term_code', {'document_identifier': document.get('identifier'), 'user_email': user_email})
+                terms = mongo.db.terms.find({'code': {'$in': term_codes}})
+                terms_with_str_ids = list()
+                for term in terms:
+                    term['_id'] = str(term['_id'])
+                    terms_with_str_ids.append(term)
+                document['terms'] = terms_with_str_ids
+                document['validated'] = document.get('identifier')+"-"+user_email in validated_document_ids
+                all_documents.append(document)
+                response = "all good"
+        else:
+            response = "No se encontro"
+            
     
-    return jsonify(documents=all_documents)
+    return jsonify(documents=all_documents, page=limit, response = response)
 
 @app.route('/mark-doc-as/<status>', methods=['POST'])
 def mark_doc_as(status):
@@ -166,7 +170,7 @@ def mark_doc_as(status):
             {'$pull': {'document_identifiers': doc_to_mark['document_identifier']}}
         )
     if status == 'validated':
-        result = mongo.db.validations.update_one(
+        result = mongo.db.completeValidations.update_one(
             {'user_email': doc_to_mark['user_email']},
             {'$push': {'document_identifiers': request.json['document_identifier']}},
             upsert=True
@@ -179,7 +183,70 @@ def mark_doc_as(status):
     return jsonify({'success': result.acknowledged})
 
 
+
+@app.route('/validation/firsttime',methods=['POST'])
+def verify_firstTime():
+    collection = 'validations'
+    success = True
+    annotator_email = request.json.get('user_email')
+    document = request.json.get('document_identifier')
+    validator_email = request.json.get('validator_email')
+    already_loaded = False
+    found1 = mongo.db[collection].find_one({'document_identifier':document,'user_email':annotator_email,'validator_email':validator_email})
+    if(found1):
+        success = False
+    return jsonify(firsttime = success)
+
+
+@app.route('/validation', methods=['POST'])
+def create_validation():
+    collection = 'validations'
+    success = False
+    already_loaded = False
+    
+    if isinstance(request.json, dict):
+        document = request.json
+        identifier = request.json.get('identifier')
+        found = mongo.db[collection].find_one({'identifier': identifier})
+        if not (found):
+            insertion_result = mongo.db[collection].insert_one(document)
+            success = insertion_result.acknowledged
+    elif isinstance(request.json, list):
+        documents = request.json
+        insert_many_result = mongo.db[collection].insert_many(documents)
+        success = insert_many_result.acknowledged
+    if success:
+        message = 'Validation inserted successfully'
+    else:
+        message = 'something went wrong'
+    return jsonify(success=success, message=message, already_loaded = already_loaded)
+
+
+@app.route('/validation/terms', methods=['POST'])
+def get_validation():
+    collection = 'validations'
+    success = False
+    annotator_email = request.json.get('user_email')
+    document = request.json.get('document_identifier')
+    validator_email = request.json.get('validator_email')
+    term_codes =  mongo.db[collection].distinct('term_code', {'document_identifier': document, 'user_email': annotator_email, 'validator_email': validator_email})
+    terms = mongo.db.terms.find({'code': {'$in': term_codes}})
+    document = {}
+    terms_with_str_ids = list()
+    for term in terms:
+        term['_id'] = str(term['_id'])
+        terms_with_str_ids.append(term)
+    document['terms'] = terms_with_str_ids
+    return jsonify(success=document)
+
+
+
+
+
+
+
 # CRUD (Create, Read, Update, Delete) routes for items `user`, `document`, `term`, `annotation`.
+
 
 
 @app.route('/<item>', methods=['POST'])

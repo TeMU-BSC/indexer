@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs'
 import { environment } from 'src/environments/environment'
 import { _sortByOrder } from 'src/app/helpers/functions'
-import { ApiResponse, Document, Annotation, Term } from 'src/app/models/interfaces'
+import { ApiResponse, Document, Annotation, Term, Validation} from 'src/app/models/interfaces'
 
 @Injectable({
   providedIn: 'root'
@@ -46,9 +46,16 @@ export class ApiService {
   addAnnotation(annotation: Annotation): Observable<any> {
     return this.http.post<any>(`${this.url}/annotation`, annotation)
   }
+  addAnnotationValidator(validation: any): Observable<any>{
+    return this.http.post<any>(`${this.url}/validation`, validation)
+  }
 
   removeAnnotation(annotation: Annotation): Observable<any> {
     return this.http.request<any>('delete', `${this.url}/annotation`, { body: [annotation] })
+  }
+
+  removeValidation(annotation: Annotation): Observable<any> {
+    return this.http.request<any>('delete', `${this.url}/validation`, { body: [annotation] })
   }
 
   markAsCompleted(docToMark: any): Observable<Document> {
@@ -81,6 +88,13 @@ export class ApiService {
 
   getDoc(id: string): Observable<Document> {
     return this.http.get<Document>(`${this.url}/doc/${id}`)
+  }
+
+  getTermsAnnotationValidator(terms: any): Observable<any>{
+    return this.http.post<any>(`${this.url}/validation/terms`, terms)
+  }
+  getFirstTimeValidation(validation: Validation): Observable<any>{
+    return this.http.post<any>(`${this.url}/validation/firsttime`,validation)
   }
 
 }

@@ -1,7 +1,7 @@
 <mat-form-field appearance="outline">
   <mat-label>{{ formConfig.label }}</mat-label>
   <mat-chip-list #chipList>
-    <mat-chip *ngFor="let term of doc.terms"
+    <mat-chip *ngFor="let term of showTerms"
       [matTooltip]="term.terminology + ': ' + term.code + ' - ' + term.description"
       [removable]="removable"
       (removed)="removeTerm(term)"
