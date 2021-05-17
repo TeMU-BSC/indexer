@@ -113,8 +113,8 @@ def get_assigned_documents_to_user(email):
 
 @app.route('/docs/validate/<email>', methods=['GET'])
 def get_assigned_users(email):
-    user = mongo.db.users.find_one({'email': email})
-    users = user.get('assigned_users')
+    validator_user = mongo.db.users.find_one({'email': email})
+    users = validator_user.get('assigned_users')
    # identifiers = user.get('assigned_document_identifiers')
     try:
         limit = int(request.args.get('page_size'))
@@ -131,9 +131,10 @@ def get_assigned_users(email):
     for user in users:
         user_email = user.get('email')
         user_completions = mongo.db.completions.find_one({'user_email': user_email})
+        user_documents = user.get('assigned_document_identifiers')
         if user_completions:
             completed_document_ids = user_completions.get('document_identifiers')
-            found_documents = mongo.db.documents.find({'identifier': {'$in': completed_document_ids}}, {'_id': 0})
+            found_documents = mongo.db.documents.find({"$and":[{'identifier': {'$in': completed_document_ids}},{ 'identifier': {'$in': user_documents}}] }, {'_id': 0})
             documents = list(found_documents)
             for document in documents:
                 document['user_email'] = user_email
