@@ -3,7 +3,7 @@ import { PageEvent } from '@angular/material/paginator'
 import { TableColumn, Width } from 'simplemattable'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { Document } from 'src/app/models/interfaces'
+import { Document,Validation,ValidationTime } from 'src/app/models/interfaces'
 
 
 @Component({
@@ -18,6 +18,8 @@ export class DocsComponent implements OnInit {
   selectedDoc: Document
   loading: boolean
   paginatorLength: number
+  firstTimeValidation: boolean
+  firstTime: boolean
 
   constructor(
     private api: ApiService,
@@ -99,7 +101,12 @@ export class DocsComponent implements OnInit {
            this.paginatorLength = response['total_document_count']
         },
         error => console.error(error),
-        () => this.loading = false
+        () =>{
+
+
+          this.firstTimeValidationFunc()
+          this.loading = false
+        }
       )
     }else{
       this.api.getAssignedDocs({
@@ -108,7 +115,6 @@ export class DocsComponent implements OnInit {
         pageIndex: event.pageIndex,
       }).subscribe(
         response => {
-
           this.docs = response['documents']
           this.paginatorLength = response['total_document_count']
         },
@@ -117,11 +123,53 @@ export class DocsComponent implements OnInit {
       )
 
     }
+  }
+
+  firstTimeValidationFunc(){
+    for (let index = 0; index < this.docs.length; index++) {
+      const doc = this.docs[index];
+      const FirstTimeValidation: Validation = {
+        document_identifier: doc.identifier,
+        user_email: doc.user_email,
+        validator_email: this.auth.getCurrentUser().email,
+        term_code: "",
+        identifier: ""
+    }
+    this.api.getFirstTimeValidation(FirstTimeValidation).subscribe(response => {
+      this.firstTime = response.firsttime
+    },
+    error => {},
+    () =>{
+      this.loadTermsToValidatorAnnotation(doc)
+    })
 
 
+    }
 
 
   }
+
+  loadTermsToValidatorAnnotation(doc:Document){
+    let terms = doc.terms
+    const email = this.auth.getCurrentUser().email
+    let Validations = []
+    if(this.firstTime){
+      terms.forEach(term => {
+        const validation: Validation = {
+          document_identifier:doc.identifier,
+          identifier: `${doc.identifier}-${term.code}-${email}-${doc.user_email}`,
+          user_email: doc.user_email,
+          validator_email: email,
+          term_code: term.code
+        }
+        Validations.push(validation)
+      });
+      this.api.addAnnotationValidator(Validations).subscribe(response => {
+      },error => {} )
+    }
+  }
+
+
 
   refreshDoc() {
     setTimeout(function(){window.location.reload()},500);
@@ -137,7 +185,37 @@ export class DocsComponent implements OnInit {
   }
 
   selectDoc(row: Document) {
+
+    const timer : ValidationTime = {
+      identifier: row.identifier+"-"+row.user_email+"-"+this.auth.getCurrentUser().email,
+      document : row.identifier,
+      annotator_email: row.user_email,
+      validator_email: this.auth.getCurrentUser().email,
+      opened_first_time: new Date(),
+      validate: false,
+      validated_time: null
+    }
+    this.api.getFirstTimeValidationTime(timer).subscribe(
+      response=>{
+
+        this.firstTimeValidation = response['firsttime']
+      },error => console.log(error),
+      ()=> this.loadValidationFirstTime(timer)
+    )
     this.selectedDoc = row
   }
+
+  loadValidationFirstTime(timer: ValidationTime){
+
+    if(this.firstTimeValidation ){this.api.addValidationFirstTime(timer).subscribe(
+      response => {
+        console.log(response)
+      },error => console.log(error)
+
+    )}
+
+  }
+
+
 
 }

@@ -94,12 +94,17 @@ export class DocComponent implements AfterViewInit, OnChanges {
             }).subscribe()
             break
           case 'validate':
+            this.api.updateFinishValidationTime({
+              identifier: this.doc.identifier+"-"+this.doc.user_email+"-"+this.auth.getCurrentUser().email,
+              validated_time: new Date()
+            }).subscribe()
             this.doc.validated = true
             this.completed.emit(true)
             this.api.markAsValidated({
               document_identifier: this.doc.identifier+"-"+this.doc.user_email,
               user_email: this.auth.getCurrentUser().email
             }).subscribe()
+
             break
         }
       }
