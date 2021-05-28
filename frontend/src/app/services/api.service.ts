@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs'
 import { environment } from 'src/environments/environment'
 import { _sortByOrder } from 'src/app/helpers/functions'
-import { ApiResponse, Document, Annotation, Term, Validation} from 'src/app/models/interfaces'
+import { ApiResponse, Document, Annotation, Term, Validation, ValidationTime} from 'src/app/models/interfaces'
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +50,10 @@ export class ApiService {
     return this.http.post<any>(`${this.url}/validation`, validation)
   }
 
+  addValidationFirstTime(validationTime: ValidationTime): Observable<any>{
+    return this.http.post<any>(`${this.url}/validationTime`, validationTime)
+  }
+
   removeAnnotation(annotation: Annotation): Observable<any> {
     return this.http.request<any>('delete', `${this.url}/annotation`, { body: [annotation] })
   }
@@ -68,6 +72,10 @@ export class ApiService {
 
   markAsValidated(docToMark: any): Observable<Document> {
     return this.http.post<Document>(`${this.url}/mark-doc-as/validated`, docToMark)
+  }
+
+  updateFinishValidationTime(validatioTime: any): Observable<any>{
+    return this.http.post<any>(`${this.url}/validationTime/finished`,validatioTime)
   }
 
   markAsUnvalidated(dockToMark: any): Observable<Document> {
@@ -96,5 +104,10 @@ export class ApiService {
   getFirstTimeValidation(validation: Validation): Observable<any>{
     return this.http.post<any>(`${this.url}/validation/firsttime`,validation)
   }
+  getFirstTimeValidationTime(validationTime: ValidationTime): Observable<any>{
+    return this.http.post<any>(`${this.url}/validationTime/firsttime`,validationTime)
+  }
+
+
 
 }

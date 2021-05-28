@@ -40,6 +40,16 @@ export interface Validation {
   term_code: string
 }
 
+export interface ValidationTime {
+  identifier: string,
+  document: Document['identifier'],
+  annotator_email: User['email'],
+  validator_email: User['email'],
+  opened_first_time:  Date,
+  validate: boolean,
+  validated_time: Date
+}
+
 export interface FormConfig {
   label: string
   hint: string

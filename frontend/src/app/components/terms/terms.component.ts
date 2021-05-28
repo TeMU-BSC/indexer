@@ -52,7 +52,7 @@ export class TermsComponent implements OnChanges,OnInit {
   }
   ngOnChanges() {
     if(this.auth.getCurrentUser().role === "validator"){
-      this.firstTimeValidation()
+    //  this.firstTimeValidation()
       this.getTermsValidatorAnnoation()
     }else{
 
@@ -94,42 +94,7 @@ export class TermsComponent implements OnChanges,OnInit {
     )
   }
 
-  firstTimeValidation(){
-    const FirstTimeValidation: Validation = {
-      document_identifier: this.doc.identifier,
-      user_email: this.doc.user_email,
-      validator_email: this.auth.getCurrentUser().email,
-      term_code: "",
-      identifier: ""
-  }
-    this.api.getFirstTimeValidation(FirstTimeValidation).subscribe(response => {
-      this.firstTime = response.firsttime
-    },
-    error => {},
-    () =>{
-      this.loadTermsToValidatorAnnotation()
-    })
-  }
 
-  loadTermsToValidatorAnnotation(){
-    let terms = this.doc.terms
-    const email = this.auth.getCurrentUser().email
-    let Validations = []
-    if(this.firstTime){
-      terms.forEach(term => {
-        const validation: Validation = {
-          document_identifier: this.doc.identifier,
-          identifier: `${this.doc.identifier}-${term.code}-${email}-${this.doc.user_email}`,
-          user_email: this.doc.user_email,
-          validator_email: email,
-          term_code: term.code
-        }
-        Validations.push(validation)
-      });
-      this.api.addAnnotationValidator(Validations).subscribe(response => {
-      },error => {},() => this.getTermsValidatorAnnoation)
-    }
-  }
 
   getTermsValidatorAnnoation(){
     const ValidationMock: Validation = {
