@@ -183,6 +183,17 @@ def mark_doc_as(status):
         )
     return jsonify({'success': result.acknowledged})
 
+@app.route('/validationTime/finished', methods=['POST'])
+def mark_validationTime():
+    validationTime = request.json
+    collection = 'validationTimes'
+    result = mongo.db[collection].update_one({'identifier': validationTime['identifier']},
+    {'$set': {'validated_time': validationTime['validated_time']}}
+    )
+    print(result.acknowledged)
+    return jsonify({'success': result.acknowledged})
+
+
 
 
 @app.route('/validation/firsttime',methods=['POST'])
@@ -194,6 +205,16 @@ def verify_firstTime():
     validator_email = request.json.get('validator_email')
     already_loaded = False
     found1 = mongo.db[collection].find_one({'document_identifier':document,'user_email':annotator_email,'validator_email':validator_email})
+    if(found1):
+        success = False
+    return jsonify(firsttime = success)
+
+@app.route('/validationTime/firsttime',methods=['POST'])
+def verify_firstTimeValidation():
+    collection = 'validationTimes'
+    success = True
+    identifier = request.json.get('identifier')
+    found1 = mongo.db[collection].find_one({'identifier':identifier})
     if(found1):
         success = False
     return jsonify(firsttime = success)
