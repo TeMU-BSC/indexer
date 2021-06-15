@@ -43,17 +43,24 @@ export class AuthService implements CanActivate {
     return this.http.request<ApiResponse>('delete', `${this.api.url}/user`, { body: users })
   }
 
-  public login(email: string, password: string): void {
+  public login(email: string, password: string): boolean {
+    let found = false;
     this.http.post<User>(`${this.api.url}/login`, { email, password }).subscribe(
       foundUser => {
         if (foundUser) {
           this.user = foundUser
           localStorage.setItem(this.browserStorageKey, JSON.stringify(this.user))
           this.title.setTitle(`Indizador - ${this.user.email}`)
-          this.router.navigate(['docs'])
+          if(this.user.role === 'annotator' ||this.user.role === 'validator' ){
+            this.router.navigate(['docs'])
+          }else if(this.user.role === 'admin'){
+            this.router.navigate(['admin'])
+          }
+          found =  true;
         }
       }
     )
+    return found;
   }
 
   public logout(): void {

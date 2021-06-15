@@ -9,7 +9,8 @@ import { HttpClientModule } from '@angular/common/http'
 import { FlexLayoutModule } from '@angular/flex-layout'
 import { MaterialModule } from './modules/material.module'
 import { SimplemattableModule } from 'simplemattable'
-
+import { MatListModule } from '@angular/material/list'
+import {MatIconModule} from '@angular/material/icon';
 // Created components, pipes, interceptors
 import { AppComponent } from './app.component'
 import { HeaderComponent } from './components/header/header.component'
@@ -24,7 +25,11 @@ import { TermsComponent } from './components/terms/terms.component'
 import { DocDetailComponent } from './components/doc-detail/doc-detail.component'
 // import { HighlightPipe } from './pipes/highlight.pipe'
 import { SafeHtmlPipe } from './pipes/safe-html.pipe'
-
+import { MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import {MatTableModule} from '@angular/material/table';
+import {MatDialogModule} from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -52,6 +57,14 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe'
     FlexLayoutModule,
     SimplemattableModule,
     HttpClientModule,
+    MatProgressSpinnerModule,
+    MatListModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    MatSortModule,
+    MatDialogModule,
   ],
   providers: [
     // HighlightPipe,

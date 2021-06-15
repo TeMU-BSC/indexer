@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit,ViewChild,AfterViewInit } from '@angular/core'
 import { PageEvent } from '@angular/material/paginator'
 import { TableColumn, Width } from 'simplemattable'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { Document,Validation,ValidationTime } from 'src/app/models/interfaces'
-
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-docs',
   templateUrl: './docs.component.html',
   styleUrls: ['./docs.component.scss']
 })
-export class DocsComponent implements OnInit {
+export class DocsComponent implements AfterViewInit {
 
   columns = []
   docs: Document[] = []
@@ -21,107 +23,82 @@ export class DocsComponent implements OnInit {
   firstTimeValidation: boolean
   firstTime: boolean
 
+  //Pagination properties
+  currentPage: number;
+  itemsPerPage: number;
+  displayedColumns: string[];
+  dataSource: MatTableDataSource<Document>;
+  private paginator: MatPaginator;
+  private sort: MatSort;
+
+
+  @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
+    this.paginator = mp;
+    this.setDataSourceAttributes();
+  }
+  @ViewChild(MatSort) set matSort(ms: MatSort) {
+    this.sort = ms;
+    this.setDataSourceAttributes();
+  }
+
+
+
   constructor(
     private api: ApiService,
     public auth: AuthService
   ) {
 
+    this.dataSource = new MatTableDataSource([]);
+    this.refresh();
 
     if(this.auth.getCurrentUser().role === "validator"){
-      this.columns = [
-        new TableColumn<Document, 'identifier'>('Identificador', 'identifier')
-          .withColFilter().withColFilterLabel('Filtrar'),
-        new TableColumn<Document, 'title'>('Título', 'title')
-          .isHiddenXs(true)
-          .withWidth(Width.pct(75))
-          .withColFilter().withColFilterLabel('Filtrar'),
-        new TableColumn<Document, 'source'>('Fuente', 'source')
-          .isHiddenXs(true)
-          .withWidth(Width.pct(75))
-          .withColFilter().withColFilterLabel('Filtrar'),
-        new TableColumn<Document, 'type'>('Tipo', 'type')
-          .isHiddenXs(true)
-          .withWidth(Width.pct(75))
-          .withColFilter().withColFilterLabel('Filtrar'),
-        // new TableColumn<Document, 'completed'>('Completado', 'completed')
-        //   .withColFilter().withColFilterLabel('Filtrar')
-        //   .withTransform(completed => completed ? 'Sí' : 'No')
-        //   .withNgStyle(completed => ({ color: completed ? 'green' : 'red' })),
-        new TableColumn<Document, 'validated'>('Validado', 'validated')
-          .withColFilter().withColFilterLabel('Filtrar')
-          .withTransform(validated => validated ? 'Sí' : 'No')
-          .withNgStyle(validated => ({ color: validated ? 'green' : 'red' })),
-      ]
+      this.displayedColumns = ['identifier', 'title', 'type', 'source','validated'];
     }else{
-      this.columns = [
-        new TableColumn<Document, 'identifier'>('Identificador', 'identifier')
-          .withColFilter().withColFilterLabel('Filtrar'),
-        new TableColumn<Document, 'title'>('Título', 'title')
-          .isHiddenXs(true)
-          .withWidth(Width.pct(75))
-          .withColFilter().withColFilterLabel('Filtrar'),
-        new TableColumn<Document, 'source'>('Fuente', 'source')
-          .isHiddenXs(true)
-          .withWidth(Width.pct(75))
-          .withColFilter().withColFilterLabel('Filtrar'),
-        new TableColumn<Document, 'type'>('Tipo', 'type')
-          .isHiddenXs(true)
-          .withWidth(Width.pct(75))
-          .withColFilter().withColFilterLabel('Filtrar'),
-        new TableColumn<Document, 'completed'>('Completado', 'completed')
-          .withColFilter().withColFilterLabel('Filtrar')
-          .withTransform(completed => completed ? 'Sí' : 'No')
-          .withNgStyle(completed => ({ color: completed ? 'green' : 'red' })),
-        // new TableColumn<Document, 'validated'>('Validado', 'validated')
-        //   .withColFilter().withColFilterLabel('Filtrar')
-        //   .withTransform(validated => validated ? 'Sí' : 'No')
-        //   .withNgStyle(validated => ({ color: validated ? 'green' : 'red' })),
-      ]
+      this.displayedColumns = ['identifier', 'title', 'type', 'source','completed'];
     }
 
   }
 
-  ngOnInit() {
-
+  setDataSourceAttributes() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
-  refreshPage(event: PageEvent) {
 
+  ngAfterViewInit() { }
+
+  refresh(event?: PageEvent) {
     this.loading = true
-
     if(this.auth.getCurrentUser().role === 'validator'){
       this.api.getAssignedUsers({
-        userEmail: this.auth.getCurrentUser().email,
-        pageSize: event.pageSize,
-        pageIndex: event.pageIndex,
-
+        userEmail: this.auth.getCurrentUser().email
       }).subscribe(
         response => {
-           this.docs = response['documents']
-           this.paginatorLength = response['total_document_count']
+          this.docs = response['documents'];
+          this.dataSource = new MatTableDataSource(response['documents']);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
         },
         error => console.error(error),
         () =>{
-
-
           this.firstTimeValidationFunc()
           this.loading = false
         }
       )
+
     }else{
       this.api.getAssignedDocs({
-        userEmail: this.auth.getCurrentUser().email,
-        pageSize: event.pageSize,
-        pageIndex: event.pageIndex,
+        userEmail: this.auth.getCurrentUser().email
       }).subscribe(
         response => {
-          this.docs = response['documents']
-          this.paginatorLength = response['total_document_count']
+          this.docs = response['documents'];
+          this.dataSource = new MatTableDataSource(response['documents']);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
         },
         error => console.error(error),
         () => this.loading = false
       )
-
     }
   }
 
@@ -142,11 +119,7 @@ export class DocsComponent implements OnInit {
     () =>{
       this.loadTermsToValidatorAnnotation(doc)
     })
-
-
     }
-
-
   }
 
   loadTermsToValidatorAnnotation(doc:Document){
@@ -184,24 +157,26 @@ export class DocsComponent implements OnInit {
     )
   }
 
-  selectDoc(row: Document) {
+  onSelect(row: Document) {
 
-    const timer : ValidationTime = {
-      identifier: row.identifier+"-"+row.user_email+"-"+this.auth.getCurrentUser().email,
-      document : row.identifier,
-      annotator_email: row.user_email,
-      validator_email: this.auth.getCurrentUser().email,
-      opened_first_time: new Date(),
-      validate: false,
-      validated_time: null
+    if(this.auth.getCurrentUser().role === "validator"){
+      const timer : ValidationTime = {
+        identifier: row.identifier+"-"+row.user_email+"-"+this.auth.getCurrentUser().email,
+        document : row.identifier,
+        annotator_email: row.user_email,
+        validator_email: this.auth.getCurrentUser().email,
+        opened_first_time: new Date(),
+        validate: false,
+        validated_time: null
+      }
+      this.api.getFirstTimeValidationTime(timer).subscribe(
+        response=>{
+          this.firstTimeValidation = response['firsttime']
+        },error => console.log(error),
+        ()=> this.loadValidationFirstTime(timer)
+      )
     }
-    this.api.getFirstTimeValidationTime(timer).subscribe(
-      response=>{
 
-        this.firstTimeValidation = response['firsttime']
-      },error => console.log(error),
-      ()=> this.loadValidationFirstTime(timer)
-    )
     this.selectedDoc = row
   }
 
@@ -209,12 +184,21 @@ export class DocsComponent implements OnInit {
 
     if(this.firstTimeValidation ){this.api.addValidationFirstTime(timer).subscribe(
       response => {
-        console.log(response)
       },error => console.log(error)
 
     )}
 
   }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+
 
 
 
