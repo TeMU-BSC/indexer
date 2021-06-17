@@ -3,7 +3,7 @@ This is the REST API for the Indexer web tool.
 
 This backend is built with Flask and connects to a given MongoDB instance.
 
-Author: alejandro.asensio@bsc.es
+Authors: alejandro.asensio@bsc.es & darryl.estrada@bsc.es
 '''
 
 # Standard library.
@@ -95,7 +95,7 @@ def get_assigned_documents_to_user(email):
         skip = int(request.args.get('page_index')) * limit
     except:
         skip = 0
-    found_documents = mongo.db.documents.find({'identifier': {'$in': identifiers}}, {'_id': 0})
+    found_documents = mongo.db.documents.find({'identifier': {'$in': identifiers}}, {'_id': 0})  
     documents = list(found_documents.skip(skip).limit(limit))
     completed_document_ids = mongo.db.completions.distinct('document_identifiers', {'user_email': email})
     total_document_count = found_documents.count()
@@ -113,46 +113,212 @@ def get_assigned_documents_to_user(email):
 
 @app.route('/docs/validate/<email>', methods=['GET'])
 def get_assigned_users(email):
-    validator_user = mongo.db.users.find_one({'email': email})
+    validated_document_ids = mongo.db.completeValidations.distinct('document_identifiers', {'user_email': email})
+    pipeline =  [
+        {
+            "$match":{
+                    "email": email
+                    }
+        },
+        {
+                "$unwind": '$assigned_users'
+        },
+        {
+           "$unwind": '$assigned_users.assigned_document_identifiers'
+        },
+        {
+            "$lookup": {
+                "from": 'documents',
+                "localField": 'assigned_users.assigned_document_identifiers',
+                "foreignField":'identifier',
+                "as": 'document',
+            }
+        },
+        {
+            "$unwind": '$document'
+        },
+        {
+            "$project":{
+                "user_email": '$assigned_users.email',
+                "identifier": '$document.identifier',
+                "title":'$document.title',
+                "abstract":'$document.abstract',
+                "year":'$document.year',
+                "source":'$document.source',
+                "type":'$document.type'
+            }
+        },
+        {
+            "$lookup":{
+                "from": "annotations",
+                "let": {"uemail": '$user_email' , "ider": "$identifier" },
+                "pipeline": [
+                    {
+                        "$match": {
+                            "$expr":{
+                                "$and":[
+                                    {"$eq": ["$document_identifier","$$ider"]},
+                                    {"$eq": ["$user_email","$$uemail"]},
+                                ]      
+                            }
+                        }
+                    },
+                { "$project": { "term_code": 1, "_id": 0 } },
+                {
+                    "$lookup":{
+                        "from":"terms",
+                        "localField": "term_code",
+                        "foreignField": "code",
+                        "as": "term"
+                    }
+                },{"$unwind": "$term"},{ "$project": { "term": 1, "_id": 0 } }
+                ],
+                "as":"terms"
+            }
+        },{
+            "$project":{'_id':0}
+        },
+        
+            {"$project":{
+          "user_email": '$user_email',
+          "identifier": '$identifier',
+          "title":'$title',
+          "abstract":'$abstract',
+          "year":'$year',
+          "source":'$source',
+          "type":'$type',
+          "terms": '$terms.term'
+      }}
+        ]
+    docs = list(mongo.db.users.aggregate(pipeline))
+    for doc in docs:
+        terms_str = list()
+        for term in doc['terms']:
+             term['_id'] = str(term['_id'])
+             terms_str.append(term)
+        doc['terms'] = terms_str
+        doc['validated'] =  doc.get('identifier')+"-"+doc.get('user_email') in validated_document_ids
+    # for user in users:
+    #     user_email = user.get('email')
+    #     user_completions = mongo.db.completions.find_one({'user_email': user_email})
+    #     user_documents = user.get('assigned_document_identifiers')
+    #     if user_completions:
+    #         completed_document_ids = user_completions.get('document_identifiers')
+    #         found_documents = mongo.db.documents.find({"$and":[{'identifier': {'$in': completed_document_ids}},{ 'identifier': {'$in': user_documents}}] }, {'_id': 0})
+    #         documents = list(found_documents)
+    #         for document in documents:
+    #             document['user_email'] = user_email
+    #             term_codes = mongo.db.annotations.distinct('term_code', {'document_identifier': document.get('identifier'), 'user_email': user_email})
+    #             terms = mongo.db.terms.find({'code': {'$in': term_codes}})
+    #             terms_with_str_ids = list()
+    #             for term in terms:
+    #                 term['_id'] = str(term['_id'])
+    #                 terms_with_str_ids.append(term)
+    #             document['terms'] = terms_with_str_ids
+    #             document['validated'] = document.get('identifier')+"-"+user_email in validated_document_ids
+    #             all_documents.append(document)
+    #             response = "all good"
+    #     else:
+    #         response = "No se encontro"
+    return jsonify(documents=docs)
+    
+@app.route('/test/db', methods=['GET'])
+def testdb():
+    email  = "johan@gmail.com"
+    validator_user = mongo.db.users.find_one({'email': email })
     users = validator_user.get('assigned_users')
-   # identifiers = user.get('assigned_document_identifiers')
-    try:
-        limit = int(request.args.get('page_size'))
-    except:
-        limit = 0
-    try:
-        skip = int(request.args.get('page_index')) * limit
-    except:
-        skip = 0
+    msg =  dumps(validator_user)
     all_documents = list()
     completed_document_ids = list()
     validated_document_ids = mongo.db.completeValidations.distinct('document_identifiers', {'user_email': email})
+    pipeline =  [
+        {
+            "$match":{
+                    "email": email
+                    }
+        },
+        {
+                "$unwind": '$assigned_users'
+        },
+        {
+           "$unwind": '$assigned_users.assigned_document_identifiers'
+        },
+        {
+            "$lookup": {
+                "from": 'documents',
+                "localField": 'assigned_users.assigned_document_identifiers',
+                "foreignField":'identifier',
+                "as": 'document',
+            }
+        },
+        {
+            "$unwind": '$document'
+        },
+        {
+            "$project":{
+                "user_email": '$assigned_users.email',
+                "identifier": '$document.identifier',
+                "title":'$document.title',
+                "abstract":'$document.abstract',
+                "year":'$document.year',
+                "source":'$document.source',
+                "type":'$document.type'
+            }
+        },
+        {
+            "$lookup":{
+                "from": "annotations",
+                "let": {"uemail": '$user_email' , "ider": "$identifier" },
+                "pipeline": [
+                    {
+                        "$match": {
+                            "$expr":{
+                                "$and":[
+                                    {"$eq": ["$document_identifier","$$ider"]},
+                                    {"$eq": ["$user_email","$$uemail"]},
+                                ]      
+                            }
+                        }
+                    },
+                { "$project": { "term_code": 1, "_id": 0 } },
+                {
+                    "$lookup":{
+                        "from":"terms",
+                        "localField": "term_code",
+                        "foreignField": "code",
+                        "as": "term"
+                    }
+                },{"$unwind": "$term"},{ "$project": { "term": 1, "_id": 0 } }
+                ],
+                "as":"terms"
+            }
+        },{
+            "$project":{'_id':0}
+        },
+        
+            {"$project":{
+          "user_email": '$user_email',
+          "identifier": '$identifier',
+          "title":'$title',
+          "abstract":'$abstract',
+          "year":'$year',
+          "source":'$source',
+          "type":'$type',
+          "terms": '$terms.term'
+      }}
+        ]
+    docs = list(mongo.db.users.aggregate(pipeline))
+    for doc in docs:
+        terms_str = list()
+        for term in doc['terms']:
+             term['_id'] = str(term['_id'])
+             terms_str.append(term)
+        doc['terms'] = terms_str
+        doc['validated'] =  doc.get('identifier')+"-"+doc.get('user_email') in validated_document_ids
+
+    return jsonify(message=docs)
     
-    for user in users:
-        user_email = user.get('email')
-        user_completions = mongo.db.completions.find_one({'user_email': user_email})
-        user_documents = user.get('assigned_document_identifiers')
-        if user_completions:
-            completed_document_ids = user_completions.get('document_identifiers')
-            found_documents = mongo.db.documents.find({"$and":[{'identifier': {'$in': completed_document_ids}},{ 'identifier': {'$in': user_documents}}] }, {'_id': 0})
-            documents = list(found_documents)
-            for document in documents:
-                document['user_email'] = user_email
-                term_codes = mongo.db.annotations.distinct('term_code', {'document_identifier': document.get('identifier'), 'user_email': user_email})
-                terms = mongo.db.terms.find({'code': {'$in': term_codes}})
-                terms_with_str_ids = list()
-                for term in terms:
-                    term['_id'] = str(term['_id'])
-                    terms_with_str_ids.append(term)
-                document['terms'] = terms_with_str_ids
-                document['validated'] = document.get('identifier')+"-"+user_email in validated_document_ids
-                all_documents.append(document)
-                response = "all good"
-        else:
-            response = "No se encontro"
-            
-    
-    return jsonify(documents=all_documents, page=limit, response = response)
+
 
 @app.route('/mark-doc-as/<status>', methods=['POST'])
 def mark_doc_as(status):

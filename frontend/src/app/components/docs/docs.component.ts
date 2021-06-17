@@ -126,8 +126,11 @@ export class DocsComponent implements AfterViewInit {
     let terms = doc.terms
     const email = this.auth.getCurrentUser().email
     let Validations = []
+
     if(this.firstTime){
       terms.forEach(term => {
+        console.log("term")
+        console.log(term)
         const validation: Validation = {
           document_identifier:doc.identifier,
           identifier: `${doc.identifier}-${term.code}-${email}-${doc.user_email}`,
@@ -137,8 +140,11 @@ export class DocsComponent implements AfterViewInit {
         }
         Validations.push(validation)
       });
-      this.api.addAnnotationValidator(Validations).subscribe(response => {
-      },error => {} )
+
+      if(Validations.length > 0){
+        this.api.addAnnotationValidator(Validations).subscribe(response => {
+        },error => {console.log("error")} )
+      }
     }
   }
 

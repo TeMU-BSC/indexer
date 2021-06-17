@@ -1,0 +1,74 @@
+
+db.users.aggregate([
+  {
+      $match:{
+              email: "luis@gmail.com"
+              }
+  },
+  {
+          $unwind: '$assigned_users'
+  },
+  {
+      $unwind: '$assigned_users.assigned_document_identifiers'
+  },
+  {
+      $lookup: {
+          from: 'documents',
+          localField: 'assigned_users.assigned_document_identifiers',
+          foreignField:'identifier',
+          as: 'document',
+      }
+  },
+  {
+      $unwind: '$document'
+  },
+  {
+      $project:{
+          user_email: '$assigned_users.email',
+          identifier: '$document.identifier',
+          title:'$document.title',
+          abstract:'$document.abstract',
+          year:'$document.year',
+          source:'$document.source',
+          type:'$document.type'
+      }
+  },
+  {
+      $lookup:{
+          from: "annotations",
+          let: {uemail: '$user_email' , ider: "$identifier" },
+          pipeline: [
+              {
+                  $match: {
+                      $expr:{
+                          $and:[
+                              {$eq: ["$document_identifier","$$ider"]},
+                              {$eq: ["$user_email","$$uemail"]},
+                          ]      
+                      }
+                  }
+              },
+           { $project: { term_code: 1, _id: 0 } },
+           {
+               $lookup:{
+                   from:"terms",
+                   localField: "term_code",
+                   foreignField: "code",
+                   as: "term"
+               }
+           },{ $project: { term: 1, _id: 0 } },{$unwind: "$term"},
+          ],
+          as:"terms"
+      }
+   },
+   {$project:{
+          user_email: '$user_email',
+          identifier: '$identifier',
+          title:'$title',
+          abstract:'$abstract',
+          year:'$year',
+          source:'$source',
+          type:'$type',
+          terms: '$terms.term'
+      }}
+  ]).pretty()
