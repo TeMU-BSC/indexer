@@ -4,7 +4,6 @@ import { TableColumn, Width } from 'simplemattable'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
 import { Document,Validation,ValidationTime } from 'src/app/models/interfaces'
-import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -28,14 +27,13 @@ export class DocsComponent implements AfterViewInit {
   itemsPerPage: number;
   displayedColumns: string[];
   dataSource: MatTableDataSource<Document>;
-  private paginator: MatPaginator;
+  pageSize: number;
+
   private sort: MatSort;
 
 
-  @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
-    this.paginator = mp;
-    this.setDataSourceAttributes();
-  }
+
+
   @ViewChild(MatSort) set matSort(ms: MatSort) {
     this.sort = ms;
     this.setDataSourceAttributes();
@@ -60,7 +58,7 @@ export class DocsComponent implements AfterViewInit {
   }
 
   setDataSourceAttributes() {
-    this.dataSource.paginator = this.paginator;
+
     this.dataSource.sort = this.sort;
   }
 
@@ -68,18 +66,19 @@ export class DocsComponent implements AfterViewInit {
   ngAfterViewInit() { }
 
   refresh(event?: PageEvent) {
+    console.log(event)
     this.loading = true
     if(this.auth.getCurrentUser().role === 'validator'){
       this.api.getAssignedUsers({
         userEmail: this.auth.getCurrentUser().email,
-        pageSize : 10,
-        pageIndex : 0
+        pageSize : event?.pageSize ? event.pageSize : 5,
+        pageIndex : event?.pageIndex ? event?.pageIndex : 0
       }).subscribe(
         response => {
-          console.log(response)
+          this.paginatorLength = response['total_document_count'];
+          this.pageSize = response['documents_count']
           this.docs = response['documents'];
           this.dataSource = new MatTableDataSource(response['documents']);
-          this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         },
         error => console.error(error),
@@ -99,7 +98,7 @@ export class DocsComponent implements AfterViewInit {
           this.docs = response['documents'];
           this.paginatorLength = response['total_document_count'];
           this.dataSource = new MatTableDataSource(response['documents']);
-          this.dataSource.paginator = this.paginator;
+          //this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         },
         error => console.error(error),

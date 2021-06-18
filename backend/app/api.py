@@ -148,7 +148,8 @@ def get_assigned_users(email):
                 response = "all good"
         else:
             response = "No se encontro"
-    return jsonify(documents=all_documents, total_document_count = total_document_count, resp = response)
+    documents_count = len(all_documents)
+    return jsonify(documents=all_documents, total_document_count = total_document_count, resp = response, documents_count = documents_count)
     
 @app.route('/test/db/<email1>', methods=['GET'])
 def testdb(email1):

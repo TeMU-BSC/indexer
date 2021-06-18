@@ -4,7 +4,7 @@
     <mat-spinner class="center"></mat-spinner>
   </div>
 
-  <div class="spinner-container" *ngIf="loading === false">
+  <div class="spinner-container" >
     <mat-form-field>
       <mat-label>Filter</mat-label>
       <input
@@ -78,7 +78,12 @@
         </tr>
       </table>
 
-      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      <mat-paginator
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      [pageSize] = "5"
+      [length] = "paginatorLength"
+      (page) = "refresh($event)"
+      ></mat-paginator>
     </div>
   </div>
   <app-doc
