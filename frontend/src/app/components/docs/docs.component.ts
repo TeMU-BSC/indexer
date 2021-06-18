@@ -71,9 +71,12 @@ export class DocsComponent implements AfterViewInit {
     this.loading = true
     if(this.auth.getCurrentUser().role === 'validator'){
       this.api.getAssignedUsers({
-        userEmail: this.auth.getCurrentUser().email
+        userEmail: this.auth.getCurrentUser().email,
+        pageSize : 10,
+        pageIndex : 0
       }).subscribe(
         response => {
+          console.log(response)
           this.docs = response['documents'];
           this.dataSource = new MatTableDataSource(response['documents']);
           this.dataSource.paginator = this.paginator;
@@ -88,10 +91,13 @@ export class DocsComponent implements AfterViewInit {
 
     }else{
       this.api.getAssignedDocs({
-        userEmail: this.auth.getCurrentUser().email
+        userEmail: this.auth.getCurrentUser().email,
+
       }).subscribe(
         response => {
+
           this.docs = response['documents'];
+          this.paginatorLength = response['total_document_count'];
           this.dataSource = new MatTableDataSource(response['documents']);
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
