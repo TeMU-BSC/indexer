@@ -79,7 +79,7 @@
       </table>
 
       <mat-paginator
-      [pageSizeOptions]="[5, 10, 25, 100]"
+      [pageSizeOptions]="[5, 10,15, 25]"
       [pageSize] = "5"
       [length] = "paginatorLength"
       (page) = "refresh($event)"
@@ -89,8 +89,6 @@
   <app-doc
     *ngIf="selectedDoc"
     [doc]="selectedDoc"
-    (completed)="refreshDoc()"
-    (validated)="refreshDoc()"
     fxFlexAlign="center"
     style="padding: 2rem 0"
   >

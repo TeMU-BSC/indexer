@@ -87,6 +87,7 @@ export class DocComponent implements AfterViewInit, OnChanges {
         switch (action) {
           case 'complete':
             this.doc.completed = true
+            this.documentFinished = true
             this.completed.emit(true)
             this.api.markAsCompleted({
               document_identifier: this.doc.identifier,
@@ -99,7 +100,8 @@ export class DocComponent implements AfterViewInit, OnChanges {
               validated_time: new Date()
             }).subscribe()
             this.doc.validated = true
-            this.completed.emit(true)
+            this.documentFinished = true
+            this.validated.emit(true)
             this.api.markAsValidated({
               document_identifier: this.doc.identifier+"-"+this.doc.user_email,
               user_email: this.auth.getCurrentUser().email

@@ -66,7 +66,7 @@ export class DocsComponent implements AfterViewInit {
   ngAfterViewInit() { }
 
   refresh(event?: PageEvent) {
-    console.log(event)
+
     this.loading = true
     if(this.auth.getCurrentUser().role === 'validator'){
       this.api.getAssignedUsers({
@@ -134,8 +134,7 @@ export class DocsComponent implements AfterViewInit {
 
     if(this.firstTime){
       terms.forEach(term => {
-        console.log("term")
-        console.log(term)
+
         const validation: Validation = {
           document_identifier:doc.identifier,
           identifier: `${doc.identifier}-${term.code}-${email}-${doc.user_email}`,
@@ -156,7 +155,6 @@ export class DocsComponent implements AfterViewInit {
 
 
   refreshDoc() {
-    setTimeout(function(){window.location.reload()},500);
     this.loading = true
     this.api.getDoc(this.selectedDoc.identifier).subscribe(
       response => {
@@ -208,6 +206,8 @@ export class DocsComponent implements AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
   }
+
+
 
 
 
