@@ -20,6 +20,11 @@ export class ApiService {
     return this.http.get<Term[]>(`${this.url}/term?multiple=true`)
   }
 
+  getTermList(query: any): Observable<Term[]> {
+    const { document_identifier, user_email } = query
+    return this.http.get<Term[]>(`${this.url}/getTermList?document_identifier=${document_identifier}&user_email=${user_email}`)
+  }
+
   addDocuments(documents: Document[]): Observable<ApiResponse> {
     return this.http.request<ApiResponse>('post', `${this.url}/document`, { body: documents })
   }

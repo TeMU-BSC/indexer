@@ -1,5 +1,6 @@
 import { Component, OnInit,ViewChild,AfterViewInit } from '@angular/core'
 import { PageEvent } from '@angular/material/paginator'
+import { MatPaginator } from '@angular/material/paginator';
 import { TableColumn, Width } from 'simplemattable'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
@@ -13,7 +14,6 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./docs.component.scss']
 })
 export class DocsComponent implements AfterViewInit {
-
   columns = []
   docs: Document[] = []
   selectedDoc: Document
@@ -28,12 +28,16 @@ export class DocsComponent implements AfterViewInit {
   displayedColumns: string[];
   dataSource: MatTableDataSource<Document>;
   pageSize: number;
-
+  private paginator: MatPaginator;
   private sort: MatSort;
 
 
 
 
+  @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
+    this.paginator = mp;
+    this.setDataSourceAttributes();
+  }
   @ViewChild(MatSort) set matSort(ms: MatSort) {
     this.sort = ms;
     this.setDataSourceAttributes();
@@ -58,7 +62,7 @@ export class DocsComponent implements AfterViewInit {
   }
 
   setDataSourceAttributes() {
-
+    this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
@@ -75,10 +79,9 @@ export class DocsComponent implements AfterViewInit {
         pageIndex : event?.pageIndex ? event?.pageIndex : 0
       }).subscribe(
         response => {
-          this.paginatorLength = response['total_document_count'];
-          this.pageSize = response['documents_count']
           this.docs = response['documents'];
           this.dataSource = new MatTableDataSource(response['documents']);
+          this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         },
         error => console.error(error),
@@ -90,15 +93,14 @@ export class DocsComponent implements AfterViewInit {
 
     }else{
       this.api.getAssignedDocs({
-        userEmail: this.auth.getCurrentUser().email,
+        userEmail: this.auth.getCurrentUser().email
 
       }).subscribe(
         response => {
 
           this.docs = response['documents'];
-          this.paginatorLength = response['total_document_count'];
           this.dataSource = new MatTableDataSource(response['documents']);
-          //this.dataSource.paginator = this.paginator;
+          this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         },
         error => console.error(error),
@@ -128,31 +130,41 @@ export class DocsComponent implements AfterViewInit {
   }
 
   loadTermsToValidatorAnnotation(doc:Document){
-    let terms = doc.terms
+
+
     const email = this.auth.getCurrentUser().email
     let Validations = []
 
     if(this.firstTime){
-      terms.forEach(term => {
+      let terms  = []
+      this.api.getTermList({
+        document_identifier: doc.identifier,
+        user_email: doc.user_email
+      }).subscribe(
+        response =>{
+           terms = response['terms']
+        },error =>{},() =>{
+          terms.forEach(term => {
+            console.log("entro en el for")
+            const validation: Validation = {
+              document_identifier:doc.identifier,
+              identifier: `${doc.identifier}-${term.code}-${email}-${doc.user_email}`,
+              user_email: doc.user_email,
+              validator_email: email,
+              term_code: term.code
+            }
+            Validations.push(validation)
+          });
 
-        const validation: Validation = {
-          document_identifier:doc.identifier,
-          identifier: `${doc.identifier}-${term.code}-${email}-${doc.user_email}`,
-          user_email: doc.user_email,
-          validator_email: email,
-          term_code: term.code
+          if(Validations.length > 0){
+            this.api.addAnnotationValidator(Validations).subscribe(response => {
+            },error => {console.log("error")} )
+          }
         }
-        Validations.push(validation)
-      });
+      )
 
-      if(Validations.length > 0){
-        this.api.addAnnotationValidator(Validations).subscribe(response => {
-        },error => {console.log("error")} )
-      }
     }
   }
-
-
 
   refreshDoc() {
     this.loading = true
@@ -167,7 +179,6 @@ export class DocsComponent implements AfterViewInit {
   }
 
   onSelect(row: Document) {
-
     if(this.auth.getCurrentUser().role === "validator"){
       const timer : ValidationTime = {
         identifier: row.identifier+"-"+row.user_email+"-"+this.auth.getCurrentUser().email,
@@ -185,12 +196,18 @@ export class DocsComponent implements AfterViewInit {
         ()=> this.loadValidationFirstTime(timer)
       )
     }
-
-    this.selectedDoc = row
+    this.api.getTermList({
+      document_identifier: row.identifier,
+      user_email: row.user_email
+    }).subscribe(
+      response =>{
+         row['terms'] = response['terms']
+      },error =>{},() =>{
+        this.selectedDoc = row
+      })
   }
 
   loadValidationFirstTime(timer: ValidationTime){
-
     if(this.firstTimeValidation ){this.api.addValidationFirstTime(timer).subscribe(
       response => {
       },error => console.log(error)
@@ -206,11 +223,4 @@ export class DocsComponent implements AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
   }
-
-
-
-
-
-
-
 }

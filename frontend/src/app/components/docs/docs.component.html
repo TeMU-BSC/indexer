@@ -4,7 +4,7 @@
     <mat-spinner class="center"></mat-spinner>
   </div>
 
-  <div class="spinner-container" >
+  <div class="spinner-container" *ngIf="loading === false">
     <mat-form-field>
       <mat-label>Filter</mat-label>
       <input
