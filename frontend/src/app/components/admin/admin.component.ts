@@ -29,9 +29,11 @@ export class AdminComponent {
   ]
   actions: Action[] = [
     { name: 'Añadir documentos', method: this.insertDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT_CREATE as any).default },
+    { name: 'Añadir documentos a clasificar', method: this.insertDocsToClassify.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT_CREATE as any).default },
     { name: 'Eliminar documentos', method: this.deleteDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT_DELETE as any).default },
     { name: 'Añadir términos', method: this.insertTerms.bind(this), jsonSnippet: (EXAMPLE_TERM as any).default },
     { name: 'Añadir usuarios', method: this.registerUsers.bind(this), jsonSnippet: (EXAMPLE_USER as any).default },
+
   ]
   selectedProject: any
   selectedAction: Action
@@ -79,6 +81,12 @@ export class AdminComponent {
           this.snackBar.open(`Error: ${this.response.message}. Por favor, revisa el formato JSON del fichero.`, 'Vale')
         }
       }
+    )
+  }
+  insertDocsToClassify(){
+
+    this.api.addDocumentToClassify(this.dataFromFile as Document[]).subscribe(
+      response => console.log(response)
     )
   }
 

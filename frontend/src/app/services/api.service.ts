@@ -29,6 +29,10 @@ export class ApiService {
     return this.http.request<ApiResponse>('post', `${this.url}/document`, { body: documents })
   }
 
+  addDocumentToClassify(documents: Document[]): Observable<ApiResponse>{
+    return this.http.request<ApiResponse>('post', `${this.url}/documentToLabel`, {body: documents})
+  }
+
   addTerms(terms: Term[]): Observable<ApiResponse> {
     return this.http.request<ApiResponse>('post', `${this.url}/term`, { body: terms })
   }
