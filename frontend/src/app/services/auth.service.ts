@@ -47,16 +47,18 @@ export class AuthService implements CanActivate {
     let found = false;
     this.http.post<User>(`${this.api.url}/login`, { email, password }).subscribe(
       foundUser => {
+        console.log(foundUser)
         if (foundUser) {
+
           this.user = foundUser
           localStorage.setItem(this.browserStorageKey, JSON.stringify(this.user))
           this.title.setTitle(`Indizador - ${this.user.email}`)
-          if(this.user.role === 'annotator' ||this.user.role === 'validator' ){
+          if (this.user.role === 'annotator' || this.user.role === 'validator' || this.user.role === 'classifier') {
             this.router.navigate(['docs'])
-          }else if(this.user.role === 'admin'){
+          } else if (this.user.role === 'admin') {
             this.router.navigate(['admin'])
           }
-          found =  true;
+          found = true;
         }
       }
     )

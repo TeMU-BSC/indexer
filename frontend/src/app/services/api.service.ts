@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs'
 import { environment } from 'src/environments/environment'
 import { _sortByOrder } from 'src/app/helpers/functions'
-import { ApiResponse, Document, Annotation, Term, Validation, ValidationTime} from 'src/app/models/interfaces'
+import { ApiResponse, Document, Annotation, Term, Validation, ValidationTime, Classifier } from 'src/app/models/interfaces'
 
 @Injectable({
   providedIn: 'root'
@@ -29,13 +29,18 @@ export class ApiService {
     return this.http.request<ApiResponse>('post', `${this.url}/document`, { body: documents })
   }
 
-  addDocumentToClassify(documents: Document[]): Observable<ApiResponse>{
-    return this.http.request<ApiResponse>('post', `${this.url}/documentToLabel`, {body: documents})
+  addDocumentToClassify(documents: Document[]): Observable<ApiResponse> {
+    return this.http.request<ApiResponse>('post', `${this.url}/documentToClassify`, { body: documents })
   }
 
   addTerms(terms: Term[]): Observable<ApiResponse> {
     return this.http.request<ApiResponse>('post', `${this.url}/term`, { body: terms })
   }
+
+  addClassifier(classifier: Classifier[]): Observable<ApiResponse> {
+    return this.http.request<ApiResponse>('post', `${this.url}/classifier`, { body: classifier })
+  }
+
 
   deleteDocuments(documents: Document[]): Observable<ApiResponse> {
     return this.http.request<ApiResponse>('delete', `${this.url}/document`, { body: documents })
@@ -51,15 +56,20 @@ export class ApiService {
     return this.http.get<any[]>(`${this.url}/docs/validate/${userEmail}?page_size=${pageSize}&page_index=${pageIndex}`)
   }
 
+  getDocsToClassify(query: any): Observable<any[]> {
+    const { userEmail, pageSize, pageIndex } = query
+    return this.http.get<any[]>(`${this.url}/docsToClassify/${userEmail}?page_size=${pageSize}&page_index=${pageIndex}`)
+  }
+
 
   addAnnotation(annotation: Annotation): Observable<any> {
     return this.http.post<any>(`${this.url}/annotation`, annotation)
   }
-  addAnnotationValidator(validation: any): Observable<any>{
+  addAnnotationValidator(validation: any): Observable<any> {
     return this.http.post<any>(`${this.url}/validation`, validation)
   }
 
-  addValidationFirstTime(validationTime: ValidationTime): Observable<any>{
+  addValidationFirstTime(validationTime: ValidationTime): Observable<any> {
     return this.http.post<any>(`${this.url}/validationTime`, validationTime)
   }
 
@@ -83,8 +93,8 @@ export class ApiService {
     return this.http.post<Document>(`${this.url}/mark-doc-as/validated`, docToMark)
   }
 
-  updateFinishValidationTime(validatioTime: any): Observable<any>{
-    return this.http.post<any>(`${this.url}/validationTime/finished`,validatioTime)
+  updateFinishValidationTime(validatioTime: any): Observable<any> {
+    return this.http.post<any>(`${this.url}/validationTime/finished`, validatioTime)
   }
 
   markAsUnvalidated(dockToMark: any): Observable<Document> {
@@ -107,14 +117,14 @@ export class ApiService {
     return this.http.get<Document>(`${this.url}/doc/${id}`)
   }
 
-  getTermsAnnotationValidator(terms: any): Observable<any>{
+  getTermsAnnotationValidator(terms: any): Observable<any> {
     return this.http.post<any>(`${this.url}/validation/terms`, terms)
   }
-  getFirstTimeValidation(validation: Validation): Observable<any>{
-    return this.http.post<any>(`${this.url}/validation/firsttime`,validation)
+  getFirstTimeValidation(validation: Validation): Observable<any> {
+    return this.http.post<any>(`${this.url}/validation/firsttime`, validation)
   }
-  getFirstTimeValidationTime(validationTime: ValidationTime): Observable<any>{
-    return this.http.post<any>(`${this.url}/validationTime/firsttime`,validationTime)
+  getFirstTimeValidationTime(validationTime: ValidationTime): Observable<any> {
+    return this.http.post<any>(`${this.url}/validationTime/firsttime`, validationTime)
   }
 
 

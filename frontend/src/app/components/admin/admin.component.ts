@@ -6,7 +6,7 @@ import * as EXAMPLE_DOCUMENT_DELETE from 'src/assets/examples/document-delete.js
 import * as EXAMPLE_TERM from 'src/assets/examples/term.json'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { ApiResponse, Document, Term, User } from 'src/app/models/interfaces'
+import { ApiResponse, Classifier, Document, Term, User } from 'src/app/models/interfaces'
 
 export interface Action {
   name: string
@@ -32,6 +32,7 @@ export class AdminComponent {
     { name: 'Añadir documentos a clasificar', method: this.insertDocsToClassify.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT_CREATE as any).default },
     { name: 'Eliminar documentos', method: this.deleteDocs.bind(this), jsonSnippet: (EXAMPLE_DOCUMENT_DELETE as any).default },
     { name: 'Añadir términos', method: this.insertTerms.bind(this), jsonSnippet: (EXAMPLE_TERM as any).default },
+    { name: 'Añadir clasificadores', method: this.insertClassifier.bind(this), jsonSnippet: (EXAMPLE_TERM as any).default },
     { name: 'Añadir usuarios', method: this.registerUsers.bind(this), jsonSnippet: (EXAMPLE_USER as any).default },
 
   ]
@@ -83,10 +84,21 @@ export class AdminComponent {
       }
     )
   }
-  insertDocsToClassify(){
+  insertDocsToClassify() {
 
     this.api.addDocumentToClassify(this.dataFromFile as Document[]).subscribe(
-      response => console.log(response)
+      response => {
+        console.log(response)
+        this.response = response
+      },
+      error => console.error(error),
+      () => {
+        if (this.response.success) {
+          this.snackBar.open(`Documentos  a clasificar añadidos correctamente.`, 'Vale')
+        } else {
+          this.snackBar.open(`Error: ${this.response.message}. Por favor, revisa el formato JSON del fichero.`, 'Vale')
+        }
+      }
     )
   }
 
@@ -103,6 +115,21 @@ export class AdminComponent {
       }
     )
   }
+
+  insertClassifier() {
+    this.api.addClassifier(this.dataFromFile as Classifier[]).subscribe(
+      response => this.response = response,
+      error => console.error(error),
+      () => {
+        if (this.response.success) {
+          this.snackBar.open(`Clasificadores añadidos correctamente.`, 'Vale')
+        } else {
+          this.snackBar.open(`Error: ${this.response.message}. Por favor, revisa el formato JSON del fichero.`, 'Vale')
+        }
+      }
+    )
+  }
+
 
   deleteDocs() {
     this.api.deleteDocuments(this.dataFromFile as Document[]).subscribe(

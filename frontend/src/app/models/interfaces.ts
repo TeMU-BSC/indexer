@@ -1,7 +1,7 @@
 export interface User {
   fullname: string
   email: string
-  role: 'annotator' | 'admin' | 'validator'
+  role: 'annotator' | 'admin' | 'validator' | 'classifier'
   password: string
   assigned_document_identifiers?: string[]
 }
@@ -25,6 +25,15 @@ export interface Term {
   synonyms: string[]
 }
 
+
+
+export interface Classifier {
+  terminology: string
+  code: string
+  name: string
+  description: string
+  synonyms: string[]
+}
 export interface Annotation {
   document_identifier: Document['identifier']
   identifier: string
@@ -45,7 +54,7 @@ export interface ValidationTime {
   document: Document['identifier'],
   annotator_email: User['email'],
   validator_email: User['email'],
-  opened_first_time:  Date,
+  opened_first_time: Date,
   validate: boolean,
   validated_time: Date
 }

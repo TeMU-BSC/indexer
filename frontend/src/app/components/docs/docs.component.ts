@@ -1,10 +1,10 @@
-import { Component, OnInit,ViewChild,AfterViewInit } from '@angular/core'
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core'
 import { PageEvent } from '@angular/material/paginator'
 import { MatPaginator } from '@angular/material/paginator';
 import { TableColumn, Width } from 'simplemattable'
 import { ApiService } from 'src/app/services/api.service'
 import { AuthService } from 'src/app/services/auth.service'
-import { Document,Validation,ValidationTime } from 'src/app/models/interfaces'
+import { Document, Validation, ValidationTime } from 'src/app/models/interfaces'
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -53,10 +53,10 @@ export class DocsComponent implements AfterViewInit {
     this.dataSource = new MatTableDataSource([]);
     this.refresh();
 
-    if(this.auth.getCurrentUser().role === "validator"){
-      this.displayedColumns = ['identifier', 'title', 'type', 'source','validated'];
-    }else{
-      this.displayedColumns = ['identifier', 'title', 'type', 'source','completed'];
+    if (this.auth.getCurrentUser().role === "validator") {
+      this.displayedColumns = ['identifier', 'title', 'type', 'source', 'validated'];
+    } else {
+      this.displayedColumns = ['identifier', 'title', 'type', 'source', 'completed'];
     }
 
   }
@@ -72,11 +72,11 @@ export class DocsComponent implements AfterViewInit {
   refresh(event?: PageEvent) {
 
     this.loading = true
-    if(this.auth.getCurrentUser().role === 'validator'){
+    if (this.auth.getCurrentUser().role === 'validator') {
       this.api.getAssignedUsers({
         userEmail: this.auth.getCurrentUser().email,
-        pageSize : event?.pageSize ? event.pageSize : 5,
-        pageIndex : event?.pageIndex ? event?.pageIndex : 0
+        pageSize: event?.pageSize ? event.pageSize : 5,
+        pageIndex: event?.pageIndex ? event?.pageIndex : 0
       }).subscribe(
         response => {
           this.docs = response['documents'];
@@ -85,19 +85,38 @@ export class DocsComponent implements AfterViewInit {
           this.dataSource.sort = this.sort;
         },
         error => console.error(error),
-        () =>{
+        () => {
           this.firstTimeValidationFunc()
           this.loading = false
         }
       )
 
-    }else{
+    } else if (this.auth.getCurrentUser().role === 'classifier') {
+      this.api.getDocsToClassify({
+        userEmail: this.auth.getCurrentUser().email,
+        pageSize: event?.pageSize ? event.pageSize : 5,
+        pageIndex: event?.pageIndex ? event?.pageIndex : 0
+      }).subscribe(
+        response => {
+          console.log(response)
+          this.docs = response['documents'];
+          this.dataSource = new MatTableDataSource(response['documents']);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        },
+        error => console.error(error),
+        () => {
+          //this.firstTimeValidationFunc()
+          this.loading = false
+        }
+      )
+
+    } else if (this.auth.getCurrentUser().role === 'annotator') {
       this.api.getAssignedDocs({
         userEmail: this.auth.getCurrentUser().email
 
       }).subscribe(
         response => {
-
           this.docs = response['documents'];
           this.dataSource = new MatTableDataSource(response['documents']);
           this.dataSource.paginator = this.paginator;
@@ -109,7 +128,7 @@ export class DocsComponent implements AfterViewInit {
     }
   }
 
-  firstTimeValidationFunc(){
+  firstTimeValidationFunc() {
     for (let index = 0; index < this.docs.length; index++) {
       const doc = this.docs[index];
       const FirstTimeValidation: Validation = {
@@ -118,36 +137,36 @@ export class DocsComponent implements AfterViewInit {
         validator_email: this.auth.getCurrentUser().email,
         term_code: "",
         identifier: ""
-    }
-    this.api.getFirstTimeValidation(FirstTimeValidation).subscribe(response => {
-      this.firstTime = response.firsttime
-    },
-    error => {},
-    () =>{
-      this.loadTermsToValidatorAnnotation(doc)
-    })
+      }
+      this.api.getFirstTimeValidation(FirstTimeValidation).subscribe(response => {
+        this.firstTime = response.firsttime
+      },
+        error => { },
+        () => {
+          this.loadTermsToValidatorAnnotation(doc)
+        })
     }
   }
 
-  loadTermsToValidatorAnnotation(doc:Document){
+  loadTermsToValidatorAnnotation(doc: Document) {
 
 
     const email = this.auth.getCurrentUser().email
     let Validations = []
 
-    if(this.firstTime){
-      let terms  = []
+    if (this.firstTime) {
+      let terms = []
       this.api.getTermList({
         document_identifier: doc.identifier,
         user_email: doc.user_email
       }).subscribe(
-        response =>{
-           terms = response['terms']
-        },error =>{},() =>{
+        response => {
+          terms = response['terms']
+        }, error => { }, () => {
           terms.forEach(term => {
             console.log("entro en el for")
             const validation: Validation = {
-              document_identifier:doc.identifier,
+              document_identifier: doc.identifier,
               identifier: `${doc.identifier}-${term.code}-${email}-${doc.user_email}`,
               user_email: doc.user_email,
               validator_email: email,
@@ -156,9 +175,9 @@ export class DocsComponent implements AfterViewInit {
             Validations.push(validation)
           });
 
-          if(Validations.length > 0){
+          if (Validations.length > 0) {
             this.api.addAnnotationValidator(Validations).subscribe(response => {
-            },error => {console.log("error")} )
+            }, error => { console.log("error") })
           }
         }
       )
@@ -179,10 +198,10 @@ export class DocsComponent implements AfterViewInit {
   }
 
   onSelect(row: Document) {
-    if(this.auth.getCurrentUser().role === "validator"){
-      const timer : ValidationTime = {
-        identifier: row.identifier+"-"+row.user_email+"-"+this.auth.getCurrentUser().email,
-        document : row.identifier,
+    if (this.auth.getCurrentUser().role === "validator") {
+      const timer: ValidationTime = {
+        identifier: row.identifier + "-" + row.user_email + "-" + this.auth.getCurrentUser().email,
+        document: row.identifier,
         annotator_email: row.user_email,
         validator_email: this.auth.getCurrentUser().email,
         opened_first_time: new Date(),
@@ -190,29 +209,31 @@ export class DocsComponent implements AfterViewInit {
         validated_time: null
       }
       this.api.getFirstTimeValidationTime(timer).subscribe(
-        response=>{
+        response => {
           this.firstTimeValidation = response['firsttime']
-        },error => console.log(error),
-        ()=> this.loadValidationFirstTime(timer)
+        }, error => console.log(error),
+        () => this.loadValidationFirstTime(timer)
       )
     }
     this.api.getTermList({
       document_identifier: row.identifier,
       user_email: row.user_email
     }).subscribe(
-      response =>{
-         row['terms'] = response['terms']
-      },error =>{},() =>{
+      response => {
+        row['terms'] = response['terms']
+      }, error => { }, () => {
         this.selectedDoc = row
       })
   }
 
-  loadValidationFirstTime(timer: ValidationTime){
-    if(this.firstTimeValidation ){this.api.addValidationFirstTime(timer).subscribe(
-      response => {
-      },error => console.log(error)
+  loadValidationFirstTime(timer: ValidationTime) {
+    if (this.firstTimeValidation) {
+      this.api.addValidationFirstTime(timer).subscribe(
+        response => {
+        }, error => console.log(error)
 
-    )}
+      )
+    }
 
   }
 

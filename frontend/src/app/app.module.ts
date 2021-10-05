@@ -30,6 +30,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import {MatDialogModule} from '@angular/material/dialog';
+import { ClassifiersComponent } from './components/classifiers/classifiers.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import {MatDialogModule} from '@angular/material/dialog';
     DocDetailComponent,
     // HighlightPipe,
     SafeHtmlPipe,
+    ClassifiersComponent,
   ],
   imports: [
     BrowserModule,
